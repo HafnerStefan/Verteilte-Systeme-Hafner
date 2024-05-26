@@ -1,8 +1,11 @@
 package ch.hftm.blog.entity;
 
+import java.util.Objects;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Blog {
@@ -14,6 +17,9 @@ public class Blog {
     String title;
     String text;
 
+    @ManyToOne
+    private User user;
+
     public Blog() {
     }
 
@@ -24,6 +30,15 @@ public class Blog {
     public Blog(String title, String text) {
         this.title = title;
         this.text = text;
+    }
+
+    //Getter and Setter
+
+    /**
+    * @return the id
+    */
+    public long getId() {
+        return id;
     }
 
     /**
@@ -52,6 +67,37 @@ public class Blog {
      */
     public void setText(String text) {
         this.text = text;
+    }
+
+    /**
+    * @return the user
+    */
+    public User getUser() {
+        return user;
+    }
+
+    /**
+     * @param user the user to set
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Blog blog = (Blog) o;
+        return id == blog.id &&
+                Objects.equals(title, blog.title) &&
+                Objects.equals(text, blog.text);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, text);
     }
 
 }

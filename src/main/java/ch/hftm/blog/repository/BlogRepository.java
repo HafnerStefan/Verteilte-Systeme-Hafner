@@ -7,4 +7,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class BlogRepository implements PanacheRepository<Blog> {
 
+    public Blog findByTitle(String title) {
+        return find("title", title).firstResult();
+    }
+
 }
