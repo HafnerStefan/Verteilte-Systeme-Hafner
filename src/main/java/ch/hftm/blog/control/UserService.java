@@ -8,7 +8,6 @@ import io.quarkus.logging.Log;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.GET;
 
 @Dependent
 public class UserService {
@@ -27,8 +26,17 @@ public class UserService {
         userRepository.persist(user);
     }
 
-    @GET
     public long count() {
         return userRepository.count();
     }
+
+    public User getUserById(Long userId) {
+        User user = userRepository.findById(userId);
+        if (user != null) {
+            return user;
+        } else {
+            throw new IllegalArgumentException("User not found with ID: " + userId);
+        }
+    }
+
 }

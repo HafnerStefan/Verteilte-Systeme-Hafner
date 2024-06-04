@@ -11,7 +11,6 @@ import jakarta.persistence.ManyToOne;
 public class Blog {
     @Id
     @GeneratedValue
-
     private long id;
 
     String title;
@@ -98,6 +97,16 @@ public class Blog {
     @Override
     public int hashCode() {
         return Objects.hash(id, title, text);
+    }
+
+    @Override
+    public String toString() {
+
+        return "Blog{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", text='" + text;
+
     }
 
 }

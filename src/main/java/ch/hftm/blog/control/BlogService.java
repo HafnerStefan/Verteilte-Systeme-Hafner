@@ -35,28 +35,33 @@ public class BlogService {
     }
 
     @Transactional
-    public void addBlog(Blog blog) {
+    public long addBlog(String title, String text) {
+        Blog blog = new Blog(title, text);
         Log.info("Adding blog " + blog.getTitle());
         blogRepository.persist(blog);
+
+        return blog.getId();
     }
 
     @Transactional
-    public void deleteBlog(Long blogId) {
+    public Blog deleteBlog(Long blogId) {
         Blog blog = blogRepository.findById(blogId);
         if (blog != null) {
             blogRepository.delete(blog);
+            return blog;
         } else {
             throw new IllegalArgumentException("Blog not found with ID: " + blogId);
         }
     }
 
     @Transactional
-    public void addUserToBlog(Long blogId, User user) {
+    public Blog addUserToBlog(Long blogId, User user) {
         Blog blog = blogRepository.findById(blogId);
         if (blog != null) {
             userRepository.persist(user); // Persistiere das User-Objekt zuerst
             blog.setUser(user); // Weise dann das User-Objekt dem Blog zu
             blogRepository.persist(blog); // Aktualisiere das Blog-Objekt in der Datenbank
+            return blog;
         } else {
             throw new IllegalArgumentException("Blog not found with ID: " + blogId);
         }
