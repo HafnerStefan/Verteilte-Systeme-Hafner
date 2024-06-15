@@ -30,41 +30,40 @@ public class BlogService {
         if (blog != null) {
             return blog;
         } else {
-            throw new IllegalArgumentException("Blog not found with ID: " + blogId);
+            throw new BlogNotFoundException("Blog with id " + blogId + " not found");
         }
     }
 
     @Transactional
-    public long addBlog(String title, String text) {
-        Blog blog = new Blog(title, text);
+    public void addBlog(Blog blog) {
         Log.info("Adding blog " + blog.getTitle());
         blogRepository.persist(blog);
 
-        return blog.getId();
     }
 
     @Transactional
-    public Blog deleteBlog(Long blogId) {
+    public void deleteBlog(Long blogId) {
         Blog blog = blogRepository.findById(blogId);
         if (blog != null) {
             blogRepository.delete(blog);
-            return blog;
         } else {
-            throw new IllegalArgumentException("Blog not found with ID: " + blogId);
+            throw new BlogNotFoundException("Blog with id " + blogId + " not found");
         }
     }
 
     @Transactional
-    public Blog addUserToBlog(Long blogId, User user) {
+    public void addUserToBlog(Long blogId, User user) {
         Blog blog = blogRepository.findById(blogId);
         if (blog != null) {
-            userRepository.persist(user); // Persistiere das User-Objekt zuerst
+            if (user.getId() != null) {
+                user = userRepository.getEntityManager().merge(user); // Verwende merge, wenn der Benutzer bereits existiert
+            } else {
+                userRepository.persist(user); // Verwende persist, wenn der Benutzer neu ist
+            }
             blog.setUser(user); // Weise dann das User-Objekt dem Blog zu
             blogRepository.persist(blog); // Aktualisiere das Blog-Objekt in der Datenbank
-            return blog;
         } else {
-            throw new IllegalArgumentException("Blog not found with ID: " + blogId);
+            throw new BlogNotFoundException("Blog with id " + blogId + " not found");
         }
     }
-
 }

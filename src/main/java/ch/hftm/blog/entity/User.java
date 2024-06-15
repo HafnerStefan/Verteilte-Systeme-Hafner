@@ -3,6 +3,10 @@ package ch.hftm.blog.entity;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,17 +14,21 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
 @Entity
+@Schema(name = "User", description = "User returne")
 public class User {
 
     @Id
     @GeneratedValue
-
-    private long id;
-
+    @Schema(required = true, example = "32126319")
+    private Long id;
+    @Schema(required = true, example = "Sandra Dubeli")
     String name;
-    String age;
+    @Schema(required = true, example = "32")
+    int age;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Schema(allOf = Blog.class)
+    @JsonManagedReference
     private List<Blog> blog;
 
     public User() {
@@ -30,7 +38,7 @@ public class User {
     /**
     * @return the id
     */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -38,7 +46,7 @@ public class User {
      * @param name
      * @param age
      */
-    public User(String name, String age) {
+    public User(String name, int age) {
         this.name = name;
         this.age = age;
     }
@@ -60,14 +68,14 @@ public class User {
     /**
      * @return the age
      */
-    public String getAge() {
+    public int getAge() {
         return age;
     }
 
     /**
      * @param age the age to set
      */
-    public void setAge(String age) {
+    public void setAge(int age) {
         this.age = age;
     }
 

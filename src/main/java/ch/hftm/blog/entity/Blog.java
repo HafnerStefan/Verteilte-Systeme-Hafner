@@ -2,21 +2,31 @@ package ch.hftm.blog.entity;
 
 import java.util.Objects;
 
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 @Entity
+@Schema(name = "Blog", description = "Blog returne")
 public class Blog {
     @Id
-    @GeneratedValue
-    private long id;
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(required = true, example = "32126319")
+    private Long id;
+    @Schema(required = true, example = "New Blog")
     String title;
+    @Schema(required = true, example = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra.")
     String text;
 
     @ManyToOne
+
+    @JsonBackReference
     private User user;
 
     public Blog() {
@@ -36,7 +46,7 @@ public class Blog {
     /**
     * @return the id
     */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

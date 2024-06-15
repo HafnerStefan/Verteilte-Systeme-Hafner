@@ -2,6 +2,7 @@ package ch.hftm.blog.control;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
@@ -25,15 +26,14 @@ public class BlogServiceTest {
     @Test
     void listingAndAddingBlogs() {
         // Arrange
-        Blog blog;
+        Blog blog = new Blog("Testing Blog", "This is my testing blog");
         int blogsBefore;
         List<Blog> blogs;
 
         // Act
         blogsBefore = blogService.getBlogs().size();
 
-        long id = blogService.addBlog("Testing Blog", "This is my testing blog");
-        blog = blogService.getBlogById(id);
+        blogService.addBlog(blog);
         blogs = blogService.getBlogs();
 
         // Assert
@@ -47,7 +47,7 @@ public class BlogServiceTest {
         blog.setTitle("Test Blog");
         blog.setText("This is a test blog.");
 
-        blogService.addBlog("Test Blog", "This is a test blog.");
+        blogService.addBlog(blog);
 
         assertNotNull(blog.getId());
     }
@@ -56,10 +56,12 @@ public class BlogServiceTest {
     @Transactional
     void addUserToBlogTest() {
         // Erstelle ein neues Blog
+        Blog blog = new Blog();
+        blog.setTitle("Test Blog");
+        blog.setText("This is a test blog.");
 
         // Füge das Blog hinzu
-        long id = blogService.addBlog("Test Blog", "This is a test blog.");
-        Blog blog = blogService.getBlogById(id);
+        blogService.addBlog(blog);
 
         // Erstelle ein neues User-Objekt
         User user = new User();
@@ -69,7 +71,7 @@ public class BlogServiceTest {
         userRepository.persist(user);
 
         // Füge den Benutzer zum Blog hinzu
-        blogService.addUserToBlog(id, user);
+        blogService.addUserToBlog(blog.getId(), user);
 
         // Überprüfe, ob das User-Objekt nicht null ist
         assertNotNull(user.getId());
@@ -77,30 +79,21 @@ public class BlogServiceTest {
         // Überprüfe, ob das User-Objekt erfolgreich dem Blog zugeordnet wurde
         assertEquals(user.getId(), blog.getUser().getId());
     }
-    /* 
-    
+
     @Test
     void deleteBlogTest() {
-    
-        long id = blogService.addBlog("Test Blog", "This is a test blog.");
-        System.out.println("ID: " + id);
-        Blog blog = blogService.getBlogById(id);
-    
+        Blog blog = new Blog();
+        blog.setTitle("Test Blog");
+        blog.setText("This is a test blog.");
+
+        blogService.addBlog(blog);
+
         Long blogId = blog.getId();
-        System.out.println("Blog ID: " + blogId);
-        Blog delBlog = blogService.deleteBlog(blogId);
-        System.out.println(delBlog.toString());
-        System.out.println("TEST*******************************");
-        List<Blog> blogs = blogService.getBlogs();
-        for (Blog b : blogs) {
-            System.out.println(b.toString());
-        }
-        delBlog = blogService.getBlogById(blogId);
-    
-        assertThrows(IllegalArgumentException.class, () -> {
+
+        blogService.deleteBlog(blogId);
+
+        assertThrows(BlogNotFoundException.class, () -> {
             blogService.getBlogById(blogId);
         });
     }
-    */
-
 }
