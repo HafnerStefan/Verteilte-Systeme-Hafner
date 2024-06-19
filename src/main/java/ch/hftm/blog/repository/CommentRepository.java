@@ -1,23 +1,24 @@
 package ch.hftm.blog.repository;
 
-import ch.hftm.blog.entity.User;
+import java.util.List;
+
+import ch.hftm.blog.entity.Comment;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class UserRepository implements PanacheRepository<User> {
+public class CommentRepository implements PanacheRepository<Comment> {
 
     // Panache stellt die Methoden listAll, findById, persist, count und delete zur Verfügung
 
     @Transactional
-    public User findByName(String name) {
-        return find("name", name).firstResult();
+    public List<Comment> findByBlogId(Long blogId) {
+        return find("blog.id", blogId).list();
     }
 
     @Transactional
-    public User findByEmail(String email) {
-        return find("email", email).firstResult();
+    public List<Comment> findByUserId(Long userId) {
+        return find("user.id", userId).list();
     }
-
 }

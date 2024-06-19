@@ -1,56 +1,103 @@
-# verteilte-systeme
+# IN306 - Verteilte Systeme (Blog-Projekt)
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+## Was macht diese Anwendung?
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+Diese Blog-Anwendung ist ein Backend-System, das mit Quarkus entwickelt wurde und eine einfache REST-API zum Verwalten von Blogposts bereitstellt. Die Anwendung ermöglicht das Erstellen, Aktualisieren, Löschen und Abrufen von Benutzern, Blogs und Kommentaren.
+Wichtig zu wissen ist das ein Blog benötigt einen User. und ein Comment benötigt einen Blog und einen User
+Das System verwendet JPA (Java Persistence API) für die Datenbankinteraktion und MicroProfile OpenAPI für die Dokumentation der REST-APIs.
 
-## Running the application in dev mode
+## Projektstruktur
 
-You can run your application in dev mode that enables live coding using:
-```shell script
-./mvnw compile quarkus:dev
+Das Projekt folgt einer standardmäßigen Quarkus-Struktur:
+
+```
+├── java
+│   └── ch
+│       └── hftm
+│           └── blog
+│               ├── boundry
+│               │   ├── BlogResource.java
+│               │   ├── CommentResource.java
+│               │   └── UserResource.java
+│               ├── control
+│               │   ├── BlogService.java
+│               │   ├── CommentService.java
+│               │   └── UserService.java
+│               ├── entity
+│               │   ├── Blog.java
+│               │   ├── Comment.java
+│               │   └── User.java
+│               ├── repository
+│               │   ├── BlogRepository.java
+│               │   ├── CommentRepository.java
+│               │   └── UserRepository.java
+│               └── exception
+│                   └── ObjectNotFoundException.java
+└── resources
+    └── application.properties
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+- **boundary**: Enthält REST-Ressourcenklassen, die HTTP-Anfragen bearbeiten.
+- **control**: Enthält Service-Klassen mit der Geschäftslogik für Blogs, Kommentare und Benutzeroperationen.
+- **repository**: Enthält Repository-Klassen für Datenbankoperationen.
+- **entity**: Enthält Entitätsklassen, die verschiedene Komponenten der Anwendung repräsentieren.
+- **exception**: Enthält benutzerdefinierte Ausnahme-Klassen zur Fehlerbehandlung.
+- **application.properties**: Konfigurationsdatei für die Datenbank und andere Einstellungen.
 
-## Packaging and running the application
+## Entitätsklassen
 
-The application can be packaged using:
-```shell script
-./mvnw package
+- **Blog**: Repräsentiert einen Blogpost in der Anwendung. Jeder Blogpost enthält Attribute wie Titel, Inhalt, Autor und Veröffentlichungsdatum.
+- **User**: Repräsentiert einen Benutzer der Blog-Anwendung. Benutzer haben Attribute wie Benutzername, E-Mail und Passwort und können Aktionen wie das Erstellen von Blogposts und Kommentaren ausführen.
+- **Comment**: Repräsentiert einen Kommentar zu einem Blogpost. Jeder Kommentar enthält Attribute wie den Inhalt des Kommentars, den Benutzer, der ihn gepostet hat, und den Zeitstempel. Kommentare ermöglichen es Benutzern, an Diskussionen teilzunehmen und Feedback zu Blogposts zu geben.
+
+## Wie startet man das Projekt?
+
+### Voraussetzungen
+
+- JDK 11 oder höher installiert.
+- Maven installiert.
+
+### Schritte zum Starten des Projekts
+
+1. **Repository klonen**:
+    ```sh
+    git clone git@github.com:HafnerStefan/Verteilte-Systeme-Hafner.git
+    ```
+
+2. **Datenbank konfigurieren**:
+    - TODO: Anleitung zur Konfiguration der Datenbank hinzufügen.
+
+3. **Anwendung starten**:
+    - Verwenden Sie Maven, um die Anwendung zu starten:
+    ```sh
+    ./mvnw quarkus:dev
+    ```
+    - Die Anwendung wird unter `http://localhost:8080` verfügbar sein.
+
+## API-Endpunkte
+
+http://localhost:8080/q/dev-ui/io.quarkus.quarkus-smallrye-openapi/swagger-ui
+
+## Testen
+
+Das Projekt verwendet JUnit 5 für Unit- und Integrationstests. Um die Tests auszuführen, verwenden Sie den folgenden Befehl:
+
+```sh
+mvn test
 ```
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+## Change History
 
-If you want to build an _über-jar_, execute the following command:
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
-```
+- **Projekt erstellt**: First Quarkus Step
+- **Blog-Modell und DB-Verbindung**: Quick-Start_DB-Anbindung mit Quarkus Panache
+- **Repository und Service und erster Test**: Erster DB Zugriff über die Test
+- **Rest Servie aufgebaut und getestet**: add Rest API
+- **REST-API-Pfade hinzugefügt**: Rest und Swagger Funktioniert und ist fast perfekt
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+## Autor
 
-## Creating a native executable
+Erstellt von Hafner Stefan.
 
-You can create a native executable using: 
-```shell script
-./mvnw package -Dnative
-```
+---
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/verteilte-systeme-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
-
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+Dieses README bietet einen umfassenden Überblick über die Blog-Anwendung, einschließlich ihrer Funktionalität, Projektstruktur, Entitätsklassen und Anweisungen zum Einrichten und Ausführen der Anwendung.
