@@ -2,6 +2,7 @@ package ch.hftm.blog.boundry;
 
 import java.util.List;
 
+import ch.hftm.blog.dto.CommentDTO;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -28,123 +29,108 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-@Path("comments")
+@Path("comment")
 @ApplicationScoped
 public class CommentResource {
 
-    @Inject
-    CommentService commentService;
 
-    @Inject
-    UserService userService;
+	@Inject
+	CommentService commentService;
 
-    @Inject
-    BlogService blogService;
+	@Inject
+	UserService userService;
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "200", description = "List of all Comments", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Comment[].class)))
-    public Response getComments() {
-        List<Comment> comments = commentService.getComments();
-        Log.info("Returning " + comments.size() + " comments");
-        return Response.ok(comments).build();
-    }
+	@Inject
+	BlogService blogService;
 
-    @GET
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "200", description = "Comment by ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Comment.class)))
-    @APIResponse(responseCode = "404", description = "Comment not found")
-    public Response getCommentById(@PathParam("id") Long id) {
-        try {
-            Comment comment = commentService.getCommentById(id);
-            return Response.ok(comment).build();
-        } catch (ObjectNotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
-    }
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@APIResponse(responseCode = "200", description = "List of all Comments", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Comment[].class)))
+	//FETCH ALL Comments
+	public Response fetchAllComments() {
+		List<CommentDTO> commentsDTO = commentService.getComments();
+		Log.info("Returning " + commentsDTO.size() + " comments");
+		return Response.ok(commentsDTO).build();
+	}
 
-    @GET
-    @Path("/byblog/{blogId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "200", description = "Comments by Blog ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Comment[].class)))
-    @APIResponse(responseCode = "404", description = "Comments not found")
-    public Response getCommentsByBlogId(@PathParam("blogId") Long blogId) {
-        List<Comment> comments = commentService.getCommentsByBlogId(blogId);
-        if (comments.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).entity("No comments found for blog with ID " + blogId)
-                    .build();
-        } else {
-            return Response.ok(comments).build();
-        }
-    }
+	@GET
+	@Path("/{commentId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@APIResponse(responseCode = "200", description = "Comment by ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Comment.class)))
+	@APIResponse(responseCode = "404", description = "Comment not found")
+	//FETCH Comment BY ID
+	public Response fetchCommentById(@PathParam("commentId") Long id) {
+		try {
+			CommentDTO commentDTO = this.commentService.getCommentById(id);
+			if (commentDTO == null) {
+				return Response.status(Response.Status.NOT_FOUND).build();
+			}
+			return Response.ok(commentDTO).build();
+		} catch (ObjectNotFoundException e) {
+			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+		}
+	}
 
-    @GET
-    @Path("/byuser/{userId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "200", description = "Comments by User ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Comment[].class)))
-    @APIResponse(responseCode = "404", description = "Comments not found")
-    public Response getCommentsByUserId(@PathParam("userId") Long userId) {
-        List<Comment> comments = commentService.getCommentsByUserId(userId);
-        if (comments.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).entity("No comments found for user with ID " + userId)
-                    .build();
-        } else {
-            return Response.ok(comments).build();
-        }
-    }
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@APIResponse(responseCode = "201", description = "Comment created", content = @Content(schema = @Schema(implementation = Comment.class)))
+	// CREATE NEW COMMENT
+	public Response createNewComment(CommentRequest commentRequest) {
+		CommentDTO commentDTO = new CommentDTO(commentRequest.getText(), commentRequest.getBlogId(), commentRequest.getUserId());
+		CommentDTO createdComment = this.commentService.addComment(commentDTO);
+		return Response.status(Response.Status.CREATED).entity(createdComment).build();
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "201", description = "Comment created", content = @Content(schema = @Schema(implementation = Comment.class)))
-    public Response addComment(CommentRequest commentRequest) {
-        try {
-            String text = commentRequest.getText();
-            User user = userService.getUserById(commentRequest.getUserId());
-            Blog blog = blogService.getBlogById(commentRequest.getBlogId());
-            Comment comment = new Comment(text, user, blog);
-            commentService.addComment(comment);
-            return Response.status(Response.Status.CREATED).entity(comment).build();
-        } catch (ObjectNotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
-    }
+	}
 
-    @PUT
-    @Path("/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @APIResponses({
-            @APIResponse(responseCode = "200", description = "Comment updated", content = @Content(schema = @Schema(implementation = Comment.class))),
-            @APIResponse(responseCode = "404", description = "Comment not found")
-    })
-    public Response updateComment(@PathParam("id") Long id, CommentRequest commentRequest) {
-        try {
-            Comment commentDetails = new Comment(commentRequest.getText(),
-                    userService.getUserById(commentRequest.getUserId()),
-                    blogService.getBlogById(commentRequest.getBlogId()));
-            commentService.updateComment(id, commentDetails);
-            return Response.ok(commentDetails).build();
-        } catch (ObjectNotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
-    }
+//TODO Remove ?
+/*	@GET
+	@Path("/byblog/{blogId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@APIResponse(responseCode = "200", description = "Comments by Blog ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Comment[].class)))
+	@APIResponse(responseCode = "404", description = "Comments not found")
+	//
+	public Response getCommentsByBlogId(@PathParam("blogId") Long blogId) {
+		List<Comment> comments = commentService.getCommentsByBlogId(blogId);
+		if (comments.isEmpty()) {
+			return Response.status(Response.Status.NOT_FOUND).entity("No comments found for blog with ID " + blogId)
+					.build();
+		} else {
+			return Response.ok(comments).build();
+		}
+	}
 
-    @DELETE
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @APIResponses({
-            @APIResponse(responseCode = "200", description = "Comment deleted"),
-            @APIResponse(responseCode = "404", description = "Comment not found")
-    })
-    public Response deleteComment(@PathParam("id") Long id) {
-        try {
-            commentService.deleteComment(id);
-            return Response.ok().build();
-        } catch (ObjectNotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
-    }
+	@GET
+	@Path("/byuser/{userId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@APIResponse(responseCode = "200", description = "Comments by User ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Comment[].class)))
+	@APIResponse(responseCode = "404", description = "Comments not found")
+	//
+	public Response getCommentsByUserId(@PathParam("userId") Long userId) {
+		List<Comment> comments = commentService.getCommentsByUserId(userId);
+		if (comments.isEmpty()) {
+			return Response.status(Response.Status.NOT_FOUND).entity("No comments found for user with ID " + userId)
+					.build();
+		} else {
+			return Response.ok(comments).build();
+		}
+	}*/
+
+
+	@DELETE
+	@Path("/{commentId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@APIResponses({
+			@APIResponse(responseCode = "200", description = "Comment deleted"),
+			@APIResponse(responseCode = "404", description = "Comment not found")
+	})
+	public Response removeComment(@PathParam("commentId") Long id) {
+		try {
+			commentService.deleteComment(id);
+			return Response.ok().build();
+		} catch (ObjectNotFoundException e) {
+			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+		}
+	}
 
 }

@@ -1,0 +1,586 @@
+---
+openapi: 3.0.3
+info:
+  title: verteilte-systeme API
+  version: 1.0.0-SNAPSHOT
+paths:
+  /blog:
+    get:
+      tags:
+      - Blog Resource
+      responses:
+        "200":
+          description: List of blogs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Blog"
+    post:
+      tags:
+      - Blog Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlogRequest"
+      responses:
+        "201":
+          description: Blog created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Blog"
+  /blog/byId:
+    get:
+      tags:
+      - Blog Resource
+      parameters:
+      - name: blogId
+        in: query
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Blog found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Blog"
+        "404":
+          description: Blog not found
+    put:
+      tags:
+      - Blog Resource
+      parameters:
+      - name: blogId
+        in: query
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlogRequest"
+      responses:
+        "200":
+          description: Blog updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Blog"
+        "404":
+          description: Blog not found
+    delete:
+      tags:
+      - Blog Resource
+      parameters:
+      - name: blogId
+        in: query
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Blog deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Blog"
+        "404":
+          description: Blog not found
+  /blog/toUser:
+    get:
+      tags:
+      - Blog Resource
+      parameters:
+      - name: blogId
+        in: query
+        schema:
+          format: int64
+          type: integer
+      - name: userid
+        in: query
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: User assigned to blog
+          content: {}
+        "404":
+          description: Blog or User not found
+  /comments:
+    get:
+      tags:
+      - Comment Resource
+      responses:
+        "200":
+          description: List of all Comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comment"
+    post:
+      tags:
+      - Comment Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentRequest"
+      responses:
+        "201":
+          description: Comment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+  /comments/byblog/{blogId}:
+    get:
+      tags:
+      - Comment Resource
+      parameters:
+      - name: blogId
+        in: path
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Comments by Blog ID
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comment"
+        "404":
+          description: Comments not found
+  /comments/byuser/{userId}:
+    get:
+      tags:
+      - Comment Resource
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Comments by User ID
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comment"
+        "404":
+          description: Comments not found
+  /comments/{id}:
+    get:
+      tags:
+      - Comment Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Comment by ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        "404":
+          description: Comment not found
+    put:
+      tags:
+      - Comment Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentRequest"
+      responses:
+        "200":
+          description: Comment updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        "404":
+          description: Comment not found
+    delete:
+      tags:
+      - Comment Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Comment deleted
+        "404":
+          description: Comment not found
+  /hello:
+    get:
+      tags:
+      - Greeting Resource
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+  /user:
+    get:
+      tags:
+      - User Resource
+      responses:
+        "200":
+          description: List of all Users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+    post:
+      tags:
+      - User Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRequest"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /user/byId:
+    get:
+      tags:
+      - User Resource
+      parameters:
+      - name: userId
+        in: query
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: User by ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+    delete:
+      tags:
+      - User Resource
+      parameters:
+      - name: userId
+        in: query
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: User deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+  /user/byemail:
+    get:
+      tags:
+      - User Resource
+      parameters:
+      - name: userEmail
+        in: query
+        schema:
+          type: string
+      responses:
+        "200":
+          description: User by Email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+  /user/byname:
+    get:
+      tags:
+      - User Resource
+      parameters:
+      - name: userName
+        in: query
+        schema:
+          type: string
+      responses:
+        "200":
+          description: User by Name
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+  /user/updateUser:
+    put:
+      tags:
+      - User Resource
+      parameters:
+      - name: userId
+        in: query
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRequest"
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+components:
+  schemas:
+    Blog:
+      description: Blog entity
+      required:
+      - id
+      - title
+      - text
+      - createdAt
+      - user
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+          example: 32126319
+        title:
+          minLength: 5
+          type: string
+          example: New Blog
+        text:
+          minLength: 20
+          type: string
+          example: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus\
+            \ laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra."
+        createdAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-06-15T10:15:30
+        updatedAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-06-15T10:15:30
+        user:
+          $ref: "#/components/schemas/User"
+        comments:
+          description: List of comments
+          type: array
+          items:
+            $ref: "#/components/schemas/Comment"
+    BlogRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        text:
+          type: string
+        userId:
+          format: int64
+          type: integer
+        commentIds:
+          type: array
+          items:
+            format: int64
+            type: integer
+    Comment:
+      description: Comment entity
+      required:
+      - id
+      - text
+      - createdAt
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+          example: 987654
+        text:
+          minLength: 20
+          type: string
+          example: Great post!
+        createdAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-06-15T10:15:30
+    CommentRequest:
+      type: object
+      properties:
+        text:
+          type: string
+        userId:
+          format: int64
+          type: integer
+        blogId:
+          format: int64
+          type: integer
+    LocalDate:
+      format: date
+      type: string
+      example: 2022-03-10
+    LocalDateTime:
+      format: date-time
+      type: string
+      example: 2022-03-10T12:15:50
+    User:
+      description: User entity
+      required:
+      - id
+      - name
+      - age
+      - email
+      - password
+      - dateOfBirth
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+          example: 32126319
+        name:
+          maxLength: 50
+          minLength: 2
+          pattern: \S
+          type: string
+          example: Sandra Dubeli
+        age:
+          format: int32
+          maximum: 150
+          minimum: 0
+          type: integer
+          example: 32
+        email:
+          pattern: \S
+          type: string
+          example: sandra.dubeli@example.com
+        password:
+          minLength: 8
+          pattern: \S
+          type: string
+          example: password123
+        address:
+          type: string
+          example: "123 Main St, Anytown, AT 12345"
+        phone:
+          pattern: "\\+\\d{2} \\d{2} \\d{3} \\d{2} \\d{2}"
+          type: string
+          example: +41 78 965 26 15
+        gender:
+          pattern: male|female|other
+          type: string
+          example: female
+        dateOfBirth:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDate"
+          example: 1988-12-31
+        createdAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-01-01T12:00:00
+        updatedAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-01-02T12:00:00
+        blogs:
+          type: array
+          items:
+            $ref: "#/components/schemas/Blog"
+          allOf: []
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Comment"
+    UserRequest:
+      description: Request payload for creating or updating a user
+      required:
+      - name
+      - age
+      - email
+      - password
+      type: object
+      properties:
+        name:
+          type: string
+          example: Sandra Dubeli
+        age:
+          format: int32
+          type: integer
+          example: 32
+        email:
+          type: string
+          example: sandra.dubeli@example.com
+        password:
+          type: string
+          example: password123
+        address:
+          type: string
+          example: "123 Main St, Anytown, AT 12345"
+        phone:
+          type: string
+          example: +41 78 965 26 15
+        gender:
+          type: string
+          example: female
+        dateOfBirth:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDate"
+          example: 1988-12-31

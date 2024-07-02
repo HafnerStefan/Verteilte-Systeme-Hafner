@@ -3,29 +3,24 @@ package ch.hftm.blog.boundry;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.ws.rs.*;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import ch.hftm.blog.control.UserService;
-import ch.hftm.blog.entity.User;
+import ch.hftm.blog.dto.UserDTO;
 import ch.hftm.blog.exception.ObjectNotFoundException;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-@Path("user") // Unter welchem Web-Pfad die Ressource erreichbar ist. Diese Annotation darfst du zusätzlich auch direkt über der Methode anbringen
+@Path("users")
 @ApplicationScoped
 
 public class UserResource {
@@ -33,115 +28,124 @@ public class UserResource {
     @Inject
     UserService userService;
 
-    @GET // Diese Methode ist über eine http-GET-Anfrage erreichbar.
+    @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "200", description = "List of all Users", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = User[].class)))
-    //GET USERS
+    @APIResponse(responseCode = "200", description = "List of all Users", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDTO[].class)))
+    // GET USERS
     public Response fetchAllUsers() {
-        List<User> users = this.userService.getUsers();
+        List<UserDTO> users = this.userService.getUsers();
         Log.info("Returning " + users.size() + " users");
         return Response.ok(users).build();
     }
 
-    @POST // Diese Methode ist über eine HTTP-POST-Anfrage erreichbar.
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "201", description = "User created", content = @Content(schema = @Schema(implementation = User.class)))
-    // ADD USER
-    public Response addUser(UserRequest userRequest) {
-        Log.info("Received UserRequest: name=" + userRequest.getName() + ", age=" + userRequest.getAge());
+    @APIResponse(responseCode = "201", description = "User created", content = @Content(schema = @Schema(implementation = UserDTO.class)))
+    // ADD USES
+    public Response addUser(
+            @Valid @jakarta.validation.groups.ConvertGroup(from = Default.class, to = ValidationGroups.Create.class) UserRequest userRequest) {
+        Log.info("Received UserRequest: name=" + userRequest.getName() + ", email=" + userRequest.getEmail());
 
-        User user = new User(userRequest.getName(), userRequest.getAge(), userRequest.getEmail(),
-                userRequest.getPassword(), userRequest.getAddress(), userRequest.getPhone(), userRequest.getGender(),
-                userRequest.getDateOfBirth());
+        UserDTO userDTO = new UserDTO();
+        userDTO.setName(userRequest.getName());
+        userDTO.setAge(userRequest.getAge());
+        userDTO.setEmail(userRequest.getEmail());
+        userDTO.setPassword(userRequest.getPassword());
+        userDTO.setAddress(userRequest.getAddress());
+        userDTO.setPhone(userRequest.getPhone());
+        userDTO.setGender(userRequest.getGender());
+        userDTO.setDateOfBirth(userRequest.getDateOfBirth());
 
-        this.userService.addUser(user);
-        Log.info("Adding User " + user.getName());
-        return Response.status(Response.Status.CREATED).entity(user).build();
+        UserDTO createdUser = this.userService.addUser(userDTO);
+        Log.info("Adding User " + createdUser.getName());
+        return Response.status(Response.Status.CREATED).entity(createdUser).build();
     }
 
     @PUT
-    @Path("/updateUser") // Diese Methode ist über eine HTTP-PUT-Anfrage erreichbar und verwendet einen Pfadparameter.
+    @Path("/{userId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "200", description = "User updated", content = @Content(schema = @Schema(implementation = User.class)))
+    @APIResponse(responseCode = "200", description = "User updated", content = @Content(schema = @Schema(implementation = UserDTO.class)))
     @APIResponse(responseCode = "404", description = "User not found")
     // UPDATE USER
-    public Response updateUser(@QueryParam("userId") Long id, UserRequest userRequest) {
+    public Response updateUser(
+            @PathParam("userId") Long id,
+            @Valid @jakarta.validation.groups.ConvertGroup(from = Default.class, to = ValidationGroups.Update.class) UserRequest userRequest) {
         try {
-            User user = new User(userRequest.getName(), userRequest.getAge(), userRequest.getEmail(),
-                    userRequest.getPassword(), userRequest.getAddress(), userRequest.getPhone(),
+            UserDTO userDTO = new UserDTO(id, userRequest.getName(), userRequest.getAge(), userRequest.getEmail(),
+                    userRequest.getAddress(), userRequest.getPhone(),
                     userRequest.getGender(), userRequest.getDateOfBirth());
-            user.setUpdatedAt(LocalDateTime.now()); // Aktualisiere das updatedAt-Feld
-            this.userService.updateUser(id, user);
+            userDTO.setUpdatedAt(LocalDateTime.now()); // Update the updatedAt field
+            this.userService.updateUser(id, userDTO);
 
-            Log.info("Updating User " + user.getName());
+            Log.info("Updating User " + userDTO.getName());
 
-            return Response.ok(user).build();
+            return Response.ok(userDTO).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
     }
 
     @DELETE
-    @Path("/byId")
+    @Path("/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponses({
-            @APIResponse(responseCode = "200", description = "User deleted", content = @Content(schema = @Schema(implementation = User.class))),
+            @APIResponse(responseCode = "200", description = "User deleted", content = @Content(schema = @Schema(implementation = UserDTO.class))),
             @APIResponse(responseCode = "404", description = "User not found")
     })
     // REMOVE USER
-    public Response removeUser(@QueryParam("userId") Long id) {
+    public Response removeUser(@PathParam("userId") Long id) {
         try {
-            User user = this.userService.getUserById(id);
+            UserDTO userDTO = this.userService.getUserDTOById(id);
             this.userService.deleteUser(id);
-            return Response.ok(user).build();
+            return Response.ok(userDTO).build();
         } catch (ObjectNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
     }
 
     @GET
-    @Path("/byId") // Diese Methode ist über eine HTTP-GET-Anfrage erreichbar und verwendet einen Pfadparameter.
+    @Path("/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "200", description = "User by ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = User.class)))
+    @APIResponse(responseCode = "200", description = "User by ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDTO.class)))
     @APIResponse(responseCode = "404", description = "User not found")
     // GET USER BY ID
-    public Response fetchUserById(@QueryParam("userId") Long id) {
+    public Response fetchUserById(@PathParam("userId") Long id) {
         try {
-            User user = this.userService.getUserById(id);
-            return Response.ok(user).build();
+            UserDTO userDTO = this.userService.getUserDTOById(id);
+            return Response.ok(userDTO).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
     }
 
     @GET
-    @Path("/byname") // Diese Methode ist über eine HTTP-GET-Anfrage erreichbar und verwendet einen Pfadparameter.
+    @Path("/{userName}")
     @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "200", description = "User by Name", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = User.class)))
+    @APIResponse(responseCode = "200", description = "User by Name", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDTO.class)))
     @APIResponse(responseCode = "404", description = "User not found")
     // GET USER BY NAME
-    public Response fetchUserByName(@QueryParam("userName") String name) {
+    public Response fetchUsersByName(@PathParam("userName") String name) {
         try {
-            User user = this.userService.getUserByName(name);
-            return Response.ok(user).build();
+            List<UserDTO> users = this.userService.getUsersByName(name);
+            return Response.ok(users).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
     }
 
     @GET
-    @Path("/byemail") // Diese Methode ist über eine HTTP-GET-Anfrage erreichbar und verwendet einen Pfadparameter.
+    @Path("/{userEmail}")
     @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "200", description = "User by Email", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = User.class)))
+    @APIResponse(responseCode = "200", description = "User by Email", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDTO.class)))
     @APIResponse(responseCode = "404", description = "User not found")
     // GET USER BY EMAIL
-    public Response fetchUserByEmail(@QueryParam("userEmail") String email) {
+    public Response fetchUserByEmail(@PathParam("userEmail") String email) {
         try {
-            User user = this.userService.getUserByEmail(email);
-            return Response.ok(user).build();
+            UserDTO userDTO = this.userService.getUserByEmail(email);
+            return Response.ok(userDTO).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }

@@ -2,7 +2,11 @@ package ch.hftm.blog.control;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import ch.hftm.blog.dto.BlogDTO;
+import ch.hftm.blog.dto.mapper.BlogMapper;
+import ch.hftm.blog.dto.mapper.UserMapper;
 import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.User;
 import ch.hftm.blog.exception.ObjectNotFoundException;
@@ -20,12 +24,18 @@ public class BlogService {
     @Inject
     UserRepository userRepository;
 
-    public List<Blog> getBlogs() {
+    public List<BlogDTO> getBlogs() {
         var blogs = blogRepository.listAll();
         Log.info("Returning " + blogs.size() + " blogs");
-        return blogs;
+        return blogs.stream()
+                .map(BlogMapper::toBlogDTO)
+                .collect(Collectors.toList());
     }
 
+    public BlogDTO getBlogDTOById(Long blogId) {
+        Blog blog = getBlogById(blogId);
+        return BlogMapper.toBlogDTO(blog);
+    }
     public Blog getBlogById(Long blogId) {
         Blog blog = blogRepository.findById(blogId);
         if (blog != null) {
@@ -35,64 +45,72 @@ public class BlogService {
         }
     }
 
-    public Blog getBlogsByTitle(String title) {
+    public BlogDTO getBlogsByTitle(String title) {
         Blog blog = blogRepository.findByTitle(title);
         if (blog != null) {
-            return blog;
+            return BlogMapper.toBlogDTO(blog);
         } else {
             throw new ObjectNotFoundException("Blog with title: " + title + " not found");
         }
     }
 
-    public List<Blog> getBlogsByUserId(Long userId) {
-        List<Blog> blog = blogRepository.findByUserId(userId);
-        if (blog != null) {
-            return blog;
+    public List<BlogDTO> getBlogsByUserId(Long userId) {
+        List<Blog> blogs = blogRepository.findByUserId(userId);
+        if (blogs != null) {
+            return blogs.stream().map(BlogMapper::toBlogDTO).collect(Collectors.toList());
         } else {
             throw new ObjectNotFoundException("Blogs with User id: " + userId + " not found");
         }
     }
 
     @Transactional
-    public void addBlog(Blog blog) {
-        Log.info("Adding Blog " + blog.getTitle());
+    public BlogDTO addBlog(BlogDTO blogDTO) {
+        Log.info("Adding Blog " + blogDTO.getTitle());
+        Blog blog = BlogMapper.toBlog(blogDTO);
+        User user = userRepository.findById(blogDTO.getUserId());
+        blog.setUser(user);
         blog.setCreatedAt(LocalDateTime.now());
         blog.setUpdatedAt(LocalDateTime.now());
         blogRepository.persist(blog);
+        return BlogMapper.toBlogDTO(blog);
     }
 
     @Transactional
-    public void updateBlog(Long id, Blog blogDetails) {
-        Blog blog = getBlogById(id);
-        blog.setTitle(blogDetails.getTitle());
-        blog.setText(blogDetails.getText());
+    public BlogDTO updateBlog(Long id, BlogDTO blogDTO) {
+
+        Blog blog = blogRepository.findById(id);
+
+        blog.setTitle(blogDTO.getTitle());
+        blog.setText(blogDTO.getText());
         blog.setUpdatedAt(LocalDateTime.now());
         Log.info("Updating Blog " + blog.getTitle());
         blogRepository.persist(blog);
+        return BlogMapper.toBlogDTO(blog);
     }
 
     @Transactional
     public void deleteBlog(Long blogId) {
-        Blog blog = getBlogById(blogId);
+        Blog blog = blogRepository.findById(blogId);
+        if (blog == null) {
+            throw new ObjectNotFoundException("Blog with id " + blogId + " not found");
+        }
         Log.info("Deleting Blog " + blog.getTitle());
         blogRepository.delete(blog);
 
     }
 
-    //TODO Kann evtl. gelöscht werden da ich nun beim Blog den User in Construcktor aufgenommen habe.... wird wohl für comments auch nicht benötigt
     @Transactional
-    public void addUserToBlog(Long blogId, User user) {
+    public BlogDTO addUserToBlog(Long blogId, Long userId) {
         Blog blog = blogRepository.findById(blogId);
-        if (blog != null) {
-            if (user.getId() != null) {
-                user = userRepository.getEntityManager().merge(user); // Verwende merge, wenn der Benutzer bereits existiert
-            } else {
-                userRepository.persist(user); // Verwende persist, wenn der Benutzer neu ist
-            }
-            blog.setUser(user); // Weise dann das User-Objekt dem Blog zu
-            blogRepository.persist(blog); // Aktualisiere das Blog-Objekt in der Datenbank
-        } else {
+        if (blog == null) {
             throw new ObjectNotFoundException("Blog with id " + blogId + " not found");
         }
+        User user = userRepository.findById(userId);
+        if (user == null) {
+            throw new ObjectNotFoundException("User not found with ID: " + userId);
+        }
+        blog.setUser(user);
+        blogRepository.persist(blog);
+        return BlogMapper.toBlogDTO(blog);
     }
 }
