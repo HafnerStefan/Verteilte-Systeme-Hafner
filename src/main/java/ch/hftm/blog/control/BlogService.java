@@ -4,9 +4,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ch.hftm.blog.dto.BlogDTO;
+import ch.hftm.blog.dto.BlogBaseDTO;
+import ch.hftm.blog.dto.BlogDetailsDTO;
+import ch.hftm.blog.dto.BlogListDTO;
 import ch.hftm.blog.dto.mapper.BlogMapper;
-import ch.hftm.blog.dto.mapper.UserMapper;
 import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.User;
 import ch.hftm.blog.exception.ObjectNotFoundException;
@@ -24,17 +25,17 @@ public class BlogService {
     @Inject
     UserRepository userRepository;
 
-    public List<BlogDTO> getBlogs() {
+    public List<BlogListDTO> getBlogs() {
         var blogs = blogRepository.listAll();
         Log.info("Returning " + blogs.size() + " blogs");
         return blogs.stream()
-                .map(BlogMapper::toBlogDTO)
+                .map(BlogMapper::toBlogListDTO)
                 .collect(Collectors.toList());
     }
 
-    public BlogDTO getBlogDTOById(Long blogId) {
+    public BlogDetailsDTO getBlogDTOById(Long blogId) {
         Blog blog = getBlogById(blogId);
-        return BlogMapper.toBlogDTO(blog);
+        return BlogMapper.toBlogDetailsDTO(blog);
     }
     public Blog getBlogById(Long blogId) {
         Blog blog = blogRepository.findById(blogId);
@@ -45,47 +46,47 @@ public class BlogService {
         }
     }
 
-    public BlogDTO getBlogsByTitle(String title) {
+    public BlogDetailsDTO getBlogsByTitle(String title) {
         Blog blog = blogRepository.findByTitle(title);
         if (blog != null) {
-            return BlogMapper.toBlogDTO(blog);
+            return BlogMapper.toBlogDetailsDTO(blog);
         } else {
             throw new ObjectNotFoundException("Blog with title: " + title + " not found");
         }
     }
 
-    public List<BlogDTO> getBlogsByUserId(Long userId) {
+    public List<BlogListDTO> getBlogsByUserId(Long userId) {
         List<Blog> blogs = blogRepository.findByUserId(userId);
         if (blogs != null) {
-            return blogs.stream().map(BlogMapper::toBlogDTO).collect(Collectors.toList());
+            return blogs.stream().map(BlogMapper::toBlogListDTO).collect(Collectors.toList());
         } else {
             throw new ObjectNotFoundException("Blogs with User id: " + userId + " not found");
         }
     }
 
     @Transactional
-    public BlogDTO addBlog(BlogDTO blogDTO) {
-        Log.info("Adding Blog " + blogDTO.getTitle());
-        Blog blog = BlogMapper.toBlog(blogDTO);
-        User user = userRepository.findById(blogDTO.getUserId());
+    public BlogDetailsDTO addBlog(BlogBaseDTO blogBaseDTO) {
+        Log.info("Adding Blog " + blogBaseDTO.getTitle());
+        Blog blog = BlogMapper.toBlog(blogBaseDTO);
+        User user = userRepository.findById(blogBaseDTO.getUserId());
         blog.setUser(user);
         blog.setCreatedAt(LocalDateTime.now());
         blog.setUpdatedAt(LocalDateTime.now());
         blogRepository.persist(blog);
-        return BlogMapper.toBlogDTO(blog);
+        return BlogMapper.toBlogDetailsDTO(blog);
     }
 
     @Transactional
-    public BlogDTO updateBlog(Long id, BlogDTO blogDTO) {
+    public BlogBaseDTO updateBlog(Long id, BlogBaseDTO blogBaseDTO) {
 
         Blog blog = blogRepository.findById(id);
 
-        blog.setTitle(blogDTO.getTitle());
-        blog.setText(blogDTO.getText());
+        blog.setTitle(blogBaseDTO.getTitle());
+        blog.setText(blogBaseDTO.getText());
         blog.setUpdatedAt(LocalDateTime.now());
         Log.info("Updating Blog " + blog.getTitle());
         blogRepository.persist(blog);
-        return BlogMapper.toBlogDTO(blog);
+        return BlogMapper.toBlogBaseDTO(blog);
     }
 
     @Transactional
@@ -100,7 +101,7 @@ public class BlogService {
     }
 
     @Transactional
-    public BlogDTO addUserToBlog(Long blogId, Long userId) {
+    public BlogBaseDTO addUserToBlog(Long blogId, Long userId) {
         Blog blog = blogRepository.findById(blogId);
         if (blog == null) {
             throw new ObjectNotFoundException("Blog with id " + blogId + " not found");
@@ -111,6 +112,6 @@ public class BlogService {
         }
         blog.setUser(user);
         blogRepository.persist(blog);
-        return BlogMapper.toBlogDTO(blog);
+        return BlogMapper.toBlogBaseDTO(blog);
     }
 }

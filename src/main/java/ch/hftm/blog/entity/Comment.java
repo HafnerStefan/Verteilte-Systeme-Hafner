@@ -19,21 +19,21 @@ import jakarta.validation.constraints.Size;
 
 @Getter
 @Entity
-@Schema(name = "Comment", description = "Comment entity")
+//@Schema(name = "Comment", description = "Comment entity")
 public class Comment {
     // Getter and Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(required = true, example = "987654")
+    //@Schema(required = true, example = "987654")
     private Long id;
 
     @Setter
-    @Schema(required = true, example = "Great post!")
+    //@Schema(required = true, example = "Great post!")
     @Size(min = 20, message = "Text needs at least 20 characters")
     private String text;
 
     @Setter
-    @Schema(required = true, example = "2023-06-15T10:15:30")
+   // @Schema(required = true, example = "2023-06-15T10:15:30")
     private LocalDateTime createdAt;
 
     @Setter

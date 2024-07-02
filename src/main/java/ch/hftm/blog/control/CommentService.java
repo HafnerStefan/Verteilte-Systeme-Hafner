@@ -33,10 +33,15 @@ public class CommentService {
 		return comments.stream().map(CommentMapper::toCommentDTO).collect(Collectors.toList());
 	}
 
-	public CommentDTO getCommentById(Long commentId) {
+	public CommentDTO getCommentDTOById(Long commentId) {
+		Comment comment = getCommentById(commentId);
+		return CommentMapper.toCommentDTO(comment);
+	}
+
+	public Comment getCommentById(Long commentId) {
 		Comment comment = commentRepository.findById(commentId);
 		if (comment != null) {
-			return CommentMapper.toCommentDTO(comment);
+			return comment;
 		} else {
 			throw new ObjectNotFoundException("Comment with id " + commentId + " not found");
 		}

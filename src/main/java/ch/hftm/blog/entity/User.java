@@ -31,60 +31,60 @@ import jakarta.validation.constraints.Size;
 @Setter
 @Getter
 @Entity
-@Schema(name = "User", description = "User entity")
+//@Schema(name = "User", description = "User entity")
 public class User {
 
     // Getter und Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(required = true, example = "32126319")
+    //@Schema(required = true, example = "32126319")
     private Long id;
 
-    @Schema(required = true, example = "Sandra Dubeli")
+    //@Schema(required = true, example = "Sandra Dubeli")
     @NotBlank(message = "Name must not be blank")
     @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
     private String name;
 
-    @Schema(required = true, example = "32")
+    //@Schema(required = true, example = "32")
     @NotNull(message = "Age must not be null")
     @Min(value = 0, message = "Age must be at least 0")
     @Max(value = 150, message = "Age must be less than or equal to 150")
     private int age;
 
-    @Schema(required = true, example = "sandra.dubeli@example.com")
+    //@Schema(required = true, example = "sandra.dubeli@example.com")
     @NotBlank(message = "Email must not be blank")
     @Email(message = "Email should be valid")
     private String email;
 
-    @Schema(required = true, example = "password123")
+    //@Schema(required = true, example = "password123")
     @NotBlank(message = "Password must not be blank", groups = ValidationGroups.Create.class)
     @Size(min = 8, message = "Password must be at least 8 characters long", groups = ValidationGroups.Create.class)
     private String password;
 
-    @Schema(example = "123 Main St, Anytown, AT 12345")
+    //@Schema(example = "123 Main St, Anytown, AT 12345")
     private String address;
 
-    @Schema(example = "+41 78 965 26 15")
+    //@Schema(example = "+41 78 965 26 15")
     @Pattern(regexp = "\\+\\d{2} \\d{2} \\d{3} \\d{2} \\d{2}", message = "Phone number must follow the pattern +XX XX XXX XX XX")
     private String phone;
 
-    @Schema(example = "female")
+    //@Schema(example = "female")
     @Pattern(regexp = "male|female|other", message = "Gender must be either 'male', 'female', or 'other'")
     private String gender;
 
-    @Schema(example = "1988-12-31")
+    //@Schema(example = "1988-12-31")
     @NotNull(message = "Date of birth must not be null")
     @Past(message = "Date of birth must be in the past")
     private LocalDate dateOfBirth;
 
-    @Schema(example = "2023-01-01T12:00:00")
+    //@Schema(example = "2023-01-01T12:00:00")
     private LocalDateTime createdAt;
 
-    @Schema(example = "2023-01-02T12:00:00")
+    //@Schema(example = "2023-01-02T12:00:00")
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @Schema(allOf = Blog.class)
+    //@Schema(allOf = Blog.class)
     @JsonManagedReference
     private List<Blog> blogs;
 

@@ -1,7 +1,8 @@
-package ch.hftm.blog.boundry;
+package ch.hftm.blog.dto.requerstDTO;
 
 import java.time.LocalDate;
 
+import ch.hftm.blog.boundry.ValidationGroups;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -30,7 +31,7 @@ public class UserRequest {
     @Size(min = 8, message = "Password must be at least 8 characters long", groups = { Default.class,
             ValidationGroups.Create.class })
     @Null(message = "Password must be null for update", groups = ValidationGroups.Update.class)
-    @Schema(required = true, example = "password123")
+    @Schema(writeOnly = true, minLength = 8, pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", example = "Password1234")
     private String password;
 
     @Schema(example = "123 Main St, Anytown, AT 12345")

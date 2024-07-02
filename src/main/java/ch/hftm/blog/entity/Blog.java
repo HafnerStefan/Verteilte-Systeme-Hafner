@@ -22,30 +22,30 @@ import jakarta.validation.constraints.Size;
 
 @Getter
 @Entity
-@Schema(name = "Blog", description = "Blog entity")
+//@Schema(name = "Blog", description = "Blog entity")
 public class Blog {
     // Getter and Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(required = true, example = "32126319")
+    //@Schema(required = true, example = "32126319")
     private Long id;
 
     @Setter
-    @Schema(required = true, example = "New Blog")
+   // @Schema(required = true, example = "New Blog")
     @Size(min = 5, message = "Title needs at least 5 characters")
     private String title;
 
     @Setter
-    @Schema(required = true, example = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra.")
+   // @Schema(required = true, example = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra.")
     @Size(min = 20, message = "Title needs at least 20 characters")
     private String text;
 
     @Setter
-    @Schema(required = true, example = "2023-06-15T10:15:30")
+   // @Schema(required = true, example = "2023-06-15T10:15:30")
     private LocalDateTime createdAt;
 
     @Setter
-    @Schema(example = "2023-06-15T10:15:30")
+   // @Schema(example = "2023-06-15T10:15:30")
     private LocalDateTime updatedAt;
 
     @Setter
@@ -56,7 +56,7 @@ public class Blog {
 
     @Setter
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Schema(description = "List of comments")
+   // @Schema(description = "List of comments")
     private List<Comment> comments;
 
     public Blog() {
