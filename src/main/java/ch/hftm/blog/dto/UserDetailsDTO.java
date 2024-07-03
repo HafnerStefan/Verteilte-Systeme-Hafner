@@ -16,7 +16,7 @@ public class UserDetailsDTO extends UserBaseDTO {
 	@Schema(description = "List of blog details")
 	private List<BlogBaseDTO> blogs;
 	@Schema(description = "List of comment details")
-	private List<CommentDTO> comments;
+	private List<CommentBaseDTO> comments;
 
 	// Default Constructor
 	public UserDetailsDTO() {
@@ -26,7 +26,7 @@ public class UserDetailsDTO extends UserBaseDTO {
 	// Constructor with all parameters
 	public UserDetailsDTO(Long id, String name, int age, String email, String password, String address, String phone,
 						  String gender, LocalDate dateOfBirth, LocalDateTime createdAt, LocalDateTime updatedAt,
-						  List<BlogBaseDTO> blogs, List<CommentDTO> comments) {
+						  List<BlogBaseDTO> blogs, List<CommentBaseDTO> comments) {
 		super(id, name, age, email, password, address, phone, gender, dateOfBirth, createdAt, updatedAt);
 		this.blogs = blogs;
 		this.comments = comments;
@@ -35,7 +35,7 @@ public class UserDetailsDTO extends UserBaseDTO {
 	// Constructor without password
 	public UserDetailsDTO(Long id, String name, int age, String email, String address, String phone,
 						  String gender, LocalDate dateOfBirth, LocalDateTime createdAt, LocalDateTime updatedAt,
-						  List<BlogBaseDTO> blogs, List<CommentDTO> comments) {
+						  List<BlogBaseDTO> blogs, List<CommentBaseDTO> comments) {
 		super(id, name, age, email, address, phone, gender, dateOfBirth, createdAt, updatedAt);
 		this.blogs = blogs;
 		this.comments = comments;

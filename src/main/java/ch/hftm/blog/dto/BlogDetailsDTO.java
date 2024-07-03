@@ -12,7 +12,7 @@ import java.util.List;
 @Schema(name = "BlogDetailsResponse", description = "DTO for detailed blog view with comments and user details")
 public class BlogDetailsDTO extends BlogBaseDTO {
 	@Schema(description = "List of comment details")
-	private List<CommentDTO> comments;
+	private List<CommentBaseDTO> comments;
 
 	@Schema(description = "User details")
 	private UserBaseDTO user;
@@ -24,7 +24,7 @@ public class BlogDetailsDTO extends BlogBaseDTO {
 
 	// Constructor with all fields
 	public BlogDetailsDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt,
-						  List<CommentDTO> comments, UserBaseDTO user) {
+						  List<CommentBaseDTO> comments, UserBaseDTO user) {
 		super(id, title, text, createdAt, updatedAt, null);
 		this.comments = comments;
 		this.user = user;

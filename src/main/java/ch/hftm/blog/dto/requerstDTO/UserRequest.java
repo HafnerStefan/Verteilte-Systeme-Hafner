@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import ch.hftm.blog.boundry.ValidationGroups;
 import lombok.Getter;
 import lombok.Setter;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import jakarta.validation.constraints.NotBlank;
@@ -43,7 +44,7 @@ public class UserRequest {
     @Schema(example = "female")
     private String gender;
 
-    @Schema(example = "1988-12-31")
+    @Schema(type = SchemaType.STRING, format = "date", example = "1988-12-31")
     private LocalDate dateOfBirth;
 
 }

@@ -10,9 +10,9 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 public class CommentRequest {
     @Schema(required = true, example = "Great post!")
     private String text;
-    @Schema(example = "[12345, 67890, 13579]")
+    @Schema(example = "12345")
     private Long userId;
-    @Schema(example = "[12345, 67890, 13579]")
+    @Schema(example = "67890")
     private Long blogId;
 
 

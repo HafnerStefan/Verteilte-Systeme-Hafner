@@ -8,6 +8,24 @@ paths:
     get:
       tags:
       - Blog Resource
+      parameters:
+      - name: size
+        in: query
+        schema:
+          format: int32
+          default: 15
+          type: integer
+      - name: start
+        in: query
+        schema:
+          format: int32
+          default: 0
+          type: integer
+      - name: userId
+        in: query
+        schema:
+          format: int64
+          type: integer
       responses:
         "200":
           description: List of blogs
@@ -16,7 +34,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Blog"
+                  $ref: "#/components/schemas/BlogsResponse"
     post:
       tags:
       - Blog Resource
@@ -31,24 +49,65 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Blog"
-  /blog/byId:
+                $ref: "#/components/schemas/BlogResponse"
+  /blog/toUser/{blogId}/{userId}:
     get:
       tags:
       - Blog Resource
       parameters:
       - name: blogId
-        in: query
+        in: path
+        required: true
         schema:
           format: int64
           type: integer
+      - name: userId
+        in: path
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: User assigned to blog
+          content: {}
+        "404":
+          description: Blog or User not found
+  /blog/{blogId}:
+    get:
+      tags:
+      - Blog Resource
+      parameters:
+      - name: blogId
+        in: path
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - name: commentSize
+        in: query
+        schema:
+          format: int32
+          default: 15
+          type: integer
+      - name: commentStart
+        in: query
+        schema:
+          format: int32
+          default: 0
+          type: integer
+      - name: sortByDateAsc
+        in: query
+        schema:
+          default: true
+          type: boolean
       responses:
         "200":
           description: Blog found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Blog"
+                $ref: "#/components/schemas/BlogDetailsResponse"
         "404":
           description: Blog not found
     put:
@@ -56,7 +115,8 @@ paths:
       - Blog Resource
       parameters:
       - name: blogId
-        in: query
+        in: path
+        required: true
         schema:
           format: int64
           type: integer
@@ -71,7 +131,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Blog"
+                $ref: "#/components/schemas/BlogResponse"
         "404":
           description: Blog not found
     delete:
@@ -79,7 +139,8 @@ paths:
       - Blog Resource
       parameters:
       - name: blogId
-        in: query
+        in: path
+        required: true
         schema:
           format: int64
           type: integer
@@ -89,43 +150,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Blog"
+                $ref: "#/components/schemas/BlogResponse"
         "404":
           description: Blog not found
-  /blog/toUser:
-    get:
-      tags:
-      - Blog Resource
-      parameters:
-      - name: blogId
-        in: query
-        schema:
-          format: int64
-          type: integer
-      - name: userid
-        in: query
-        schema:
-          format: int64
-          type: integer
-      responses:
-        "200":
-          description: User assigned to blog
-          content: {}
-        "404":
-          description: Blog or User not found
-  /comments:
-    get:
-      tags:
-      - Comment Resource
-      responses:
-        "200":
-          description: List of all Comments
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Comment"
+  /comment:
     post:
       tags:
       - Comment Resource
@@ -140,30 +168,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Comment"
-  /comments/byblog/{blogId}:
-    get:
-      tags:
-      - Comment Resource
-      parameters:
-      - name: blogId
-        in: path
-        required: true
-        schema:
-          format: int64
-          type: integer
-      responses:
-        "200":
-          description: Comments by Blog ID
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Comment"
-        "404":
-          description: Comments not found
-  /comments/byuser/{userId}:
+                $ref: "#/components/schemas/CommentResponse"
+  /comment/byuser/{userId}:
     get:
       tags:
       - Comment Resource
@@ -182,15 +188,69 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Comment"
+                  $ref: "#/components/schemas/CommentWithBlogTitleResponse"
         "404":
           description: Comments not found
-  /comments/{id}:
+  /comment/context/{commentId}:
     get:
       tags:
       - Comment Resource
       parameters:
-      - name: id
+      - name: commentId
+        in: path
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - name: nextCommentSize
+        in: query
+        schema:
+          format: int32
+          default: 4
+          type: integer
+      - name: previousCommentSize
+        in: query
+        schema:
+          format: int32
+          default: 2
+          type: integer
+      responses:
+        "200":
+          description: Comment with context by ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentWithBlogContextResponse"
+        "404":
+          description: Comment not found
+  /comment/{blogId}:
+    get:
+      tags:
+      - Comment Resource
+      parameters:
+      - name: blogId
+        in: path
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Comments by Blog ID
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CommentResponse"
+        "404":
+          description: Comments not found
+  /comment/{commentId}:
+    get:
+      tags:
+      - Comment Resource
+      parameters:
+      - name: commentId
         in: path
         required: true
         schema:
@@ -202,38 +262,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Comment"
-        "404":
-          description: Comment not found
-    put:
-      tags:
-      - Comment Resource
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          format: int64
-          type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CommentRequest"
-      responses:
-        "200":
-          description: Comment updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Comment"
+                $ref: "#/components/schemas/CommentResponse"
         "404":
           description: Comment not found
     delete:
       tags:
       - Comment Resource
       parameters:
-      - name: id
+      - name: commentId
         in: path
         required: true
         schema:
@@ -242,6 +278,10 @@ paths:
       responses:
         "200":
           description: Comment deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentResponse"
         "404":
           description: Comment not found
   /hello:
@@ -255,7 +295,7 @@ paths:
             text/plain:
               schema:
                 type: string
-  /user:
+  /users:
     get:
       tags:
       - User Resource
@@ -267,7 +307,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/User"
+                  $ref: "#/components/schemas/UsersResponse"
     post:
       tags:
       - User Resource
@@ -282,14 +322,34 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-  /user/byId:
+                $ref: "#/components/schemas/UserResponse"
+  /users/{userEmail}:
+    get:
+      tags:
+      - User Resource
+      parameters:
+      - name: userEmail
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: User by Email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetailsResponse"
+        "404":
+          description: User not found
+  /users/{userId}:
     get:
       tags:
       - User Resource
       parameters:
       - name: userId
-        in: query
+        in: path
+        required: true
         schema:
           format: int64
           type: integer
@@ -299,70 +359,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserDetailsResponse"
         "404":
           description: User not found
-    delete:
-      tags:
-      - User Resource
-      parameters:
-      - name: userId
-        in: query
-        schema:
-          format: int64
-          type: integer
-      responses:
-        "200":
-          description: User deleted
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "404":
-          description: User not found
-  /user/byemail:
-    get:
-      tags:
-      - User Resource
-      parameters:
-      - name: userEmail
-        in: query
-        schema:
-          type: string
-      responses:
-        "200":
-          description: User by Email
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "404":
-          description: User not found
-  /user/byname:
-    get:
-      tags:
-      - User Resource
-      parameters:
-      - name: userName
-        in: query
-        schema:
-          type: string
-      responses:
-        "200":
-          description: User by Name
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "404":
-          description: User not found
-  /user/updateUser:
     put:
       tags:
       - User Resource
       parameters:
       - name: userId
-        in: query
+        in: path
+        required: true
         schema:
           format: int64
           type: integer
@@ -377,19 +383,55 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserDetailsResponse"
+        "404":
+          description: User not found
+    delete:
+      tags:
+      - User Resource
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: User deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetailsResponse"
+        "404":
+          description: User not found
+  /users/{userName}:
+    get:
+      tags:
+      - User Resource
+      parameters:
+      - name: userName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: User by Name
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetailsResponse"
         "404":
           description: User not found
 components:
   schemas:
-    Blog:
-      description: Blog entity
+    BlogDetailsResponse:
+      description: DTO for detailed blog view with comments and user details
       required:
       - id
       - title
       - text
-      - createdAt
-      - user
       type: object
       properties:
         id:
@@ -397,11 +439,9 @@ components:
           type: integer
           example: 32126319
         title:
-          minLength: 5
           type: string
           example: New Blog
         text:
-          minLength: 20
           type: string
           example: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus\
             \ laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra."
@@ -409,66 +449,248 @@ components:
           type: string
           allOf:
           - $ref: "#/components/schemas/LocalDateTime"
-          example: 2023-06-15T10:15:30
+          example: 2023-01-02T12:00:00
         updatedAt:
           type: string
           allOf:
           - $ref: "#/components/schemas/LocalDateTime"
-          example: 2023-06-15T10:15:30
-        user:
-          $ref: "#/components/schemas/User"
+          example: 2023-01-02T12:00:00
+        userId:
+          format: int64
+          type: integer
+          example: 1245
         comments:
-          description: List of comments
+          description: List of comment details
           type: array
           items:
-            $ref: "#/components/schemas/Comment"
+            $ref: "#/components/schemas/CommentResponse"
+        user:
+          description: User details
+          type: object
+          allOf:
+          - $ref: "#/components/schemas/UserResponse"
     BlogRequest:
+      description: Request payload for creating or updating a blog
+      required:
+      - title
+      - text
+      - userId
       type: object
       properties:
         title:
           type: string
+          example: New Blog
         text:
           type: string
+          example: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus\
+            \ laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra."
         userId:
           format: int64
           type: integer
+          example: 2023-06-15T10:15:30
         commentIds:
           type: array
           items:
             format: int64
             type: integer
-    Comment:
-      description: Comment entity
+          example:
+          - 12345
+          - 67890
+          - 13579
+    BlogResponse:
+      description: Blog entity
       required:
       - id
+      - title
       - text
-      - createdAt
       type: object
       properties:
         id:
           format: int64
           type: integer
-          example: 987654
-        text:
-          minLength: 20
+          example: 32126319
+        title:
           type: string
-          example: Great post!
+          example: New Blog
+        text:
+          type: string
+          example: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus\
+            \ laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra."
         createdAt:
           type: string
           allOf:
           - $ref: "#/components/schemas/LocalDateTime"
-          example: 2023-06-15T10:15:30
+          example: 2023-01-02T12:00:00
+        updatedAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-01-02T12:00:00
+        userId:
+          format: int64
+          type: integer
+          example: 1245
+    BlogsResponse:
+      description: DTO for listing blogs with comment IDs
+      required:
+      - id
+      - title
+      - text
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+          example: 32126319
+        title:
+          type: string
+          example: New Blog
+        text:
+          type: string
+          example: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus\
+            \ laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra."
+        createdAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-01-02T12:00:00
+        updatedAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-01-02T12:00:00
+        userId:
+          format: int64
+          type: integer
+          example: 1245
+        commentsIds:
+          description: List of comment IDs
+          type: array
+          items:
+            format: int64
+            type: integer
+          example:
+          - 46516
+          - 4584
+          - 62
+          - 14
+          - 2
     CommentRequest:
+      description: Request payload for creating comment
+      required:
+      - text
       type: object
       properties:
         text:
           type: string
+          example: Great post!
         userId:
           format: int64
           type: integer
+          example: 12345
         blogId:
           format: int64
           type: integer
+          example: 67890
+    CommentResponse:
+      description: Blog entity
+      required:
+      - id
+      - text
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+          example: 32126319
+        text:
+          type: string
+          example: "Lorem ipsum dolor sit amet, consectetur adipiscing"
+        createdAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-01-02T12:00:00
+        blogId:
+          format: int64
+          type: integer
+          example: 1245
+        userId:
+          format: int64
+          type: integer
+          example: 1245
+    CommentWithBlogContextResponse:
+      description: DTO for comments with blog title and context
+      required:
+      - id
+      - text
+      - blogTitle
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+          example: 32126319
+        text:
+          type: string
+          example: "Lorem ipsum dolor sit amet, consectetur adipiscing"
+        createdAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-01-02T12:00:00
+        blogId:
+          format: int64
+          type: integer
+          example: 1245
+        userId:
+          format: int64
+          type: integer
+          example: 1245
+        blogTitle:
+          type: string
+          example: My Blog Title
+        previousComments:
+          description: Previous comments
+          type: array
+          items:
+            $ref: "#/components/schemas/CommentResponse"
+        nextComments:
+          description: Next comments
+          type: array
+          items:
+            $ref: "#/components/schemas/CommentResponse"
+    CommentWithBlogTitleResponse:
+      description: DTO for comments with blog title
+      required:
+      - id
+      - text
+      - blogTitle
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+          example: 32126319
+        text:
+          type: string
+          example: "Lorem ipsum dolor sit amet, consectetur adipiscing"
+        createdAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-01-02T12:00:00
+        blogId:
+          format: int64
+          type: integer
+          example: 1245
+        userId:
+          format: int64
+          type: integer
+          example: 1245
+        blogTitle:
+          type: string
+          example: My Blog Title
     LocalDate:
       format: date
       type: string
@@ -477,15 +699,13 @@ components:
       format: date-time
       type: string
       example: 2022-03-10T12:15:50
-    User:
-      description: User entity
+    UserDetailsResponse:
+      description: DTO for detailed user view with blogs and comments
       required:
       - id
       - name
       - age
       - email
-      - password
-      - dateOfBirth
       type: object
       properties:
         id:
@@ -493,35 +713,22 @@ components:
           type: integer
           example: 32126319
         name:
-          maxLength: 50
-          minLength: 2
-          pattern: \S
           type: string
           example: Sandra Dubeli
         age:
           format: int32
-          maximum: 150
-          minimum: 0
           type: integer
           example: 32
         email:
-          pattern: \S
           type: string
           example: sandra.dubeli@example.com
-        password:
-          minLength: 8
-          pattern: \S
-          type: string
-          example: password123
         address:
           type: string
           example: "123 Main St, Anytown, AT 12345"
         phone:
-          pattern: "\\+\\d{2} \\d{2} \\d{3} \\d{2} \\d{2}"
           type: string
           example: +41 78 965 26 15
         gender:
-          pattern: male|female|other
           type: string
           example: female
         dateOfBirth:
@@ -533,28 +740,28 @@ components:
           type: string
           allOf:
           - $ref: "#/components/schemas/LocalDateTime"
-          example: 2023-01-01T12:00:00
+          example: 2023-01-02T12:00:00
         updatedAt:
           type: string
           allOf:
           - $ref: "#/components/schemas/LocalDateTime"
           example: 2023-01-02T12:00:00
         blogs:
+          description: List of blog details
           type: array
           items:
-            $ref: "#/components/schemas/Blog"
-          allOf: []
+            $ref: "#/components/schemas/BlogResponse"
         comments:
+          description: List of comment details
           type: array
           items:
-            $ref: "#/components/schemas/Comment"
+            $ref: "#/components/schemas/CommentResponse"
     UserRequest:
       description: Request payload for creating or updating a user
       required:
       - name
       - age
       - email
-      - password
       type: object
       properties:
         name:
@@ -568,8 +775,11 @@ components:
           type: string
           example: sandra.dubeli@example.com
         password:
+          minLength: 8
+          pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$"
           type: string
-          example: password123
+          example: Password1234
+          writeOnly: true
         address:
           type: string
           example: "123 Main St, Anytown, AT 12345"
@@ -584,3 +794,115 @@ components:
           allOf:
           - $ref: "#/components/schemas/LocalDate"
           example: 1988-12-31
+    UserResponse:
+      description: Base DTO for user
+      required:
+      - id
+      - name
+      - age
+      - email
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+          example: 32126319
+        name:
+          type: string
+          example: Sandra Dubeli
+        age:
+          format: int32
+          type: integer
+          example: 32
+        email:
+          type: string
+          example: sandra.dubeli@example.com
+        address:
+          type: string
+          example: "123 Main St, Anytown, AT 12345"
+        phone:
+          type: string
+          example: +41 78 965 26 15
+        gender:
+          type: string
+          example: female
+        dateOfBirth:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDate"
+          example: 1988-12-31
+        createdAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-01-02T12:00:00
+        updatedAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-01-02T12:00:00
+    UsersResponse:
+      description: DTO for listing users with blog and comment IDs
+      required:
+      - id
+      - name
+      - age
+      - email
+      type: object
+      properties:
+        id:
+          format: int64
+          type: integer
+          example: 32126319
+        name:
+          type: string
+          example: Sandra Dubeli
+        age:
+          format: int32
+          type: integer
+          example: 32
+        email:
+          type: string
+          example: sandra.dubeli@example.com
+        address:
+          type: string
+          example: "123 Main St, Anytown, AT 12345"
+        phone:
+          type: string
+          example: +41 78 965 26 15
+        gender:
+          type: string
+          example: female
+        dateOfBirth:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDate"
+          example: 1988-12-31
+        createdAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-01-02T12:00:00
+        updatedAt:
+          type: string
+          allOf:
+          - $ref: "#/components/schemas/LocalDateTime"
+          example: 2023-01-02T12:00:00
+        blogIds:
+          type: array
+          items:
+            format: int64
+            type: integer
+          example:
+          - 12345
+          - 67890
+          - 13579
+        commentIds:
+          type: array
+          items:
+            format: int64
+            type: integer
+          example:
+          - 98765
+          - 43210
+          - 24680

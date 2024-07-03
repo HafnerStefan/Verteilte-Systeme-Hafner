@@ -2,6 +2,7 @@ package ch.hftm.blog.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -17,9 +18,9 @@ public class BlogBaseDTO {
     private String title;
     @Schema(required = true, example = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra.")
     private String text;
-    @Schema(required = true, example = "2023-06-15T10:15:30")
+    @Schema(type = SchemaType.STRING, format = "date-time", example = "2023-01-02T12:00:00")
     private LocalDateTime createdAt;
-    @Schema(example = "2023-06-15T10:15:30")
+    @Schema(type = SchemaType.STRING, format = "date-time", example = "2023-01-02T12:00:00")
     private LocalDateTime updatedAt;
     @Schema(example = "1245")
     private Long userId;

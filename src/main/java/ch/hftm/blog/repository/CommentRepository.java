@@ -1,5 +1,6 @@
 package ch.hftm.blog.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import ch.hftm.blog.entity.Comment;
@@ -21,4 +22,18 @@ public class CommentRepository implements PanacheRepository<Comment> {
     public List<Comment> findByUserId(Long userId) {
         return find("user.id", userId).list();
     }
+
+    public List<Comment> findPreviousComments(Long blogId, LocalDateTime createdAt, int limit) {
+        return find("blog.id = ?1 and createdAt < ?2 order by createdAt desc", blogId, createdAt).page(0, limit).list();
+    }
+
+    public List<Comment> findNextComments(Long blogId, LocalDateTime createdAt, int limit) {
+        return find("blog.id = ?1 and createdAt > ?2 order by createdAt asc", blogId, createdAt).page(0, limit).list();
+    }
+
+
 }
+
+
+
+

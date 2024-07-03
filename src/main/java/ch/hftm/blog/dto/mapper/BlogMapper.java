@@ -2,8 +2,6 @@ package ch.hftm.blog.dto.mapper;
 
 import ch.hftm.blog.dto.*;
 
-import ch.hftm.blog.dto.mapper.CommentMapper;
-import ch.hftm.blog.dto.mapper.UserMapper;
 import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.Comment;
 
@@ -43,11 +41,11 @@ public class BlogMapper {
         );
     }
 
-    public static BlogDetailsDTO toBlogDetailsDTO(Blog blog) {
-        List<CommentDTO> commentDTOs = new ArrayList<>();
-        if (blog.getComments() != null) {
-            commentDTOs = blog.getComments().stream()
-                    .map(CommentMapper::toCommentDTO)
+    public static BlogDetailsDTO toBlogDetailsDTO(Blog blog, List<Comment> sortedAndPaginatedComments) {
+        List<CommentBaseDTO> commentBaseDTOS = new ArrayList<>();
+        if (sortedAndPaginatedComments != null) {
+            commentBaseDTOS = sortedAndPaginatedComments.stream()
+                    .map(CommentMapper::toCommentBaseDTO)
                     .collect(Collectors.toList());
         }
 
@@ -59,10 +57,31 @@ public class BlogMapper {
                 blog.getText(),
                 blog.getCreatedAt(),
                 blog.getUpdatedAt(),
-                commentDTOs,
+                commentBaseDTOS,
                 userDTO
         );
     }
+
+/*    public static BlogDetailsDTO toBlogDetailsDTO(Blog blog) {
+        List<CommentBaseDTO> commentBaseDTOS = new ArrayList<>();
+        if (blog.getComments() != null) {
+            commentBaseDTOS = blog.getComments().stream()
+                    .map(CommentMapper::toCommentBaseDTO)
+                    .collect(Collectors.toList());
+        }
+
+        UserBaseDTO userDTO = UserMapper.toUserBaseDTO(blog.getUser());
+
+        return new BlogDetailsDTO(
+                blog.getId(),
+                blog.getTitle(),
+                blog.getText(),
+                blog.getCreatedAt(),
+                blog.getUpdatedAt(),
+				commentBaseDTOS,
+                userDTO
+        );
+    }*/
 
     public static Blog toBlog(BlogBaseDTO blogBaseDTO) {
         Blog blog = new Blog();
@@ -74,3 +93,5 @@ public class BlogMapper {
         return blog;
     }
 }
+
+

@@ -2,6 +2,7 @@ package ch.hftm.blog.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.time.LocalDate;
@@ -28,11 +29,11 @@ public class UserBaseDTO {
 	private String phone;
 	@Schema(example = "female")
 	private String gender;
-	@Schema(example = "1988-12-31")
+	@Schema(type = SchemaType.STRING, format = "date", example = "1988-12-31")
 	private LocalDate dateOfBirth;
-	@Schema(example = "2023-01-02T12:00:00")
+	@Schema(type = SchemaType.STRING, format = "date-time", example = "2023-01-02T12:00:00")
 	private LocalDateTime createdAt;
-	@Schema(example = "2023-01-01T12:00:00")
+	@Schema(type = SchemaType.STRING, format = "date-time", example = "2023-01-02T12:00:00")
 	private LocalDateTime updatedAt;
 
 	// Default Constructor

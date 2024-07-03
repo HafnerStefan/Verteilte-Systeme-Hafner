@@ -1,7 +1,7 @@
 package ch.hftm.blog.dto.mapper;
 
 import ch.hftm.blog.dto.BlogBaseDTO;
-import ch.hftm.blog.dto.CommentDTO;
+import ch.hftm.blog.dto.CommentBaseDTO;
 import ch.hftm.blog.dto.UserBaseDTO;
 import ch.hftm.blog.dto.UserDetailsDTO;
 import ch.hftm.blog.dto.UserListDTO;
@@ -78,16 +78,16 @@ public class UserMapper {
                         }
                 }
 
-                List<CommentDTO> commentDTOs = new ArrayList<>();
+                List<CommentBaseDTO> commentBaseDTOS = new ArrayList<>();
                 if (user.getComments() != null) {
                         for (Comment comment : user.getComments()) {
-                                CommentDTO commentDTO = new CommentDTO(
+                                CommentBaseDTO commentBaseDTO = new CommentBaseDTO(
                                                 comment.getId(),
                                                 comment.getText(),
                                                 comment.getCreatedAt(),
                                                 comment.getBlog().getId(),
                                                 comment.getUser().getId());
-                                commentDTOs.add(commentDTO);
+                                commentBaseDTOS.add(commentBaseDTO);
                         }
                 }
 
@@ -103,7 +103,7 @@ public class UserMapper {
                         user.getCreatedAt(),
                         user.getUpdatedAt(),
                         blogBaseDTOS,
-                        commentDTOs
+						commentBaseDTOS
                 );
         }
 

@@ -37,17 +37,21 @@ public class BlogResource {
     @Inject
     UserService userService;
 
-    @Inject
-    CommentService commentService;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponse(responseCode = "200", description = "List of blogs", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BlogListDTO[].class)))
-    //FETCH ALL BLOGS
-    public Response fetchAllBlogs(@QueryParam("userId") Long userId) {
-        List<BlogListDTO> blogsDTO = this.blogService.getBlogs();
-        Log.info("Returning " + blogsDTO.size() + " blogs");
-        return Response.ok(blogsDTO).build();
+    // FETCH ALL BLOGS
+    public Response fetchAllBlogs(@QueryParam("userId") Long userId, @QueryParam("start")@DefaultValue("0") int start, @QueryParam("size")@DefaultValue("15") int size) {
+        List<BlogListDTO> blogListDTO;
+        if (userId != null) {
+            blogListDTO = this.blogService.getBlogsByUserId(userId, start, size);
+            Log.info("Returning " + blogListDTO.size() + " blogs for user with ID " + userId);
+        } else {
+            blogListDTO = this.blogService.getBlogs(start, size);
+            Log.info("Returning " + blogListDTO.size() + " blogs");
+        }
+        return Response.ok(blogListDTO).build();
     }
 
     @Path("/{blogId}")
@@ -57,11 +61,12 @@ public class BlogResource {
             @APIResponse(responseCode = "200", description = "Blog found", content = @Content(schema = @Schema(implementation = BlogDetailsDTO.class))),
             @APIResponse(responseCode = "404", description = "Blog not found")
     })
-    //FETCH BLOG BY ID
-    public Response fetchBlogById(@PathParam("blogId") Long id) {
+    // FETCH BLOG BY ID
+    public Response fetchBlogById(@PathParam("blogId") Long id, @QueryParam("commentStart")@DefaultValue("0") int commentStart,
+                                  @QueryParam("commentSize")@DefaultValue("15") int commentSize, @QueryParam("sortByDateAsc")@DefaultValue("true") boolean sortByDateAsc) {
 
         try {
-            BlogDetailsDTO blogDetailsDTO = this.blogService.getBlogDTOById(id);
+            BlogDetailsDTO blogDetailsDTO = this.blogService.getBlogDetailsDTOById(id, commentStart, commentSize, sortByDateAsc);
             if (blogDetailsDTO == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -78,7 +83,7 @@ public class BlogResource {
     // CREATE NEW BLOG
     public Response createNewBlog(BlogRequest blogRequest) {
         BlogBaseDTO blogBaseDTO = new BlogBaseDTO(blogRequest.getTitle(), blogRequest.getText(), blogRequest.getUserId());
-        BlogDetailsDTO createdBlog = this.blogService.addBlog(blogBaseDTO);
+        BlogBaseDTO createdBlog = this.blogService.addBlog(blogBaseDTO);
         return Response.status(Response.Status.CREATED).entity(createdBlog).build();
     }
 
@@ -93,7 +98,7 @@ public class BlogResource {
     //Update Blog with comments
     public Response updateBlog(@PathParam("blogId") Long id, BlogRequest blogRequest) {
         try {
-            BlogBaseDTO blogBaseDTO = blogService.getBlogDTOById(id);
+            BlogBaseDTO blogBaseDTO = blogService.getBlogBaseDTOById(id);
             blogBaseDTO.setTitle(blogRequest.getTitle());
             blogBaseDTO.setText(blogRequest.getText());
             blogBaseDTO.setUserId(blogRequest.getUserId());
@@ -115,7 +120,7 @@ public class BlogResource {
     // REMOVE BLOG
     public Response removeBlog(@PathParam("blogId") Long id) {
         try {
-            BlogBaseDTO blogBaseDTO = this.blogService.getBlogDTOById(id);
+            BlogBaseDTO blogBaseDTO = this.blogService.getBlogBaseDTOById(id);
             this.blogService.deleteBlog(id);
             return Response.ok(blogBaseDTO).build();
         } catch (ObjectNotFoundException e) {
