@@ -5,6 +5,8 @@ import java.util.List;
 
 
 import ch.hftm.blog.control.UserService;
+import ch.hftm.blog.dto.requerstDTO.PasswordChangeRequest;
+import ch.hftm.blog.dto.requerstDTO.UserCreateRequest;
 import ch.hftm.blog.exception.ObjectNotFoundException;
 import ch.hftm.blog.dto.UserBaseDTO;
 import ch.hftm.blog.dto.UserDetailsDTO;
@@ -47,24 +49,63 @@ public class UserResource {
         return Response.ok(users).build();
     }
 
+    @GET
+    @Path("/id:{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(responseCode = "200", description = "User by ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDetailsDTO.class)))
+    @APIResponse(responseCode = "404", description = "User not found")
+    // GET USER BY ID
+    public Response fetchUserById(@PathParam("userId") Long id) {
+
+            UserDetailsDTO userDetailsDTO = this.userService.getUserDTOById(id);
+            return Response.ok(userDetailsDTO).build();
+
+    }
+
+    @GET
+    @Path("/name:{userName}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(responseCode = "200", description = "User by Name", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDetailsDTO.class)))
+    @APIResponse(responseCode = "404", description = "User not found")
+    // GET USER BY NAME
+    public Response fetchUsersByName(@PathParam("userName") String name) {
+
+            List<UserDetailsDTO> users = this.userService.getUsersByName(name);
+            return Response.ok(users).build();
+
+    }
+
+    @GET
+    @Path("/email:{userEmail}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(responseCode = "200", description = "User by Email", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDetailsDTO.class)))
+    @APIResponse(responseCode = "404", description = "User not found")
+    // GET USER BY EMAIL
+    public Response fetchUserByEmail(@PathParam("userEmail") String email) {
+
+            UserDetailsDTO userDetailsDTO = this.userService.getUserByEmail(email);
+            return Response.ok(userDetailsDTO).build();
+
+    }
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponse(responseCode = "201", description = "User created", content = @Content(schema = @Schema(implementation = UserBaseDTO.class)))
     // ADD USES
-    public Response addUser(
-            @Valid @jakarta.validation.groups.ConvertGroup(from = Default.class, to = ValidationGroups.Create.class) UserRequest userRequest) {
-        Log.info("Received UserRequest: name=" + userRequest.getName() + ", email=" + userRequest.getEmail());
+    public Response createNewUser(
+            @Valid @jakarta.validation.groups.ConvertGroup(from = Default.class, to = ValidationGroups.Create.class) UserCreateRequest userCreateRequest) {
+        Log.info("Received UserRequest: name=" + userCreateRequest.getName() + ", email=" + userCreateRequest.getEmail());
 
         UserBaseDTO userBaseDTO = new UserBaseDTO();
-        userBaseDTO.setName(userRequest.getName());
-        userBaseDTO.setAge(userRequest.getAge());
-        userBaseDTO.setEmail(userRequest.getEmail());
-        userBaseDTO.setPassword(userRequest.getPassword());
-        userBaseDTO.setAddress(userRequest.getAddress());
-        userBaseDTO.setPhone(userRequest.getPhone());
-        userBaseDTO.setGender(userRequest.getGender());
-        userBaseDTO.setDateOfBirth(userRequest.getDateOfBirth());
+        userBaseDTO.setName(userCreateRequest.getName());
+        userBaseDTO.setAge(userCreateRequest.getAge());
+        userBaseDTO.setEmail(userCreateRequest.getEmail());
+        userBaseDTO.setPassword(userCreateRequest.getPassword());
+        userBaseDTO.setAddress(userCreateRequest.getAddress());
+        userBaseDTO.setPhone(userCreateRequest.getPhone());
+        userBaseDTO.setGender(userCreateRequest.getGender());
+        userBaseDTO.setDateOfBirth(userCreateRequest.getDateOfBirth());
 
         UserBaseDTO createdUser = this.userService.addUser(userBaseDTO);
         Log.info("Adding User " + createdUser.getName());
@@ -75,27 +116,37 @@ public class UserResource {
     @Path("/{userId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "200", description = "User updated", content = @Content(schema = @Schema(implementation = UserDetailsDTO.class)))
+    @APIResponse(responseCode = "200", description = "User updated", content = @Content(schema = @Schema(implementation = UserBaseDTO.class)))
     @APIResponse(responseCode = "404", description = "User not found")
     // UPDATE USER
     public Response updateUser(
             @PathParam("userId") Long id,
             @Valid @jakarta.validation.groups.ConvertGroup(from = Default.class, to = ValidationGroups.Update.class) UserRequest userRequest) {
-        try {
+
             UserBaseDTO userDTO = new UserBaseDTO(id, userRequest.getName(), userRequest.getAge(), userRequest.getEmail(),
                     userRequest.getAddress(), userRequest.getPhone(),
                     userRequest.getGender(), userRequest.getDateOfBirth());
             userDTO.setUpdatedAt(LocalDateTime.now()); // Update the updatedAt field
-            this.userService.updateUser(id, userDTO);
+            UserBaseDTO updateUser = this.userService.updateUser(id, userDTO);
 
             Log.info("Updating User " + userDTO.getName());
 
-            return Response.ok(userDTO).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
+            return Response.ok(updateUser).build();
+
     }
 
+
+    @PUT
+    @Path("/{id}/change-password")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response changePassword(@PathParam("id") Long id, PasswordChangeRequest passwordChangeRequest) {
+
+            userService.changePassword(id, passwordChangeRequest);
+            UserBaseDTO updateUser = userService.getUserBaseDTOById(id);
+            return Response.ok(updateUser).build();
+
+    }
     @DELETE
     @Path("/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -105,58 +156,17 @@ public class UserResource {
     })
     // REMOVE USER
     public Response removeUser(@PathParam("userId") Long id) {
-        try {
+
             UserDetailsDTO userDetailsDTO = this.userService.getUserDTOById(id);
             this.userService.deleteUser(id);
             return Response.ok(userDetailsDTO).build();
-        } catch (ObjectNotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
+
     }
 
-    @GET
-    @Path("/{userId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "200", description = "User by ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDetailsDTO.class)))
-    @APIResponse(responseCode = "404", description = "User not found")
-    // GET USER BY ID
-    public Response fetchUserById(@PathParam("userId") Long id) {
-        try {
-            UserDetailsDTO userDetailsDTO = this.userService.getUserDTOById(id);
-            return Response.ok(userDetailsDTO).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
-    }
 
-    @GET
-    @Path("/{userName}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "200", description = "User by Name", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDetailsDTO.class)))
-    @APIResponse(responseCode = "404", description = "User not found")
-    // GET USER BY NAME
-    public Response fetchUsersByName(@PathParam("userName") String name) {
-        try {
-            List<UserDetailsDTO> users = this.userService.getUsersByName(name);
-            return Response.ok(users).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
-    }
 
-    @GET
-    @Path("/{userEmail}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @APIResponse(responseCode = "200", description = "User by Email", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDetailsDTO.class)))
-    @APIResponse(responseCode = "404", description = "User not found")
-    // GET USER BY EMAIL
-    public Response fetchUserByEmail(@PathParam("userEmail") String email) {
-        try {
-            UserDetailsDTO userDetailsDTO = this.userService.getUserByEmail(email);
-            return Response.ok(userDetailsDTO).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
-    }
+
+
+
 
 }

@@ -19,4 +19,11 @@ public class BlogRepository implements PanacheRepository<Blog> {
         return find("user.id", userId).list();
     }
 
+ /*
+    // Additional deletion methods for blogs
+   @Transactional
+    public void delete(Blog blog) {
+        delete("from Blog where id = ?1", blog.getId());
+    }
+*/
 }

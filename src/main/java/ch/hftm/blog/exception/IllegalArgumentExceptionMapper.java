@@ -5,19 +5,18 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
 @Provider
-public class DuplicateEmailExceptionMapper implements ExceptionMapper<IllegalArgumentException> {
+public class IllegalArgumentExceptionMapper implements ExceptionMapper<IllegalArgumentException> {
 
     @Override
     public Response toResponse(IllegalArgumentException exception) {
         // Check whether the exception indicates a duplicate e-mail
         if (exception.getMessage().startsWith("Email already exists")) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity(new ErrorResponse("Email address already exists"))
+                    .entity(new ErrorResponse("IllegalArgumentException: Email address already exists", Response.Status.CONFLICT.getStatusCode()))
                     .build();
         }
         // Return a general error response for other IllegalArgumentExceptions
         return Response.status(Response.Status.BAD_REQUEST)
-                .entity(new ErrorResponse(exception.getMessage()))
-                .build();
+                .entity(new ErrorResponse( "IllegalArgumentException:"+exception.getMessage(),Response.Status.BAD_REQUEST.getStatusCode())).build();
     }
 }

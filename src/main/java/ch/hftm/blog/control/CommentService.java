@@ -26,10 +26,13 @@ import jakarta.transaction.Transactional;
 public class CommentService {
 	@Inject
 	CommentRepository commentRepository;
+
 	@Inject
 	BlogRepository blogRepository;
+
 	@Inject
 	UserRepository userRepository;
+
 
 	public List<CommentBaseDTO> getComments() {
 		var comments = commentRepository.listAll();
@@ -49,6 +52,27 @@ public class CommentService {
 		} else {
 			throw new ObjectNotFoundException("Comment with id " + commentId + " not found");
 		}
+	}
+
+	public List<CommentWithBlogTitleDTO> getCommentsWithBlogTitleByUserId(Long userId) {
+		User user  = userRepository.findById(userId);
+		if (user == null) {
+			throw new ObjectNotFoundException("User not found with ID: " + userId);
+		}
+		List<Comment> comments = commentRepository.findByUserId(userId);
+		if (comments == null || comments.isEmpty()) {
+			throw new ObjectNotFoundException("No comments found for user with id " + userId);
+		} else {
+
+			return comments.stream().map(CommentMapper::toCommentWithBlogTitleDTO).collect(Collectors.toList());
+		}
+	}
+
+	public CommentWithBlogContextDTO getCommentWithBlogContextById(Long commentId,int previousCommentSize, int nextCommentSize) {
+		Comment comment = getCommentById(commentId);
+		List<Comment> previousComments = commentRepository.findPreviousComments(comment.getBlog().getId(), comment.getCreatedAt(), previousCommentSize);
+		List<Comment> nextComments = commentRepository.findNextComments(comment.getBlog().getId(), comment.getCreatedAt(), nextCommentSize);
+		return CommentMapper.toCommentWithBlogContextDTO(comment, previousComments, nextComments);
 	}
 
 
@@ -77,12 +101,20 @@ public class CommentService {
 		Comment comment = CommentMapper.toComment(commentBaseDTO);
 		Blog blog = blogRepository.findById(commentBaseDTO.getBlogId());
 		User user = userRepository.findById(commentBaseDTO.getUserId());
-		comment.setBlog(blog);
-		comment.setUser(user);
-		comment.setCreatedAt(LocalDateTime.now());
-		Log.info("Adding Comment by User " + comment.getUser().getName());
-		commentRepository.persist(comment);
-		return CommentMapper.toCommentBaseDTO(comment);
+		if (blog == null && user == null) {
+			throw new ObjectNotFoundException("Blog with id " + commentBaseDTO.getBlogId() + " and User not found with ID: " + commentBaseDTO.getUserId() + " not found");
+		} else if (blog == null) {
+			throw new ObjectNotFoundException("Blog with id " + commentBaseDTO.getBlogId() + " not found");
+		} else if (user == null) {
+			throw new ObjectNotFoundException("User not found with ID: " + commentBaseDTO.getUserId());
+		} else {
+			comment.setBlog(blog);
+			comment.setUser(user);
+			comment.setCreatedAt(LocalDateTime.now());
+			Log.info("Adding Comment by User " + comment.getUser().getName());
+			commentRepository.persist(comment);
+			return CommentMapper.toCommentBaseDTO(comment);
+		}
 	}
 
 	@Transactional
@@ -91,25 +123,21 @@ public class CommentService {
 		if (comment == null) {
 			throw new ObjectNotFoundException("Comment with id " + comment + " not found");
 		}
-		Log.info("Deleting Comment by User " + comment.getUser().getName());
-		commentRepository.delete(comment);
-	}
+		Blog blog = comment.getBlog();
+		User user = comment.getUser();
 
-	public List<CommentWithBlogTitleDTO> getCommentsWithBlogTitleByUserId(Long userId) {
-		List<Comment> comments = commentRepository.findByUserId(userId);
-		if (comments != null) {
-			return comments.stream().map(CommentMapper::toCommentWithBlogTitleDTO).collect(Collectors.toList());
-		} else {
-			throw new ObjectNotFoundException("No comments found for user with id " + userId);
+		if (blog != null){
+			blog.getComments().remove(comment);
 		}
+		if (user != null){
+			user.getComments().remove(comment);
+		}
+		commentRepository.delete(comment);
+
+		Log.info("Deleting Comment by User " + comment.getUser().getName());
 	}
 
-	public CommentWithBlogContextDTO getCommentWithBlogContextById(Long commentId,int previousCommentSize, int nextCommentSize) {
-		Comment comment = getCommentById(commentId);
-		List<Comment> previousComments = commentRepository.findPreviousComments(comment.getBlog().getId(), comment.getCreatedAt(), previousCommentSize);
-		List<Comment> nextComments = commentRepository.findNextComments(comment.getBlog().getId(), comment.getCreatedAt(), nextCommentSize);
-		return CommentMapper.toCommentWithBlogContextDTO(comment, previousComments, nextComments);
-	}
+
 
 
 }

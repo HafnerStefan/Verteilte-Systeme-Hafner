@@ -5,20 +5,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.Version;
 import ch.hftm.blog.boundry.ValidationGroups;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -31,6 +26,7 @@ import jakarta.validation.constraints.Size;
 @Setter
 @Getter
 @Entity
+@Table(name = "user")
 //@Schema(name = "User", description = "User entity")
 public class User {
 
@@ -75,12 +71,15 @@ public class User {
     //@Schema(example = "1988-12-31")
     @NotNull(message = "Date of birth must not be null")
     @Past(message = "Date of birth must be in the past")
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
     //@Schema(example = "2023-01-01T12:00:00")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     //@Schema(example = "2023-01-02T12:00:00")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -91,6 +90,8 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Comment> comments;
+
+
 
     public User() {
         // Standardkonstruktor

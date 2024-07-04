@@ -4,24 +4,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-
+import jakarta.persistence.Version;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Getter
 @Entity
+@Table(name = "blog")
 //@Schema(name = "Blog", description = "Blog entity")
 public class Blog {
     // Getter and Setter
@@ -42,10 +37,12 @@ public class Blog {
 
     @Setter
    // @Schema(required = true, example = "2023-06-15T10:15:30")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Setter
    // @Schema(example = "2023-06-15T10:15:30")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @Setter
@@ -58,6 +55,9 @@ public class Blog {
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
    // @Schema(description = "List of comments")
     private List<Comment> comments;
+
+
+
 
     public Blog() {
     }

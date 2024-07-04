@@ -82,6 +82,7 @@ public class UserBaseDTO {
 		this.phone = phone;
 		this.gender = gender;
 		this.dateOfBirth = dateOfBirth;
+
 	}
 }
 

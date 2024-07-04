@@ -23,9 +23,9 @@ public class BlogDetailsDTO extends BlogBaseDTO {
 	}
 
 	// Constructor with all fields
-	public BlogDetailsDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt,
+	public BlogDetailsDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt,Long userId,
 						  List<CommentBaseDTO> comments, UserBaseDTO user) {
-		super(id, title, text, createdAt, updatedAt, null);
+		super(id, title, text, createdAt, updatedAt, userId);
 		this.comments = comments;
 		this.user = user;
 	}

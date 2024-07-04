@@ -57,6 +57,7 @@ public class BlogMapper {
                 blog.getText(),
                 blog.getCreatedAt(),
                 blog.getUpdatedAt(),
+                blog.getUser().getId(),
                 commentBaseDTOS,
                 userDTO
         );
