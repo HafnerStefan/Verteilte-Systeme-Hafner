@@ -1,12 +1,12 @@
 package ch.hftm.blog.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.time.LocalDateTime;
+
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 @Setter
 @Getter
@@ -37,7 +37,8 @@ public class BlogBaseDTO {
     }
 
     // Constructor without comments
-    public BlogBaseDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt, Long userId) {
+    public BlogBaseDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt,
+            Long userId) {
         this.id = id;
         this.title = title;
         this.text = text;
@@ -45,7 +46,5 @@ public class BlogBaseDTO {
         this.updatedAt = updatedAt;
         this.userId = userId;
     }
-
-
 
 }

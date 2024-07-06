@@ -4,44 +4,46 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import jakarta.persistence.Version;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.Version;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Entity
 @Table(name = "blog")
-//@Schema(name = "Blog", description = "Blog entity")
+
 public class Blog {
     // Getter and Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //@Schema(required = true, example = "32126319")
+
     private Long id;
 
     @Setter
-   // @Schema(required = true, example = "New Blog")
     @Size(min = 5, message = "Title needs at least 5 characters")
     private String title;
 
     @Setter
-   // @Schema(required = true, example = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra.")
     @Size(min = 20, message = "Title needs at least 20 characters")
     private String text;
 
     @Setter
-   // @Schema(required = true, example = "2023-06-15T10:15:30")
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Setter
-   // @Schema(example = "2023-06-15T10:15:30")
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
@@ -53,11 +55,7 @@ public class Blog {
 
     @Setter
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
-   // @Schema(description = "List of comments")
     private List<Comment> comments;
-
-
-
 
     public Blog() {
     }

@@ -1,15 +1,12 @@
 package ch.hftm.blog.dto.requerstDTO;
 
+import java.util.List;
+
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Null;
-import jakarta.validation.constraints.Size;
-import jakarta.validation.groups.Default;
-
-import java.util.List;
 
 @Setter
 @Getter
@@ -25,10 +22,8 @@ public class BlogRequest {
     @Schema(example = "[12345, 67890, 13579]")
     private List<Long> commentIds;
 
-
     public BlogRequest() {
     }
-
 
     public BlogRequest(String title, String text, Long userId) {
         this.title = title;
@@ -36,7 +31,6 @@ public class BlogRequest {
         this.userId = userId;
 
     }
-
 
     public BlogRequest(String title, String text, Long userId, List<Long> commentIds) {
         this.title = title;

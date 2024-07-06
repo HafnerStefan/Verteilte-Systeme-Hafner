@@ -2,12 +2,11 @@ package ch.hftm.blog.dto.requerstDTO;
 
 import java.time.LocalDate;
 
-import ch.hftm.blog.boundry.ValidationGroups;
-import lombok.Getter;
-import lombok.Setter;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+import lombok.Getter;
+import lombok.Setter;
 
 @Setter
 @Getter

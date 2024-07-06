@@ -3,34 +3,34 @@ package ch.hftm.blog.entity;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Version;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Entity
 @Table(name = "comment")
-//@Schema(name = "Comment", description = "Comment entity")
 public class Comment {
     // Getter and Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //@Schema(required = true, example = "987654")
     private Long id;
 
     @Setter
-    //@Schema(required = true, example = "Great post!")
     @Size(min = 20, message = "Text needs at least 20 characters")
     private String text;
 
     @Setter
-   // @Schema(required = true, example = "2023-06-15T10:15:30")
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -45,7 +45,6 @@ public class Comment {
     @JsonIgnore
     @NotNull(message = "Comment need a User")
     private User user;
-
 
     public Comment() {
     }

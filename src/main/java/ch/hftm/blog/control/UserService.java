@@ -6,22 +6,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import ch.hftm.blog.dto.UserBaseDTO;
-import ch.hftm.blog.dto.UserListDTO;
 import ch.hftm.blog.dto.UserDetailsDTO;
+import ch.hftm.blog.dto.UserListDTO;
 import ch.hftm.blog.dto.mapper.UserMapper;
 import ch.hftm.blog.dto.requerstDTO.PasswordChangeRequest;
 import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.Comment;
 import ch.hftm.blog.entity.User;
 import ch.hftm.blog.exception.ObjectNotFoundException;
-import ch.hftm.blog.repository.BlogRepository;
-import ch.hftm.blog.repository.CommentRepository;
 import ch.hftm.blog.repository.UserRepository;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.persistence.LockModeType;
-import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
@@ -109,7 +105,6 @@ public class UserService {
 		user.setName(userBaseDTO.getName());
 		user.setAge(userBaseDTO.getAge());
 
-
 		if (!user.getEmail().equals(userBaseDTO.getEmail())) {
 			if (emailExists(userBaseDTO.getEmail())) {
 				throw new IllegalArgumentException("Email already exists: " + userBaseDTO.getEmail());
@@ -132,7 +127,7 @@ public class UserService {
 	public void changePassword(Long userId, PasswordChangeRequest passwordChangeRequest) {
 		User user = userRepository.findById(userId);
 		if (user == null) {
-			throw new ObjectNotFoundException("User with "+userId + " not found");
+			throw new ObjectNotFoundException("User with " + userId + " not found");
 		}
 
 		// Überprüfung des alten Passworts
@@ -160,7 +155,6 @@ public class UserService {
 			throw new ObjectNotFoundException("User not found with id: " + userId);
 		}
 
-
 		for (Blog userBlog : user.getBlogs()) {
 			if (userBlog.getComments() != null) {
 				for (Comment comment : userBlog.getComments()) {
@@ -169,17 +163,15 @@ public class UserService {
 			}
 		}
 
-		for (Comment userComment : user.getComments()){
-			if (userComment != null){
+		for (Comment userComment : user.getComments()) {
+			if (userComment != null) {
 				userComment.getBlog().getComments().remove(userComment);
 			}
 
 		}
 
-
 		// Lösche den Benutzer
 		userRepository.delete(user);
-
 
 	}
 
@@ -188,8 +180,3 @@ public class UserService {
 	}
 
 }
-
-
-
-
-

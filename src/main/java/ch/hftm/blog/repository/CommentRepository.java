@@ -3,9 +3,7 @@ package ch.hftm.blog.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.Comment;
-import ch.hftm.blog.entity.User;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -33,14 +31,14 @@ public class CommentRepository implements PanacheRepository<Comment> {
         return find("blog.id = ?1 and createdAt > ?2 order by createdAt asc", blogId, createdAt).page(0, limit).list();
     }
 
-/*    // Additional deletion methods for comments
+    /*    // Additional deletion methods for comments
     @Transactional
     public void deleteByUser(User user) {
         getEntityManager().createQuery("DELETE FROM Comment c WHERE c.user = :user")
                 .setParameter("user", user)
                 .executeUpdate();
     }
-
+    
     @Transactional
     public void deleteByBlog(Blog blog) {
         getEntityManager().createQuery("DELETE FROM Comment c WHERE c.blog = :blog")
@@ -48,9 +46,4 @@ public class CommentRepository implements PanacheRepository<Comment> {
                 .executeUpdate();
     }*/
 
-
 }
-
-
-
-
