@@ -29,6 +29,8 @@ public class UserService {
 	BlogService blogService;
 	@Inject
 	CommentService commentService;
+	@Inject
+	KeycloakService keycloakService;
 
 	public List<UserListDTO> getUsers() {
 		List<User> users = userRepository.listAll();
@@ -91,6 +93,10 @@ public class UserService {
 		if (emailExists(userDTO.getEmail())) {
 			throw new IllegalArgumentException("Email already exists: " + userDTO.getEmail());
 		}
+
+		// add user to Keycloak
+		keycloakService.createUserInKeycloak(userDTO);
+
 		User user = UserMapper.toUser(userDTO);
 		Log.info("Adding User " + user.getName());
 		user.setCreatedAt(LocalDateTime.now());
@@ -170,7 +176,10 @@ public class UserService {
 
 		}
 
-		// Lösche den Benutzer
+		// Delete user from Keycloak
+		keycloakService.deleteUserInKeycloak(user);
+
+		// Delete user from database
 		userRepository.delete(user);
 
 	}
