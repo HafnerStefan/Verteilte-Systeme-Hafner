@@ -9,6 +9,7 @@ import ch.hftm.blog.dto.UserBaseDTO;
 import ch.hftm.blog.dto.UserDetailsDTO;
 import ch.hftm.blog.dto.UserListDTO;
 import ch.hftm.blog.dto.mapper.UserMapper;
+import ch.hftm.blog.dto.requerstDTO.LoginRequest;
 import ch.hftm.blog.dto.requerstDTO.PasswordChangeRequest;
 import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.Comment;
@@ -146,6 +147,17 @@ public class UserService {
 		userRepository.persist(user);
 
 		Log.info("Password updated for user " + user.getName());
+	}
+
+	public boolean login(LoginRequest loginRequest) {
+		String email = loginRequest.getEmail();
+		String password = loginRequest.getPassword();
+
+		User user = userRepository.findByEmail(email);
+		if (user == null) {
+			throw new ObjectNotFoundException("User not found with email: " + email);
+		}
+		return user.getPassword().equals(password);
 	}
 
 	@Transactional

@@ -3,27 +3,32 @@ package ch.hftm.blog.boundry;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import ch.hftm.blog.control.UserService;
-import ch.hftm.blog.dto.requerstDTO.PasswordChangeRequest;
-import ch.hftm.blog.dto.requerstDTO.UserCreateRequest;
-
-import ch.hftm.blog.dto.UserBaseDTO;
-import ch.hftm.blog.dto.UserDetailsDTO;
-import ch.hftm.blog.dto.UserListDTO;
-import ch.hftm.blog.dto.requerstDTO.UserRequest;
-
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
+import ch.hftm.blog.control.UserService;
+import ch.hftm.blog.dto.UserBaseDTO;
+import ch.hftm.blog.dto.UserDetailsDTO;
+import ch.hftm.blog.dto.UserListDTO;
+import ch.hftm.blog.dto.requerstDTO.LoginRequest;
+import ch.hftm.blog.dto.requerstDTO.PasswordChangeRequest;
+import ch.hftm.blog.dto.requerstDTO.UserCreateRequest;
+import ch.hftm.blog.dto.requerstDTO.UserRequest;
 import io.quarkus.logging.Log;
-
-import jakarta.ws.rs.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -87,6 +92,16 @@ public class UserResource {
                                 + userDetailsDTO.getId());
                 return Response.ok(userDetailsDTO).build();
 
+        }
+
+        @GET
+        @Path("/login")
+        @Consumes(MediaType.APPLICATION_JSON)
+        @Produces(MediaType.APPLICATION_JSON)
+        public Response login(LoginRequest loginRequest) {
+                boolean isLoggedIn = this.userService.login(loginRequest);
+                Log.info("User " + loginRequest.getEmail() + " logged in");
+                return Response.ok(isLoggedIn).build();
         }
 
         @POST
