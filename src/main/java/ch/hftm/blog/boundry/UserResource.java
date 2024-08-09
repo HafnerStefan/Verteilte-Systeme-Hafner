@@ -1,7 +1,9 @@
 package ch.hftm.blog.boundry;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -12,6 +14,7 @@ import ch.hftm.blog.control.UserService;
 import ch.hftm.blog.dto.UserBaseDTO;
 import ch.hftm.blog.dto.UserDetailsDTO;
 import ch.hftm.blog.dto.UserListDTO;
+import ch.hftm.blog.dto.mapper.UserMapper;
 import ch.hftm.blog.dto.requerstDTO.LoginRequest;
 import ch.hftm.blog.dto.requerstDTO.PasswordChangeRequest;
 import ch.hftm.blog.dto.requerstDTO.UserCreateRequest;
@@ -100,8 +103,20 @@ public class UserResource {
         @Produces(MediaType.APPLICATION_JSON)
         public Response login(LoginRequest loginRequest) {
                 boolean isLoggedIn = this.userService.login(loginRequest);
+
                 Log.info("User " + loginRequest.getEmail() + " logged in");
-                return Response.ok(isLoggedIn).build();
+
+                // Create a map to store the JSON response
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", isLoggedIn);
+                if (isLoggedIn) {
+                        UserBaseDTO user = UserMapper
+                                        .toUserBaseDTOFromUserDeatailsDTO(
+                                                        this.userService.getUserByEmail(loginRequest.getEmail()));
+                        response.put("user", user);
+
+                }
+                return Response.ok(response).build();
         }
 
         @POST

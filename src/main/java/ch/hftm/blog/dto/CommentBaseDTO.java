@@ -1,11 +1,12 @@
 package ch.hftm.blog.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.time.LocalDateTime;
+
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
 @Setter
 @Getter
@@ -21,7 +22,8 @@ public class CommentBaseDTO {
     private Long blogId;
     @Schema(example = "1245")
     private Long userId;
-
+    @Schema(description = "Username of the comment author")
+    private String username;
 
     public CommentBaseDTO() {
     }
@@ -31,7 +33,6 @@ public class CommentBaseDTO {
         this.blogId = blogId;
         this.userId = userId;
     }
-
 
     public CommentBaseDTO(Long id, String text, LocalDateTime createdAt, Long blogId, Long userId) {
         this.id = id;

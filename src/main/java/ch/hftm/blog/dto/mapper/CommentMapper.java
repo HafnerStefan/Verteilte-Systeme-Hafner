@@ -1,12 +1,13 @@
 package ch.hftm.blog.dto.mapper;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import ch.hftm.blog.dto.CommentBaseDTO;
+import ch.hftm.blog.dto.CommentDetailDTO;
 import ch.hftm.blog.dto.CommentWithBlogContextDTO;
 import ch.hftm.blog.dto.CommentWithBlogTitleDTO;
 import ch.hftm.blog.entity.Comment;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class CommentMapper {
 
@@ -28,8 +29,20 @@ public class CommentMapper {
         return comment;
     }
 
+    public static CommentDetailDTO toCommentDetailDTO(Comment comment) {
+        String username = comment.getUser().getName();
 
-    public static CommentWithBlogContextDTO toCommentWithBlogContextDTO(Comment comment, List<Comment> previousComments, List<Comment> nextComments) {
+        return new CommentDetailDTO(
+                comment.getId(),
+                comment.getText(),
+                comment.getCreatedAt(),
+                comment.getBlog().getId(),
+                comment.getUser().getId(),
+                username);
+    }
+
+    public static CommentWithBlogContextDTO toCommentWithBlogContextDTO(Comment comment, List<Comment> previousComments,
+            List<Comment> nextComments) {
         List<CommentBaseDTO> previousCommentDTOs = previousComments.stream()
                 .map(CommentMapper::toCommentBaseDTO)
                 .collect(Collectors.toList());
@@ -46,8 +59,7 @@ public class CommentMapper {
                 comment.getUser().getId(),
                 comment.getBlog().getTitle(),
                 previousCommentDTOs,
-                nextCommentDTOs
-        );
+                nextCommentDTOs);
     }
 
     public static CommentWithBlogTitleDTO toCommentWithBlogTitleDTO(Comment comment) {
@@ -57,9 +69,7 @@ public class CommentMapper {
                 comment.getCreatedAt(),
                 comment.getBlog().getId(),
                 comment.getUser().getId(),
-                comment.getBlog().getTitle()
-        );
+                comment.getBlog().getTitle());
     }
-
 
 }

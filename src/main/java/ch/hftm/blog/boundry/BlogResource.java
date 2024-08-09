@@ -45,30 +45,25 @@ public class BlogResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "List of blogs", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BlogListDTO[].class)))
-	// FETCH ALL BLOGS
-	public Response fetchAllBlogs(@QueryParam("userId") Long userId, @QueryParam("start") @DefaultValue("0") int start,
-			@QueryParam("size") @DefaultValue("15") int size) {
+	public Response fetchAllBlogs(@QueryParam("userId") Long userId,
+			@QueryParam("startPage") @DefaultValue("0") int startPage,
+			@QueryParam("size") @DefaultValue("15") int size,
+			@QueryParam("sortOrder") @DefaultValue("asc") String sortOrder) {
 		List<BlogListDTO> blogListDTO;
+
 		if (userId != null) {
-			blogListDTO = this.blogService.getBlogsByUserId(userId, start, size);
+			blogListDTO = blogService.getBlogsByUserId(userId, startPage, size, sortOrder);
 			Log.info("Returning " + blogListDTO.size() + " blogs for user with ID " + userId);
 		} else {
-			blogListDTO = this.blogService.getBlogs(start, size);
+			blogListDTO = blogService.getBlogs(startPage, size, sortOrder);
 			Log.info("Returning " + blogListDTO.size() + " blogs");
 		}
 
-		if (userId != null && blogListDTO.isEmpty()) {
-			int sizeMax = this.blogService.getBlogsByUserId(userId, 0, 10000).size();
-			throw new ObjectIsEmptyException("Return list of Blogs is Empty: the user: " + userId + " has max "
-					+ sizeMax + " blogs. Do you want see blog " + (start * size) + " to " + (start * size + size));
-		}
 		if (blogListDTO.isEmpty()) {
 			throw new ObjectIsEmptyException("Return list of Blogs is Empty");
 		} else {
-			Log.info("Returning " + blogListDTO.size() + " blogs");
 			return Response.ok(blogListDTO).build();
 		}
-
 	}
 
 	@Path("/{blogId}")
