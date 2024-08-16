@@ -33,7 +33,6 @@ public class BlogService {
 
 	public List<BlogListDTO> getBlogs(int startPage, int size, String sortOrder) {
 		List<Blog> blogs;
-
 		if ("desc".equalsIgnoreCase(sortOrder)) {
 			blogs = blogRepository.findAll(Sort.by("updatedAt").descending())
 					.page(Page.of(startPage, size))
@@ -43,14 +42,12 @@ public class BlogService {
 					.page(Page.of(startPage, size))
 					.list();
 		}
-
 		Log.info("Fetched " + blogs.size() + " blogs from page " + startPage);
 		return blogs.stream().map(BlogMapper::toBlogListDTO).collect(Collectors.toList());
 	}
 
 	public List<BlogListDTO> getBlogsByUserId(Long userId, int startPage, int size, String sortOrder) {
 		List<Blog> blogs;
-
 		if ("desc".equalsIgnoreCase(sortOrder)) {
 			blogs = blogRepository.find("user.id", Sort.by("updatedAt").descending(), userId)
 					.page(Page.of(startPage, size))
@@ -60,7 +57,6 @@ public class BlogService {
 					.page(Page.of(startPage, size))
 					.list();
 		}
-
 		Log.info("Fetched " + blogs.size() + " blogs for user with ID " + userId + " from page " + startPage);
 		return blogs.stream().map(BlogMapper::toBlogListDTO).collect(Collectors.toList());
 	}
@@ -68,6 +64,11 @@ public class BlogService {
 	public int getTotalBlogCount() {
 		return blogRepository.findAll().list().size();
 	}
+	public int getLastBlogPage(int blogSize) {
+		long totalBlogs = blogRepository.count();
+		return (int) Math.ceil((double) totalBlogs / blogSize);
+	}
+
 
 	public BlogDetailsDTO getBlogDetailsDTOById(Long blogId, int commentStart, int commentSize, boolean sortByDateAsc) {
 		Blog blog = getBlogById(blogId);

@@ -21,7 +21,9 @@ public class BlogMapper {
                 blog.getText(),
                 blog.getCreatedAt(),
                 blog.getUpdatedAt(),
-                blog.getUser().getId());
+                blog.getUser().getId(),
+                blog.getUser().getName());
+
     }
 
     public static BlogListDTO toBlogListDTO(Blog blog) {
@@ -39,6 +41,7 @@ public class BlogMapper {
                 blog.getCreatedAt(),
                 blog.getUpdatedAt(),
                 blog.getUser().getId(),
+                blog.getUser().getName(),
                 commentIds);
     }
 

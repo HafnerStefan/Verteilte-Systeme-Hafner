@@ -32,11 +32,11 @@ public class Blog {
     private Long id;
 
     @Setter
-    @Size(min = 5, message = "Title needs at least 5 characters")
+    @Size(min = 3, message = "Title needs at least 3 characters")
     private String title;
 
     @Setter
-    @Size(min = 20, message = "Title needs at least 20 characters")
+    @Size(min = 10, message = "Text needs at least 10 characters")
     private String text;
 
     @Setter

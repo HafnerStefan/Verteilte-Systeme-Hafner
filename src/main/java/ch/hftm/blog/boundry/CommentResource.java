@@ -52,6 +52,8 @@ public class CommentResource {
 		return Response.ok(commentBaseDTO).build();
 	}
 
+
+
 	//TODO Remove ?
 	@GET
 	@Path("/blogId:{blogId}")

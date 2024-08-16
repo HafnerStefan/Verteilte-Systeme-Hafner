@@ -82,7 +82,8 @@ public class UserMapper {
                                                 blog.getText(),
                                                 blog.getCreatedAt(),
                                                 blog.getUpdatedAt(),
-                                                blog.getUser().getId()
+                                                blog.getUser().getId(),
+                                                blog.getUser().getName()
 
                                 // Comments are set separately
                                 );

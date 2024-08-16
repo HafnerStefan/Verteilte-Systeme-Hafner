@@ -21,14 +21,14 @@ public class BlogListDTO extends BlogBaseDTO {
 	}
 
 	// Constructor with all fields
-	public BlogListDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt, Long userId,
+	public BlogListDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt, Long userId,String username,
 					   List<Long> commentsIds) {
-		super(id, title, text, createdAt, updatedAt, userId);
+		super(id, title, text, createdAt, updatedAt, userId,username);
 		this.commentsIds = commentsIds;
 	}
 
 	// Constructor with basic fields
-	public BlogListDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt, Long userId) {
-		super(id, title, text, createdAt, updatedAt, userId);
+	public BlogListDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt, Long userId,String username) {
+		super(id, title, text, createdAt, updatedAt, userId,username);
 	}
 }

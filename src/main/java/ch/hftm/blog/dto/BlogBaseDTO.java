@@ -24,6 +24,8 @@ public class BlogBaseDTO {
     private LocalDateTime updatedAt;
     @Schema(example = "1245")
     private Long userId;
+    @Schema(description = "Username of the blog author")
+    private String username;
 
     // Default constructor
     public BlogBaseDTO() {
@@ -38,13 +40,14 @@ public class BlogBaseDTO {
 
     // Constructor without comments
     public BlogBaseDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt,
-            Long userId) {
+            Long userId,String username) {
         this.id = id;
         this.title = title;
         this.text = text;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.userId = userId;
+        this.username = username;
     }
 
 }

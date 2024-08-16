@@ -18,8 +18,7 @@ public class BlogDetailsDTO extends BlogBaseDTO {
 	@Schema(description = "User details")
 	private UserBaseDTO user;
 
-	@Schema(description = "Username of the blog author")
-	private String username;
+
 
 	// Default constructor
 	public BlogDetailsDTO() {
@@ -30,15 +29,15 @@ public class BlogDetailsDTO extends BlogBaseDTO {
 	public BlogDetailsDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt,
 			Long userId,
 			List<CommentDetailDTO> comments, UserBaseDTO user, String username) {
-		super(id, title, text, createdAt, updatedAt, userId);
+		super(id, title, text, createdAt, updatedAt, userId, username);
 		this.comments = comments;
 		this.user = user;
-		this.username = username;
+
 	}
 
 	// Constructor with basic fields
 	public BlogDetailsDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt,
-			Long userId) {
-		super(id, title, text, createdAt, updatedAt, userId);
+			Long userId,String username) {
+		super(id, title, text, createdAt, updatedAt, userId, username);
 	}
 }
