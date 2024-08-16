@@ -27,7 +27,7 @@ public class Comment {
     private Long id;
 
     @Setter
-    @Size(min = 20, message = "Text needs at least 20 characters")
+    @Size(min = 3, message = "Text needs at least 3 characters")
     private String text;
 
     @Setter

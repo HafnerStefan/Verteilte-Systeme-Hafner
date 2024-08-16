@@ -54,6 +54,12 @@ public class CommentService {
 		}
 	}
 
+	public int getMaxCommentPageByBlogId(Long blogId, int pageSize) {
+		long totalComments = commentRepository.find("blog.id", blogId).count();
+		return (int) Math.ceil((double) totalComments / pageSize);
+	}
+
+
 	public List<CommentWithBlogTitleDTO> getCommentsWithBlogTitleByUserId(Long userId) {
 		User user  = userRepository.findById(userId);
 		if (user == null) {

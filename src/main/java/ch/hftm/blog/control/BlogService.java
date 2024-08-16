@@ -64,7 +64,7 @@ public class BlogService {
 	public int getTotalBlogCount() {
 		return blogRepository.findAll().list().size();
 	}
-	public int getLastBlogPage(int blogSize) {
+	public int getMaxBlogPage(int blogSize) {
 		long totalBlogs = blogRepository.count();
 		return (int) Math.ceil((double) totalBlogs / blogSize);
 	}

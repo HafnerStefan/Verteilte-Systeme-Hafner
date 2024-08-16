@@ -70,7 +70,8 @@ public class BlogResource {
 	@Path("/maxPage")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getMaxBlogPage(@QueryParam("size") @DefaultValue("15") int size) {
-		int maxPages = blogService.getLastBlogPage(size);
+		int maxPages = blogService.getMaxBlogPage(size);
+		Log.info("Returning " + maxPages + " pages");
 		return Response.ok(maxPages).build();
 	}
 
