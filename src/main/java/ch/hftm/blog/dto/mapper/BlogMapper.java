@@ -1,13 +1,16 @@
 package ch.hftm.blog.dto.mapper;
 
-import ch.hftm.blog.dto.*;
-
-import ch.hftm.blog.entity.Blog;
-import ch.hftm.blog.entity.Comment;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import ch.hftm.blog.dto.BlogBaseDTO;
+import ch.hftm.blog.dto.BlogDetailsDTO;
+import ch.hftm.blog.dto.BlogListDTO;
+import ch.hftm.blog.dto.CommentDetailDTO;
+import ch.hftm.blog.dto.UserBaseDTO;
+import ch.hftm.blog.entity.Blog;
+import ch.hftm.blog.entity.Comment;
 
 public class BlogMapper {
 
@@ -18,8 +21,9 @@ public class BlogMapper {
                 blog.getText(),
                 blog.getCreatedAt(),
                 blog.getUpdatedAt(),
-                blog.getUser().getId()
-        );
+                blog.getUser().getId(),
+                blog.getUser().getName());
+
     }
 
     public static BlogListDTO toBlogListDTO(Blog blog) {
@@ -37,19 +41,20 @@ public class BlogMapper {
                 blog.getCreatedAt(),
                 blog.getUpdatedAt(),
                 blog.getUser().getId(),
-                commentIds
-        );
+                blog.getUser().getName(),
+                commentIds);
     }
 
     public static BlogDetailsDTO toBlogDetailsDTO(Blog blog, List<Comment> sortedAndPaginatedComments) {
-        List<CommentBaseDTO> commentBaseDTOS = new ArrayList<>();
+        List<CommentDetailDTO> commentDetailDTOS = new ArrayList<>();
         if (sortedAndPaginatedComments != null) {
-            commentBaseDTOS = sortedAndPaginatedComments.stream()
-                    .map(CommentMapper::toCommentBaseDTO)
+            commentDetailDTOS = sortedAndPaginatedComments.stream()
+                    .map(CommentMapper::toCommentDetailDTO) // Verwende CommentDetailDTO
                     .collect(Collectors.toList());
         }
 
         UserBaseDTO userDTO = UserMapper.toUserBaseDTO(blog.getUser());
+        String username = blog.getUser().getName();
 
         return new BlogDetailsDTO(
                 blog.getId(),
@@ -58,28 +63,28 @@ public class BlogMapper {
                 blog.getCreatedAt(),
                 blog.getUpdatedAt(),
                 blog.getUser().getId(),
-                commentBaseDTOS,
-                userDTO
-        );
+                commentDetailDTOS,
+                userDTO,
+                username);
     }
 
-/*    public static BlogDetailsDTO toBlogDetailsDTO(Blog blog) {
+    /*    public static BlogDetailsDTO toBlogDetailsDTO(Blog blog) {
         List<CommentBaseDTO> commentBaseDTOS = new ArrayList<>();
         if (blog.getComments() != null) {
             commentBaseDTOS = blog.getComments().stream()
                     .map(CommentMapper::toCommentBaseDTO)
                     .collect(Collectors.toList());
         }
-
+    
         UserBaseDTO userDTO = UserMapper.toUserBaseDTO(blog.getUser());
-
+    
         return new BlogDetailsDTO(
                 blog.getId(),
                 blog.getTitle(),
                 blog.getText(),
                 blog.getCreatedAt(),
                 blog.getUpdatedAt(),
-				commentBaseDTOS,
+    				commentBaseDTOS,
                 userDTO
         );
     }*/
@@ -94,5 +99,3 @@ public class BlogMapper {
         return blog;
     }
 }
-
-

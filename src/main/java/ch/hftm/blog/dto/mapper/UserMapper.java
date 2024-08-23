@@ -1,5 +1,8 @@
 package ch.hftm.blog.dto.mapper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.hftm.blog.dto.BlogBaseDTO;
 import ch.hftm.blog.dto.CommentBaseDTO;
 import ch.hftm.blog.dto.UserBaseDTO;
@@ -9,24 +12,34 @@ import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.Comment;
 import ch.hftm.blog.entity.User;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class UserMapper {
 
         public static UserBaseDTO toUserBaseDTO(User user) {
                 return new UserBaseDTO(
-                        user.getId(),
-                        user.getName(),
-                        user.getAge(),
-                        user.getEmail(),
-                        user.getAddress(),
-                        user.getPhone(),
-                        user.getGender(),
-                        user.getDateOfBirth(),
-                        user.getCreatedAt(),
-                        user.getUpdatedAt()
-                );
+                                user.getId(),
+                                user.getName(),
+                                user.getAge(),
+                                user.getEmail(),
+                                user.getAddress(),
+                                user.getPhone(),
+                                user.getGender(),
+                                user.getDateOfBirth(),
+                                user.getCreatedAt(),
+                                user.getUpdatedAt());
+        }
+
+        public static UserBaseDTO toUserBaseDTOFromUserDeatailsDTO(UserDetailsDTO user) {
+                return new UserBaseDTO(
+                                user.getId(),
+                                user.getName(),
+                                user.getAge(),
+                                user.getEmail(),
+                                user.getAddress(),
+                                user.getPhone(),
+                                user.getGender(),
+                                user.getDateOfBirth(),
+                                user.getCreatedAt(),
+                                user.getUpdatedAt());
         }
 
         public static UserListDTO toUserListDTO(User user) {
@@ -45,19 +58,18 @@ public class UserMapper {
                 }
 
                 return new UserListDTO(
-                        user.getId(),
-                        user.getName(),
-                        user.getAge(),
-                        user.getEmail(),
-                        user.getAddress(),
-                        user.getPhone(),
-                        user.getGender(),
-                        user.getDateOfBirth(),
-                        user.getCreatedAt(),
-                        user.getUpdatedAt(),
-                        blogIds,
-                        commentIds
-                );
+                                user.getId(),
+                                user.getName(),
+                                user.getAge(),
+                                user.getEmail(),
+                                user.getAddress(),
+                                user.getPhone(),
+                                user.getGender(),
+                                user.getDateOfBirth(),
+                                user.getCreatedAt(),
+                                user.getUpdatedAt(),
+                                blogIds,
+                                commentIds);
         }
 
         public static UserDetailsDTO toUserDetailsDTO(User user) {
@@ -70,9 +82,10 @@ public class UserMapper {
                                                 blog.getText(),
                                                 blog.getCreatedAt(),
                                                 blog.getUpdatedAt(),
-                                                blog.getUser().getId()
+                                                blog.getUser().getId(),
+                                                blog.getUser().getName()
 
-                                        // Comments are set separately
+                                // Comments are set separately
                                 );
                                 blogBaseDTOS.add(blogBaseDTO);
                         }
@@ -92,19 +105,18 @@ public class UserMapper {
                 }
 
                 return new UserDetailsDTO(
-                        user.getId(),
-                        user.getName(),
-                        user.getAge(),
-                        user.getEmail(),
-                        user.getAddress(),
-                        user.getPhone(),
-                        user.getGender(),
-                        user.getDateOfBirth(),
-                        user.getCreatedAt(),
-                        user.getUpdatedAt(),
-                        blogBaseDTOS,
-						commentBaseDTOS
-                );
+                                user.getId(),
+                                user.getName(),
+                                user.getAge(),
+                                user.getEmail(),
+                                user.getAddress(),
+                                user.getPhone(),
+                                user.getGender(),
+                                user.getDateOfBirth(),
+                                user.getCreatedAt(),
+                                user.getUpdatedAt(),
+                                blogBaseDTOS,
+                                commentBaseDTOS);
         }
 
         public static User toUser(UserBaseDTO userBaseDTO) {

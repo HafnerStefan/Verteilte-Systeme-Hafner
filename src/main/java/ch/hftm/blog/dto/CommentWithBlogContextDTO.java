@@ -1,11 +1,12 @@
 package ch.hftm.blog.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -25,8 +26,9 @@ public class CommentWithBlogContextDTO extends CommentBaseDTO {
 	}
 
 	// Constructor with parameters
-	public CommentWithBlogContextDTO(Long id, String text, LocalDateTime createdAt, Long blogId, Long userId, String blogTitle,
-									 List<CommentBaseDTO> previousComments, List<CommentBaseDTO> nextComments) {
+	public CommentWithBlogContextDTO(Long id, String text, LocalDateTime createdAt, Long blogId, Long userId,
+			String blogTitle,
+			List<CommentBaseDTO> previousComments, List<CommentBaseDTO> nextComments) {
 		super(id, text, createdAt, blogId, userId);
 		this.blogTitle = blogTitle;
 		this.previousComments = previousComments;

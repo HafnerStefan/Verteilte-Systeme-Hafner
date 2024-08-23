@@ -52,6 +52,16 @@ public class CommentResource {
 		return Response.ok(commentBaseDTO).build();
 	}
 
+
+	@GET
+	@Path("/maxPage")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getCommentPageByBlogId(@QueryParam("blogId") long blogId, @QueryParam("size") @DefaultValue("6") int size) {
+		int maxPages = commentService.getMaxCommentPageByBlogId(blogId,size);
+		Log.info("Returning " + maxPages + " pages for blog with ID " + blogId);
+		return Response.ok(maxPages).build();
+	}
+
 	//TODO Remove ?
 	@GET
 	@Path("/blogId:{blogId}")
