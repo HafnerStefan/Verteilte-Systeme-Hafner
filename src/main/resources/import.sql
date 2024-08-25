@@ -1,3 +1,8 @@
+
+-- Insert the 'User' role into the roles table
+INSERT INTO roles (id, name) VALUES (1, 'User');
+INSERT INTO roles (id, name) VALUES (2, 'Admin');
+
 -- Insert example users
 INSERT INTO user (id, name, age, email, password, address, phone, gender, date_of_birth, created_at, updated_at)
 VALUES (1, 'John Doe', 30, 'john.doe@example.com', 'Password123!', '123 Main St', '+41 78 965 26 15', 'male',
@@ -36,9 +41,20 @@ VALUES (9, 'George Red', 27, 'george.red@example.com', 'Password123!', '606 Will
         '1995-09-09', '2023-01-01T12:00:00', '2023-01-01T12:00:00');
 
 INSERT INTO user (id, name, age, email, password, address, phone, gender, date_of_birth, created_at, updated_at)
-VALUES (10, 'Hannah Yellow', 31, 'hannah.yellow@example.com', 'Password123!', '707 Maple St', '+41 70 901 23 45',
+VALUES (10, 'Stefan Hafner', 31, 'Stefan.hafner@example.com', 'Password123!', '707 Maple St', '+41 70 901 23 45',
         'female', '1991-10-10', '2023-01-01T12:00:00', '2023-01-01T12:00:00');
 
+-- Assign the 'User' role to all users
+INSERT INTO user_roles (user_id, role_id) VALUES (1, 1);
+INSERT INTO user_roles (user_id, role_id) VALUES (2, 1);
+INSERT INTO user_roles (user_id, role_id) VALUES (3, 1);
+INSERT INTO user_roles (user_id, role_id) VALUES (4, 1);
+INSERT INTO user_roles (user_id, role_id) VALUES (5, 1);
+INSERT INTO user_roles (user_id, role_id) VALUES (6, 1);
+INSERT INTO user_roles (user_id, role_id) VALUES (7, 1);
+INSERT INTO user_roles (user_id, role_id) VALUES (8, 1);
+INSERT INTO user_roles (user_id, role_id) VALUES (9, 1);
+INSERT INTO user_roles (user_id, role_id) VALUES (10, 2);
 
 -- Insert example blogs
 INSERT INTO blog (id, title, text, created_at, updated_at, user_id)
@@ -79,7 +95,6 @@ INSERT INTO blog (id, title, text, created_at, updated_at, user_id)
 VALUES (10, 'Tips for Improving Your Work-Life Balance',
         'Finding a good work-life balance can be challenging. Here are some tips...', '2023-02-05T12:00:00',
         '2023-02-05T12:00:00', 10);
-
 
 -- Insert example comments
 INSERT INTO comment (id, text, created_at, blog_id, user_id)

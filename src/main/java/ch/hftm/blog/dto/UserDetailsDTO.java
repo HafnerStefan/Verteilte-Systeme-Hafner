@@ -1,5 +1,6 @@
 package ch.hftm.blog.dto;
 
+import ch.hftm.blog.entity.Role;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -7,6 +8,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -25,18 +27,18 @@ public class UserDetailsDTO extends UserBaseDTO {
 
 	// Constructor with all parameters
 	public UserDetailsDTO(Long id, String name, int age, String email, String password, String address, String phone,
-						  String gender, LocalDate dateOfBirth, LocalDateTime createdAt, LocalDateTime updatedAt,
+						  String gender, LocalDate dateOfBirth, Set<Role> roles, LocalDateTime createdAt, LocalDateTime updatedAt,
 						  List<BlogBaseDTO> blogs, List<CommentBaseDTO> comments) {
-		super(id, name, age, email, password, address, phone, gender, dateOfBirth, createdAt, updatedAt);
+		super(id, name, age, email, password, address, phone, gender, dateOfBirth,roles, createdAt, updatedAt);
 		this.blogs = blogs;
 		this.comments = comments;
 	}
 
 	// Constructor without password
 	public UserDetailsDTO(Long id, String name, int age, String email, String address, String phone,
-						  String gender, LocalDate dateOfBirth, LocalDateTime createdAt, LocalDateTime updatedAt,
+						  String gender, LocalDate dateOfBirth,Set<Role> roles, LocalDateTime createdAt, LocalDateTime updatedAt,
 						  List<BlogBaseDTO> blogs, List<CommentBaseDTO> comments) {
-		super(id, name, age, email, address, phone, gender, dateOfBirth, createdAt, updatedAt);
+		super(id, name, age, email, address, phone, gender, dateOfBirth,roles, createdAt, updatedAt);
 		this.blogs = blogs;
 		this.comments = comments;
 	}

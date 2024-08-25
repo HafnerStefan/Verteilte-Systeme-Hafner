@@ -1,8 +1,7 @@
 package ch.hftm.blog.control;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import ch.hftm.blog.dto.UserBaseDTO;
@@ -13,13 +12,20 @@ import ch.hftm.blog.dto.requerstDTO.LoginRequest;
 import ch.hftm.blog.dto.requerstDTO.PasswordChangeRequest;
 import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.Comment;
+import ch.hftm.blog.entity.Role;
 import ch.hftm.blog.entity.User;
 import ch.hftm.blog.exception.ObjectNotFoundException;
 import ch.hftm.blog.repository.UserRepository;
 import io.quarkus.logging.Log;
+import io.quarkus.security.UnauthorizedException;
+import io.smallrye.jwt.auth.principal.JWTParser;
+import io.smallrye.jwt.build.Jwt;
+import io.smallrye.jwt.build.JwtClaimsBuilder;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @ApplicationScoped
 public class UserService {
@@ -30,8 +36,17 @@ public class UserService {
 	BlogService blogService;
 	@Inject
 	CommentService commentService;
+
 	@Inject
-	KeycloakService keycloakService;
+	JsonWebToken jwtToken;
+
+
+
+	@Inject
+	JWTParser jwtParser;
+
+	@ConfigProperty(name = "jwt.expiration.days", defaultValue = "30")
+	int jwtExpirationDays;
 
 	public List<UserListDTO> getUsers() {
 		List<User> users = userRepository.listAll();
@@ -95,9 +110,6 @@ public class UserService {
 			throw new IllegalArgumentException("Email already exists: " + userDTO.getEmail());
 		}
 
-		// add user to Keycloak
-		keycloakService.createUserInKeycloak(userDTO);
-
 		User user = UserMapper.toUser(userDTO);
 		Log.info("Adding User " + user.getName());
 		user.setCreatedAt(LocalDateTime.now());
@@ -137,6 +149,14 @@ public class UserService {
 			throw new ObjectNotFoundException("User with " + userId + " not found");
 		}
 
+		// Überprüfen, ob der aktuelle Benutzer berechtigt ist, das Passwort zu ändern
+		String currentUserEmail = jwtToken.getName();
+		Set<String> roles = jwtToken.getGroups();
+
+		if (!user.getEmail().equals(currentUserEmail) && !roles.contains("Admin")) {
+			throw new UnauthorizedException("You are not allowed to change the password for this user");
+		}
+
 		// Überprüfung des alten Passworts
 		if (!user.getPassword().equals(passwordChangeRequest.getOldPassword())) {
 			throw new IllegalArgumentException("Old password is incorrect");
@@ -152,10 +172,12 @@ public class UserService {
 		user.setUpdatedAt(LocalDateTime.now());
 		userRepository.persist(user);
 
-		Log.info("Password updated for user " + user.getName());
+		Log.info("Password updated for user " + user.getName() + " by " + currentUserEmail);
 	}
 
-	public boolean login(LoginRequest loginRequest) {
+
+
+	public UserBaseDTO authenticateUser(LoginRequest loginRequest) {
 		String email = loginRequest.getEmail();
 		String password = loginRequest.getPassword();
 
@@ -163,14 +185,57 @@ public class UserService {
 		if (user == null) {
 			throw new ObjectNotFoundException("User not found with email: " + email);
 		}
-		return user.getPassword().equals(password);
+		if (!user.getPassword().equals(password)) {
+			throw new IllegalArgumentException("Password is incorrect");
+		}
+		return UserMapper.toUserBaseDTO(user);
 	}
+
+
+
+	public String generateJwtToken(String email, Set<Role> roles) {
+		long currentTimeInSecs = new Date().getTime() / 1000;
+		long expirationTime = currentTimeInSecs + jwtExpirationDays * 24 * 60 * 60;
+
+		// Konvertiere das Set<Role> in ein Set<String> mit den Rollennamen
+		Set<String> roleNames = (roles != null) ?
+				roles.stream()
+						.map(Role::getName)
+						.collect(Collectors.toSet()) :
+				Collections.emptySet();
+
+		JwtClaimsBuilder claimsBuilder = Jwt.claims()
+				.issuer("hftm")  // Definiere den Aussteller des JWT
+				.subject(email)
+				.upn(email)
+				.groups(roleNames)  // Hier werden die Rollennamen als Gruppen gesetzt
+				.issuedAt(currentTimeInSecs)
+				.expiresAt(expirationTime)
+				.claim("email", email);
+
+		return claimsBuilder.sign();
+	}
+
+
+
+	public void validateJwtToken(String token) throws Exception {
+		jwtParser.parse(token); // Token validieren, Exception wird geworfen, wenn das Token ungültig ist
+	}
+
 
 	@Transactional
 	public void deleteUser(Long userId) {
 		User user = userRepository.findById(userId);
 		if (user == null) {
 			throw new ObjectNotFoundException("User not found with id: " + userId);
+		}
+
+		// Überprüfen, ob der aktuelle Benutzer berechtigt ist, diesen Benutzer zu löschen
+		String currentUserEmail = jwtToken.getName();
+		Set<String> roles = jwtToken.getGroups();
+
+		if (!user.getEmail().equals(currentUserEmail) && !roles.contains("Admin")) {
+			throw new UnauthorizedException("You are not allowed to delete this user");
 		}
 
 		for (Blog userBlog : user.getBlogs()) {
@@ -180,21 +245,15 @@ public class UserService {
 				}
 			}
 		}
-
 		for (Comment userComment : user.getComments()) {
 			if (userComment != null) {
 				userComment.getBlog().getComments().remove(userComment);
 			}
-
 		}
-
-		// Delete user from Keycloak
-		keycloakService.deleteUserInKeycloak(user);
-
-		// Delete user from database
 		userRepository.delete(user);
-
+		Log.info("User with ID: " + userId + " deleted by " + currentUserEmail);
 	}
+
 
 	private boolean emailExists(String email) {
 		return userRepository.findByEmail(email) != null;

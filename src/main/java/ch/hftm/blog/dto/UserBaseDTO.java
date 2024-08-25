@@ -1,5 +1,6 @@
 package ch.hftm.blog.dto;
 
+import ch.hftm.blog.entity.Role;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -7,6 +8,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -35,6 +37,7 @@ public class UserBaseDTO {
 	private LocalDateTime createdAt;
 	@Schema(type = SchemaType.STRING, format = "date-time", example = "2023-01-02T12:00:00")
 	private LocalDateTime updatedAt;
+	private Set<Role> roles;
 
 	// Default Constructor
 	public UserBaseDTO() {
@@ -42,7 +45,7 @@ public class UserBaseDTO {
 
 	// Constructor with all parameters
 	public UserBaseDTO(Long id, String name, int age, String email, String password, String address, String phone,
-					   String gender, LocalDate dateOfBirth, LocalDateTime createdAt, LocalDateTime updatedAt) {
+					   String gender, LocalDate dateOfBirth, Set<Role> roles, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.name = name;
 		this.age = age;
@@ -54,11 +57,12 @@ public class UserBaseDTO {
 		this.dateOfBirth = dateOfBirth;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
+		this.roles = roles;
 	}
 
 	// Constructor without password
 	public UserBaseDTO(Long id, String name, int age, String email, String address, String phone,
-					   String gender, LocalDate dateOfBirth, LocalDateTime createdAt, LocalDateTime updatedAt) {
+					   String gender, LocalDate dateOfBirth,Set<Role> roles, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.name = name;
 		this.age = age;
@@ -69,6 +73,7 @@ public class UserBaseDTO {
 		this.dateOfBirth = dateOfBirth;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
+		this.roles = roles;
 	}
 
 	// Constructor without password

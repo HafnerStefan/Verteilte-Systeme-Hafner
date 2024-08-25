@@ -2,21 +2,15 @@ package ch.hftm.blog.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import ch.hftm.blog.boundry.ValidationGroups;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -55,6 +49,15 @@ public class User {
     @NotBlank(message = "Password must not be blank", groups = ValidationGroups.Create.class)
     @Size(min = 8, message = "Password must be at least 8 characters long", groups = ValidationGroups.Create.class)
     private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    @JsonManagedReference
+    private Set<Role> roles = new HashSet<>();
 
     private String address;
 
@@ -131,6 +134,16 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, age, email, password, address, phone, gender, dateOfBirth, createdAt, updatedAt);
+    }
+
+    public void addRole(Role role) {
+        this.roles.add(role);
+        role.getUsers().add(this);
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
+        role.getUsers().remove(this);
     }
 
 }

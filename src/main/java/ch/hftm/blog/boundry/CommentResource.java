@@ -2,6 +2,7 @@ package ch.hftm.blog.boundry;
 
 import java.util.List;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -42,6 +43,7 @@ public class CommentResource {
 
 	@GET
 	@Path("/commentId:{commentId}")
+	@RolesAllowed({"Admin"})
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "Comment by ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CommentBaseDTO.class)))
 	@APIResponse(responseCode = "404", description = "Comment not found")
@@ -55,6 +57,7 @@ public class CommentResource {
 
 	@GET
 	@Path("/maxPage")
+	@RolesAllowed({"User", "Admin"})
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getCommentPageByBlogId(@QueryParam("blogId") long blogId, @QueryParam("size") @DefaultValue("6") int size) {
 		int maxPages = commentService.getMaxCommentPageByBlogId(blogId,size);
@@ -65,6 +68,7 @@ public class CommentResource {
 	//TODO Remove ?
 	@GET
 	@Path("/blogId:{blogId}")
+	@RolesAllowed({"User", "Admin"})
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "Comments by Blog ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CommentBaseDTO[].class)))
 	@APIResponse(responseCode = "404", description = "Comments not found")
@@ -76,6 +80,7 @@ public class CommentResource {
 
 	@GET
 	@Path("/context:{commentId}")
+	@RolesAllowed({"Admin"})
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "Comment with context by ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CommentWithBlogContextDTO.class)))
 	@APIResponse(responseCode = "404", description = "Comment not found")
@@ -90,6 +95,7 @@ public class CommentResource {
 
 	@GET
 	@Path("/byuser/{userId}")
+	@RolesAllowed({"User", "Admin"})
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "Comments by User ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CommentWithBlogTitleDTO[].class)))
 	@APIResponse(responseCode = "404", description = "Comments not found")
@@ -100,6 +106,7 @@ public class CommentResource {
 	}
 
 	@POST
+	@RolesAllowed({"User", "Admin"})
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "201", description = "Comment created", content = @Content(schema = @Schema(implementation = CommentBaseDTO.class)))
@@ -114,6 +121,7 @@ public class CommentResource {
 	}
 
 	@DELETE
+	@RolesAllowed({"User", "Admin"})
 	@Path("/{commentId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponses({

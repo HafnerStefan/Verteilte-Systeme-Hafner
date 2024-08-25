@@ -2,6 +2,7 @@ package ch.hftm.blog.control;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import ch.hftm.blog.dto.BlogBaseDTO;
@@ -18,9 +19,11 @@ import ch.hftm.blog.repository.UserRepository;
 import io.quarkus.logging.Log;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
+import io.quarkus.security.UnauthorizedException;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Dependent
 public class BlogService {
@@ -30,6 +33,8 @@ public class BlogService {
 	UserRepository userRepository;
 	@Inject
 	CommentRepository commentRepository;
+	@Inject
+	JsonWebToken jwtToken;
 
 	public List<BlogListDTO> getBlogs(int startPage, int size, String sortOrder) {
 		List<Blog> blogs;
@@ -149,8 +154,18 @@ public class BlogService {
 
 	@Transactional
 	public BlogListDTO updateBlog(Long id, BlogBaseDTO blogBaseDTO) {
-
 		Blog blog = blogRepository.findById(id);
+		if (blog == null) {
+			throw new ObjectNotFoundException("Blog with id " + id + " not found");
+		}
+
+		// Überprüfen, ob der aktuelle Benutzer berechtigt ist, diesen Blog zu aktualisieren
+		String currentUserEmail = jwtToken.getName();
+		Set<String> roles = jwtToken.getGroups();
+
+		if (!blog.getUser().getEmail().equals(currentUserEmail) && !roles.contains("Admin")) {
+			throw new UnauthorizedException("You are not allowed to update this blog");
+		}
 
 		blog.setTitle(blogBaseDTO.getTitle());
 		blog.setText(blogBaseDTO.getText());
@@ -160,18 +175,27 @@ public class BlogService {
 		return BlogMapper.toBlogListDTO(blog);
 	}
 
+
 	@Transactional
 	public void deleteBlog(Long blogId) {
 		Blog blog = blogRepository.findById(blogId);
 		if (blog == null) {
 			throw new ObjectNotFoundException("Blog with id " + blogId + " not found");
 		}
+
+		// Überprüfen, ob der aktuelle Benutzer berechtigt ist, diesen Blog zu löschen
+		String currentUserEmail = jwtToken.getName();
+		Set<String> roles = jwtToken.getGroups();
+
+		if (!blog.getUser().getEmail().equals(currentUserEmail) && !roles.contains("Admin")) {
+			throw new UnauthorizedException("You are not allowed to delete this blog");
+		}
+
 		User user = blog.getUser();
 
 		for (Comment comment : blog.getComments()) {
 			if (comment.getUser() != null) {
 				comment.getUser().getComments().remove(comment);
-				//userRepository.persistAndFlush(comment.getUser());
 			}
 			commentRepository.delete(comment);
 		}
@@ -186,6 +210,6 @@ public class BlogService {
 		}
 
 		Log.info("Deleting Blog " + blog.getTitle());
-
 	}
+
 }

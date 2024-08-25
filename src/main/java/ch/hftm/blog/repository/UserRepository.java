@@ -22,4 +22,13 @@ public class UserRepository implements PanacheRepository<User> {
         return find("email", email).firstResult();
     }
 
+    @Transactional
+    public List<User> findByRoleName(String roleName) {
+        return find("select u from User u join u.roles r where r.name = ?1", roleName).list();
+    }
+
+
+
 }
+
+

@@ -2,6 +2,7 @@ package ch.hftm.blog.control;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import ch.hftm.blog.dto.CommentBaseDTO;
@@ -18,9 +19,11 @@ import ch.hftm.blog.repository.UserRepository;
 
 
 import io.quarkus.logging.Log;
+import io.quarkus.security.UnauthorizedException;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Dependent
 public class CommentService {
@@ -32,6 +35,8 @@ public class CommentService {
 
 	@Inject
 	UserRepository userRepository;
+	@Inject
+	JsonWebToken jwtToken;
 
 
 	public List<CommentBaseDTO> getComments() {
@@ -127,21 +132,31 @@ public class CommentService {
 	public void deleteComment(Long commentId) {
 		Comment comment = commentRepository.findById(commentId);
 		if (comment == null) {
-			throw new ObjectNotFoundException("Comment with id " + comment + " not found");
+			throw new ObjectNotFoundException("Comment with id " + commentId + " not found");
 		}
+
+		// Überprüfen, ob der aktuelle Benutzer berechtigt ist, diesen Kommentar zu löschen
+		String currentUserEmail = jwtToken.getName();
+		Set<String> roles = jwtToken.getGroups();
+
+		if (!comment.getUser().getEmail().equals(currentUserEmail) && !roles.contains("Admin")) {
+			throw new UnauthorizedException("You are not allowed to delete this comment");
+		}
+
 		Blog blog = comment.getBlog();
 		User user = comment.getUser();
 
-		if (blog != null){
+		if (blog != null) {
 			blog.getComments().remove(comment);
 		}
-		if (user != null){
+		if (user != null) {
 			user.getComments().remove(comment);
 		}
 		commentRepository.delete(comment);
 
 		Log.info("Deleting Comment by User " + comment.getUser().getName());
 	}
+
 
 
 
