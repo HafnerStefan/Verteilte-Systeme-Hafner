@@ -149,11 +149,11 @@ public class UserService {
 			throw new ObjectNotFoundException("User with " + userId + " not found");
 		}
 
-		// Überprüfen, ob der aktuelle Benutzer berechtigt ist, das Passwort zu ändern
-		String currentUserEmail = jwtToken.getName();
+
+		long currentUserId = Long.parseLong(jwtToken.getSubject());
 		Set<String> roles = jwtToken.getGroups();
 
-		if (!user.getEmail().equals(currentUserEmail) && !roles.contains("Admin")) {
+		if (user.getId() != currentUserId && !roles.contains("Admin")) {
 			throw new UnauthorizedException("You are not allowed to change the password for this user");
 		}
 
@@ -172,7 +172,7 @@ public class UserService {
 		user.setUpdatedAt(LocalDateTime.now());
 		userRepository.persist(user);
 
-		Log.info("Password updated for user " + user.getName() + " by " + currentUserEmail);
+		Log.info("Password updated for user " + user.getName() + " by " + currentUserId);
 	}
 
 
@@ -193,11 +193,10 @@ public class UserService {
 
 
 
-	public String generateJwtToken(String email, Set<Role> roles) {
+	public String generateJwtToken(String email, Set<Role> roles,Long userId) {
 		long currentTimeInSecs = new Date().getTime() / 1000;
 		long expirationTime = currentTimeInSecs + jwtExpirationDays * 24 * 60 * 60;
 
-		// Konvertiere das Set<Role> in ein Set<String> mit den Rollennamen
 		Set<String> roleNames = (roles != null) ?
 				roles.stream()
 						.map(Role::getName)
@@ -205,21 +204,33 @@ public class UserService {
 				Collections.emptySet();
 
 		JwtClaimsBuilder claimsBuilder = Jwt.claims()
-				.issuer("hftm")  // Definiere den Aussteller des JWT
-				.subject(email)
-				.upn(email)
-				.groups(roleNames)  // Hier werden die Rollennamen als Gruppen gesetzt
+				.issuer("hftm")
+				.subject(userId.toString())
+				.groups(roleNames)
 				.issuedAt(currentTimeInSecs)
-				.expiresAt(expirationTime)
-				.claim("email", email);
+				.expiresAt(expirationTime);
 
 		return claimsBuilder.sign();
 	}
 
 
 
-	public void validateJwtToken(String token) throws Exception {
-		jwtParser.parse(token); // Token validieren, Exception wird geworfen, wenn das Token ungültig ist
+	@Transactional
+	public UserBaseDTO validateJwtToken(String token) throws Exception {
+		JsonWebToken jwt = jwtParser.parse(token); // Token validieren und analysieren
+
+		// Benutzer-ID aus dem Token extrahieren
+		String userIdStr = jwt.getSubject(); // Annahme: Benutzer-ID ist im 'subject' des Tokens
+		Long userId = Long.parseLong(userIdStr);
+
+		// Benutzer anhand der Benutzer-ID suchen
+		User user = userRepository.findById(userId);
+		if (user == null) {
+			throw new ObjectNotFoundException("User not found with id: " + userId);
+		}
+
+		// Benutzer in UserBaseDTO umwandeln und zurückgeben
+		return UserMapper.toUserBaseDTO(user);
 	}
 
 
@@ -230,11 +241,11 @@ public class UserService {
 			throw new ObjectNotFoundException("User not found with id: " + userId);
 		}
 
-		// Überprüfen, ob der aktuelle Benutzer berechtigt ist, diesen Benutzer zu löschen
-		String currentUserEmail = jwtToken.getName();
+
+		long currentUserId = Long.parseLong(jwtToken.getSubject());
 		Set<String> roles = jwtToken.getGroups();
 
-		if (!user.getEmail().equals(currentUserEmail) && !roles.contains("Admin")) {
+		if (user.getId() != currentUserId && !roles.contains("Admin")) {
 			throw new UnauthorizedException("You are not allowed to delete this user");
 		}
 
@@ -251,7 +262,7 @@ public class UserService {
 			}
 		}
 		userRepository.delete(user);
-		Log.info("User with ID: " + userId + " deleted by " + currentUserEmail);
+		Log.info("User with ID: " + userId + " deleted" );
 	}
 
 

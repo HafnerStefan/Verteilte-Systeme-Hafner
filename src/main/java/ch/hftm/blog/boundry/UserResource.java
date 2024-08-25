@@ -96,7 +96,7 @@ public class UserResource {
 
 	}
 
-	/*
+/*
 			@GET
 			@Path("/login")
 			@Consumes(MediaType.APPLICATION_JSON)
@@ -123,19 +123,30 @@ public class UserResource {
 	@POST
 	@Path("/login")
 	@PermitAll
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(LoginRequest loginRequest) {
 		UserBaseDTO user = userService.authenticateUser(loginRequest);
 
+		Map<String, Object> response = new HashMap<>();
 		if (user != null) {
 			// Hier werden die Rollen als Set übergeben
-			String token = userService.generateJwtToken(user.getEmail(), user.getRoles());
-			return Response.ok(user)
+			String token = userService.generateJwtToken(user.getEmail(), user.getRoles(), user.getId());
+
+			response.put("success", true);
+			response.put("user", user);
+
+			return Response.ok(response)
 					.header("Authorization", "Bearer " + token)
 					.build();
 		} else {
-			return Response.status(Response.Status.UNAUTHORIZED).build();
+			response.put("success", false);
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(response)
+					.build();
 		}
 	}
+
 
 	@POST
 	@Path("/validate-token")
@@ -146,10 +157,12 @@ public class UserResource {
 		}
 
 		String token = authorizationHeader.substring("Bearer".length()).trim();
-
+		Map<String, Object> response = new HashMap<>();
 		try {
-			userService.validateJwtToken(token);
-			return Response.ok().build(); // Token ist gültig
+			UserBaseDTO user = userService.validateJwtToken(token);
+			response.put("success", true);
+			response.put("user", user);
+			return Response.ok(response).build(); // Token ist gültig
 		} catch (Exception e) {
 			return Response.status(Response.Status.UNAUTHORIZED).build(); // Token ist ungültig oder abgelaufen
 		}

@@ -136,10 +136,10 @@ public class CommentService {
 		}
 
 		// Überprüfen, ob der aktuelle Benutzer berechtigt ist, diesen Kommentar zu löschen
-		String currentUserEmail = jwtToken.getName();
+		long currentUserId = Long.parseLong(jwtToken.getSubject());
 		Set<String> roles = jwtToken.getGroups();
 
-		if (!comment.getUser().getEmail().equals(currentUserEmail) && !roles.contains("Admin")) {
+		if (comment.getUser().getId() != currentUserId && !roles.contains("Admin")) {
 			throw new UnauthorizedException("You are not allowed to delete this comment");
 		}
 
