@@ -86,6 +86,53 @@ Das Projekt verwendet JUnit 5 für Unit- und Integrationstests. Um die Tests aus
 mvn test
 ```
 
+# Anwendungsbereitstellung mit Docker
+
+## Docker Container erstellen
+
+### Docker Network erstellen
+```sh
+docker network create blog-nw
+```
+
+### MySQL Docker Container erstellen
+```sh
+docker run --name blog-mysql -p 3306:3306 --network blog-nw -e MYSQL_ROOT_PASSWORD=vs4tw -e MYSQL_USER=dbuser -e MYSQL_PASSWORD=dbuser -e MYSQL_DATABASE=blogdb -d mysql:8.0
+```
+
+```sh
+docker run --name blog-backend --network blog-nw `
+  -e QUARKUS_DATASOURCE_JDBC_URL=jdbc:mysql://blog-mysql:3306/blogdb `
+  -e QUARKUS_DATASOURCE_USERNAME=dbuser `
+  -e QUARKUS_DATASOURCE_PASSWORD=dbuser `
+  -p 8080:8080 -d stefanhafner/quarkus/hftm:1.0.0-SNAPSHOT
+```
+
+## DB Beispiel Daten Laden
+
+```sh
+type src\main\resources\import.sql | docker exec -i blog-mysql mysql -u dbuser -pdbuser blogdb
+```
+
+
+## Restart des Containers
+
+```sh
+docker start blog-mysql
+docker start blog-backend
+```
+
+# Docker Compose starten
+## Docker Compose starten
+```sh
+docker-compose -f src/main/docker/docker-compose.yml up -d
+```
+## Docker Compose starten with example data
+```sh 
+docker-compose -f src/main/docker/docker-compose-with-example-sql-data.yml up -d
+```
+
+
 ## Change History
 
 - **Projekt erstellt**: First Quarkus Step
