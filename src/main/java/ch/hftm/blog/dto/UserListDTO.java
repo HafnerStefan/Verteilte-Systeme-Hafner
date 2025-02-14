@@ -3,6 +3,7 @@ package ch.hftm.blog.dto;
 import ch.hftm.blog.entity.Role;
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.time.LocalDate;
@@ -16,9 +17,9 @@ import java.util.Set;
 public class UserListDTO extends UserBaseDTO {
 
 	@Schema(example = "[12345, 67890, 13579]")
-	private List<Long> blogIds;
+	private List<ObjectId> blogIds;
 	@Schema(example = "[98765, 43210, 24680]")
-	private List<Long> commentIds;
+	private List<ObjectId> commentIds;
 
 	// Default Constructor
 	public UserListDTO() {
@@ -26,18 +27,18 @@ public class UserListDTO extends UserBaseDTO {
 	}
 
 	// Constructor with all parameters
-	public UserListDTO(Long id, String name, int age, String email, String password, String address, String phone,
+	public UserListDTO(ObjectId id, String name, int age, String email, String password, String address, String phone,
 					   String gender, LocalDate dateOfBirth, Set<Role> roles, LocalDateTime createdAt, LocalDateTime updatedAt,
-					   List<Long> blogIds, List<Long> commentIds) {
+					   List<ObjectId> blogIds, List<ObjectId> commentIds) {
 		super(id, name, age, email, password, address, phone, gender, dateOfBirth,roles, createdAt, updatedAt);
 		this.blogIds = blogIds;
 		this.commentIds = commentIds;
 	}
 
 	// Constructor without password
-	public UserListDTO(Long id, String name, int age, String email, String address, String phone,
+	public UserListDTO(ObjectId id, String name, int age, String email, String address, String phone,
 					   String gender, LocalDate dateOfBirth,Set<Role> roles, LocalDateTime createdAt, LocalDateTime updatedAt,
-					   List<Long> blogIds, List<Long> commentIds) {
+					   List<ObjectId> blogIds, List<ObjectId> commentIds) {
 		super(id, name, age, email, address, phone, gender, dateOfBirth,roles, createdAt, updatedAt);
 		this.blogIds = blogIds;
 		this.commentIds = commentIds;

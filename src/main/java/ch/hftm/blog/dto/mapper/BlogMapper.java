@@ -11,6 +11,7 @@ import ch.hftm.blog.dto.CommentDetailDTO;
 import ch.hftm.blog.dto.UserBaseDTO;
 import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.Comment;
+import org.bson.types.ObjectId;
 
 public class BlogMapper {
 
@@ -27,7 +28,7 @@ public class BlogMapper {
     }
 
     public static BlogListDTO toBlogListDTO(Blog blog) {
-        List<Long> commentIds = new ArrayList<>();
+        List<ObjectId> commentIds = new ArrayList<>();
         if (blog.getComments() != null) {
             for (Comment comment : blog.getComments()) {
                 commentIds.add(comment.getId());

@@ -2,6 +2,7 @@ package ch.hftm.blog.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -13,7 +14,7 @@ import java.util.List;
 public class BlogListDTO extends BlogBaseDTO {
 
 	@Schema(description = "List of comment IDs", example = "[46516,4584,62,14,2]")
-	private List<Long> commentsIds;
+	private List<ObjectId> commentsIds;
 
 	// Default constructor
 	public BlogListDTO() {
@@ -21,14 +22,14 @@ public class BlogListDTO extends BlogBaseDTO {
 	}
 
 	// Constructor with all fields
-	public BlogListDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt, Long userId,String username,
-					   List<Long> commentsIds) {
+	public BlogListDTO(ObjectId id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt, ObjectId userId, String username,
+					   List<ObjectId> commentsIds) {
 		super(id, title, text, createdAt, updatedAt, userId,username);
 		this.commentsIds = commentsIds;
 	}
 
 	// Constructor with basic fields
-	public BlogListDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt, Long userId,String username) {
+	public BlogListDTO(ObjectId id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt, ObjectId userId,String username) {
 		super(id, title, text, createdAt, updatedAt, userId,username);
 	}
 }

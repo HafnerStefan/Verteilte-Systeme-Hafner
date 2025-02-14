@@ -2,6 +2,7 @@ package ch.hftm.blog.dto;
 
 import java.time.LocalDateTime;
 
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import lombok.Getter;
@@ -19,7 +20,7 @@ public class CommentDetailDTO extends CommentBaseDTO {
         super();
     }
 
-    public CommentDetailDTO(Long id, String text, LocalDateTime createdAt, Long blogId, Long userId, String username) {
+    public CommentDetailDTO(ObjectId id, String text, LocalDateTime createdAt, ObjectId blogId, ObjectId userId, String username) {
         super(id, text, createdAt, blogId, userId);
         this.username = username;
     }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -48,8 +49,9 @@ public class CommentResource {
 	@APIResponse(responseCode = "200", description = "Comment by ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CommentBaseDTO.class)))
 	@APIResponse(responseCode = "404", description = "Comment not found")
 	//FETCH Comment BY ID
-	public Response fetchCommentById(@PathParam("commentId") Long id) {
-		CommentBaseDTO commentBaseDTO = this.commentService.getCommentDTOById(id);
+	public Response fetchCommentById(@PathParam("commentId") String id) {
+		ObjectId commentId = new ObjectId(id);
+		CommentBaseDTO commentBaseDTO = this.commentService.getCommentDTOById(commentId);
 		Log.info("Returning comment with ID: " + id);
 		return Response.ok(commentBaseDTO).build();
 	}
@@ -59,7 +61,8 @@ public class CommentResource {
 	@Path("/maxPage")
 	@RolesAllowed({"User", "Admin"})
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getCommentPageByBlogId(@QueryParam("blogId") long blogId, @QueryParam("size") @DefaultValue("6") int size) {
+	public Response getCommentPageByBlogId(@QueryParam("blogId") String id, @QueryParam("size") @DefaultValue("6") int size) {
+		ObjectId blogId = new ObjectId(id);
 		int maxPages = commentService.getMaxCommentPageByBlogId(blogId,size);
 		Log.info("Returning " + maxPages + " pages for blog with ID " + blogId);
 		return Response.ok(maxPages).build();
@@ -72,7 +75,8 @@ public class CommentResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "Comments by Blog ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CommentBaseDTO[].class)))
 	@APIResponse(responseCode = "404", description = "Comments not found")
-	public Response getCommentsByBlogId(@PathParam("blogId") Long blogId) {
+	public Response getCommentsByBlogId(@PathParam("blogId") String id) {
+		ObjectId blogId = new ObjectId(id);
 		List<CommentBaseDTO> comments = commentService.getCommentsByBlogId(blogId);
 		Log.info("Returning " + comments.size() + " comments for blog with ID " + blogId);
 		return Response.ok(comments).build();
@@ -84,12 +88,13 @@ public class CommentResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "Comment with context by ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CommentWithBlogContextDTO.class)))
 	@APIResponse(responseCode = "404", description = "Comment not found")
-	public Response getCommentWithContextById(@PathParam("commentId") Long id,
+	public Response getCommentWithContextById(@PathParam("commentId") String id,
 			@QueryParam("previousCommentSize") @DefaultValue("2") int previousCommentSize,
 			@QueryParam("nextCommentSize") @DefaultValue("4") int nextCommentSize) {
-		CommentWithBlogContextDTO commentContext = this.commentService.getCommentWithBlogContextById(id,
+		ObjectId commentId = new ObjectId(id);
+		CommentWithBlogContextDTO commentContext = this.commentService.getCommentWithBlogContextById(commentId,
 				previousCommentSize, nextCommentSize);
-		Log.info("Returning comment with context and ID: " + id);
+		Log.info("Returning comment with context and ID: " + commentId);
 		return Response.ok(commentContext).build();
 	}
 
@@ -99,7 +104,8 @@ public class CommentResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "Comments by User ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CommentWithBlogTitleDTO[].class)))
 	@APIResponse(responseCode = "404", description = "Comments not found")
-	public Response getCommentsByUserId(@PathParam("userId") Long userId) {
+	public Response getCommentsByUserId(@PathParam("userId") String id) {
+		ObjectId userId = new ObjectId(id);
 		List<CommentWithBlogTitleDTO> comments = commentService.getCommentsWithBlogTitleByUserId(userId);
 		Log.info("Returning " + comments.size() + " comments for user with ID " + userId);
 		return Response.ok(comments).build();
@@ -129,9 +135,10 @@ public class CommentResource {
 			@APIResponse(responseCode = "404", description = "Comment not found")
 	})
 	//REMOVE COMMENT
-	public Response removeComment(@PathParam("commentId") Long id) {
-		CommentBaseDTO commentBaseDTO = this.commentService.getCommentDTOById(id);
-		commentService.deleteComment(id);
+	public Response removeComment(@PathParam("commentId") String id) {
+		ObjectId commentId = new ObjectId(id);
+		CommentBaseDTO commentBaseDTO = this.commentService.getCommentDTOById(commentId);
+		commentService.deleteComment(commentId);
 		Log.info("Comment with ID: " + id + " deleted");
 		return Response.ok(commentBaseDTO).build();
 	}

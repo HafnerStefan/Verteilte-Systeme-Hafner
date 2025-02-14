@@ -2,6 +2,7 @@ package ch.hftm.blog.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -19,7 +20,7 @@ public class CommentWithBlogTitleDTO extends CommentBaseDTO {
 	}
 
 	// Constructor with parameters
-	public CommentWithBlogTitleDTO(Long id, String text, LocalDateTime createdAt, Long blogId, Long userId, String blogTitle) {
+	public CommentWithBlogTitleDTO(ObjectId id, String text, LocalDateTime createdAt, ObjectId blogId, ObjectId userId, String blogTitle) {
 		super(id, text, createdAt, blogId, userId);
 		this.blogTitle = blogTitle;
 	}

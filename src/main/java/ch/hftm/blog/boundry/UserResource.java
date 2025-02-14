@@ -4,10 +4,14 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -57,8 +61,9 @@ public class UserResource {
 	@APIResponse(responseCode = "200", description = "User by ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDetailsDTO.class)))
 	@APIResponse(responseCode = "404", description = "User not found")
 	// GET USER BY ID
-	public Response fetchUserById(@PathParam("userId") Long id) {
-		UserDetailsDTO userDetailsDTO = this.userService.getUserDTOById(id);
+	public Response fetchUserById(@PathParam("userId") String id) {
+		ObjectId userId = new ObjectId(id);
+		UserDetailsDTO userDetailsDTO = this.userService.getUserDTOById(userId);
 		Log.info("Returning User " + userDetailsDTO.getName() + " with ID " + id);
 		return Response.ok(userDetailsDTO).build();
 
@@ -125,7 +130,7 @@ public class UserResource {
 	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response login(LoginRequest loginRequest) {
+	public Response login( LoginRequest loginRequest) {
 		UserBaseDTO user = userService.authenticateUser(loginRequest);
 
 		Map<String, Object> response = new HashMap<>();
@@ -204,15 +209,15 @@ public class UserResource {
 	@APIResponse(responseCode = "404", description = "User not found")
 	// UPDATE USER
 	public Response updateUser(
-			@PathParam("userId") Long id,
+			@PathParam("userId") String id,
 			@Valid @jakarta.validation.groups.ConvertGroup(from = Default.class, to = ValidationGroups.Update.class) UserRequest userRequest) {
-
-		UserBaseDTO userDTO = new UserBaseDTO(id, userRequest.getName(), userRequest.getAge(),
+		ObjectId userId = new ObjectId(id);
+		UserBaseDTO userDTO = new UserBaseDTO(userId, userRequest.getName(), userRequest.getAge(),
 				userRequest.getEmail(),
 				userRequest.getAddress(), userRequest.getPhone(),
 				userRequest.getGender(), userRequest.getDateOfBirth());
 		userDTO.setUpdatedAt(LocalDateTime.now()); // Update the updatedAt field
-		UserBaseDTO updateUser = this.userService.updateUser(id, userDTO);
+		UserBaseDTO updateUser = this.userService.updateUser(userId, userDTO);
 		Log.info("Updating User " + userDTO.getName() + " with ID " + id);
 		return Response.ok(updateUser).build();
 
@@ -223,9 +228,10 @@ public class UserResource {
 	@RolesAllowed({"Admin"})
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response changePassword(@PathParam("id") Long id, PasswordChangeRequest passwordChangeRequest) {
-		userService.changePassword(id, passwordChangeRequest);
-		UserBaseDTO updateUser = userService.getUserBaseDTOById(id);
+	public Response changePassword(@PathParam("id") String id, PasswordChangeRequest passwordChangeRequest) {
+		ObjectId userId = new ObjectId(id);
+		userService.changePassword(userId, passwordChangeRequest);
+		UserBaseDTO updateUser = userService.getUserBaseDTOById(userId);
 		Log.info("Changing password for User " + updateUser.getName() + " with ID " + id);
 		return Response.ok(updateUser).build();
 
@@ -240,9 +246,10 @@ public class UserResource {
 			@APIResponse(responseCode = "404", description = "User not found")
 	})
 	// REMOVE USER
-	public Response removeUser(@PathParam("userId") Long id) {
-		UserDetailsDTO userDetailsDTO = this.userService.getUserDTOById(id);
-		this.userService.deleteUser(id);
+	public Response removeUser(@PathParam("userId") String id) {
+		ObjectId userId = new ObjectId(id);
+		UserDetailsDTO userDetailsDTO = this.userService.getUserDTOById(userId);
+		this.userService.deleteUser(userId);
 		Log.info("Deleting User " + userDetailsDTO.getName() + " with ID " + id);
 		return Response.ok(userDetailsDTO).build();
 

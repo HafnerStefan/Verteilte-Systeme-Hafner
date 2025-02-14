@@ -1,7 +1,11 @@
 package ch.hftm.blog.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Id;
+import dev.morphia.annotations.Property;
+import dev.morphia.annotations.Reference;
+import org.bson.types.ObjectId;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,19 +16,20 @@ import java.util.Set;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "roles")
+@Entity("roles")
+//@Table(name = "roles")
 public class Role {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private ObjectId id;
 
 	@NotBlank(message = "Role name must not be blank")
-	@Column(unique = true, nullable = false)
+	//@Column(unique = true, nullable = false)
 	private String name;
 
-	@ManyToMany(mappedBy = "roles")
+	//@ManyToMany(mappedBy = "roles")
+	@Reference
 	@JsonBackReference
 	private Set<User> users = new HashSet<>();
 

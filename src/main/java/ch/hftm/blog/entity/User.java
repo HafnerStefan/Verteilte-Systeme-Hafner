@@ -10,7 +10,11 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import ch.hftm.blog.boundry.ValidationGroups;
-import jakarta.persistence.*;
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Id;
+import dev.morphia.annotations.Property;
+import dev.morphia.annotations.Reference;
+import org.bson.types.ObjectId;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -25,13 +29,13 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-@Table(name = "user")
+//@Table(name = "user")
 public class User {
 
     // Getter und Setter
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    private ObjectId id;
 
     @NotBlank(message = "Name must not be blank")
     @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
@@ -50,12 +54,12 @@ public class User {
     @Size(min = 8, message = "Password must be at least 8 characters long", groups = ValidationGroups.Create.class)
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    /*@ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    )*/
     @JsonManagedReference
     private Set<Role> roles = new HashSet<>();
 
@@ -69,20 +73,22 @@ public class User {
 
     @NotNull(message = "Date of birth must not be null")
     @Past(message = "Date of birth must be in the past")
-    @Column(name = "date_of_birth")
+    //@Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(name = "created_at")
+    //@Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+   // @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    //@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Reference
     @JsonManagedReference
     private List<Blog> blogs;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    //@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Reference
     @JsonManagedReference
     private List<Comment> comments;
 

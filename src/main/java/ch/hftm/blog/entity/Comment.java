@@ -5,43 +5,43 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Id;
+import dev.morphia.annotations.Property;
+import dev.morphia.annotations.Reference;
+import org.bson.types.ObjectId;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Entity
-@Table(name = "comment")
+@Entity("comment")
+//@Table(name = "comment")
 public class Comment {
     // Getter and Setter
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    private ObjectId id;
 
     @Setter
     @Size(min = 3, message = "Text needs at least 3 characters")
     private String text;
 
     @Setter
-    @Column(name = "created_at")
+    //@Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Setter
-    @ManyToOne
+    //@ManyToOne
+    @Reference
     @JsonIgnore
     @NotNull(message = "Comment need a Blog")
     private Blog blog;
 
     @Setter
-    @ManyToOne
+    //@ManyToOne
+    @Reference
     @JsonIgnore
     @NotNull(message = "Comment need a User")
     private User user;

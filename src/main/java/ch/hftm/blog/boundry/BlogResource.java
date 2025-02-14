@@ -3,6 +3,7 @@ package ch.hftm.blog.boundry;
 import java.util.List;
 
 import jakarta.annotation.security.RolesAllowed;
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -48,14 +49,15 @@ public class BlogResource {
 	@RolesAllowed({"User", "Admin"})
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "List of blogs", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BlogListDTO[].class)))
-	public Response fetchAllBlogs(@QueryParam("userId") Long userId,
+
+	public Response fetchAllBlogs(@QueryParam("userId") String userId,
 			@QueryParam("startPage") @DefaultValue("0") int startPage,
 			@QueryParam("size") @DefaultValue("15") int size,
 			@QueryParam("sortOrder") @DefaultValue("asc") String sortOrder) {
 		List<BlogListDTO> blogListDTO;
-
+		ObjectId objectIdUser = new ObjectId(userId);
 		if (userId != null) {
-			blogListDTO = blogService.getBlogsByUserId(userId, startPage, size, sortOrder);
+			blogListDTO = blogService.getBlogsByUserId(objectIdUser, startPage, size, sortOrder);
 			Log.info("Returning " + blogListDTO.size() + " blogs for user with ID " + userId);
 		} else {
 			blogListDTO = blogService.getBlogs(startPage, size, sortOrder);
@@ -88,11 +90,12 @@ public class BlogResource {
 			@APIResponse(responseCode = "404", description = "Blog not found")
 	})
 	// FETCH BLOG BY ID
-	public Response fetchBlogById(@PathParam("blogId") Long id,
+	public Response fetchBlogById(@PathParam("blogId") String id,
 			@QueryParam("commentStart") @DefaultValue("0") int commentStart,
 			@QueryParam("commentSize") @DefaultValue("15") int commentSize,
 			@QueryParam("sortByDateAsc") @DefaultValue("true") boolean sortByDateAsc) {
-		BlogDetailsDTO blogDetailsDTO = this.blogService.getBlogDetailsDTOById(id, commentStart, commentSize,
+		ObjectId blogId = new ObjectId(id);
+		BlogDetailsDTO blogDetailsDTO = this.blogService.getBlogDetailsDTOById(blogId, commentStart, commentSize,
 				sortByDateAsc);
 		if (blogDetailsDTO == null) {
 			return Response.status(Response.Status.NOT_FOUND).build();
@@ -111,9 +114,11 @@ public class BlogResource {
 			@APIResponse(responseCode = "404", description = "Blog or User not found")
 	})
 	// USER TO BLOG
-	public Response assignUserToBlog(@PathParam("blogId") Long blogId, @PathParam("userId") Long userId) {
-		BlogBaseDTO updatedBlogBaseDTO = this.blogService.addUserToBlog(blogId, userId);
-		Log.info("User with ID: " + userId + " assigned to blog with ID: " + blogId);
+	public Response assignUserToBlog(@PathParam("blogId") String  blogId, @PathParam("userId") String userId) {
+		ObjectId oBlogId = new ObjectId(blogId);
+		ObjectId oUserId = new ObjectId(userId);
+		BlogBaseDTO updatedBlogBaseDTO = this.blogService.addUserToBlog(oBlogId, oUserId);
+		Log.info("User with ID: " + oUserId  + " assigned to blog with ID: " + oBlogId);
 		return Response.ok(updatedBlogBaseDTO).build();
 	}
 
@@ -141,12 +146,13 @@ public class BlogResource {
 			@APIResponse(responseCode = "404", description = "Blog not found")
 	})
 	//Update Blog with comments
-	public Response updateBlog(@PathParam("blogId") Long id, BlogRequest blogRequest) {
-		BlogBaseDTO blogBaseDTO = blogService.getBlogBaseDTOById(id);
+	public Response updateBlog(@PathParam("blogId") String id, BlogRequest blogRequest) {
+		ObjectId oBlogId = new ObjectId(id);
+		BlogBaseDTO blogBaseDTO = blogService.getBlogBaseDTOById(oBlogId);
 		blogBaseDTO.setTitle(blogRequest.getTitle());
 		blogBaseDTO.setText(blogRequest.getText());
 		blogBaseDTO.setUserId(blogRequest.getUserId());
-		BlogBaseDTO updatedBlogBaseDTO = blogService.updateBlog(id, blogBaseDTO);
+		BlogBaseDTO updatedBlogBaseDTO = blogService.updateBlog(oBlogId, blogBaseDTO);
 		Log.info("Blog with ID: " + id + " updated");
 		return Response.ok(updatedBlogBaseDTO).build();
 
@@ -161,9 +167,10 @@ public class BlogResource {
 			@APIResponse(responseCode = "404", description = "Blog not found")
 	})
 	// REMOVE BLOG
-	public Response removeBlog(@PathParam("blogId") Long id) {
-		BlogDetailsDTO blogDetailsDTO = this.blogService.getBlogDetailsDTOById(id);
-		this.blogService.deleteBlog(id);
+	public Response removeBlog(@PathParam("blogId") String id) {
+		ObjectId oBlogId = new ObjectId(id);
+		BlogDetailsDTO blogDetailsDTO = this.blogService.getBlogDetailsDTOById(oBlogId);
+		this.blogService.deleteBlog(oBlogId );
 		Log.info("Blog with ID: " + id + " deleted");
 		return Response.ok(blogDetailsDTO).build();
 

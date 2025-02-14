@@ -15,6 +15,7 @@ import ch.hftm.blog.entity.Comment;
 import ch.hftm.blog.entity.Role;
 import ch.hftm.blog.entity.User;
 import ch.hftm.blog.exception.ObjectNotFoundException;
+import ch.hftm.blog.repository.RoleRepository;
 import ch.hftm.blog.repository.UserRepository;
 import io.quarkus.logging.Log;
 import io.quarkus.security.UnauthorizedException;
@@ -23,15 +24,19 @@ import io.smallrye.jwt.build.Jwt;
 import io.smallrye.jwt.build.JwtClaimsBuilder;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+
+//For Mongo DB
+import org.bson.types.ObjectId;
 
 @ApplicationScoped
 public class UserService {
 
 	@Inject
 	UserRepository userRepository;
+	@Inject
+	RoleRepository roleRepository;
 	@Inject
 	BlogService blogService;
 	@Inject
@@ -61,7 +66,7 @@ public class UserService {
 		return userDTOs;
 	}
 
-	public User getUserById(Long userId) {
+	public User getUserById(ObjectId userId) {
 		User user = userRepository.findById(userId);
 		if (user != null) {
 			return user;
@@ -70,12 +75,12 @@ public class UserService {
 		}
 	}
 
-	public UserDetailsDTO getUserDTOById(Long userId) {
+	public UserDetailsDTO getUserDTOById(ObjectId userId) {
 		User user = getUserById(userId);
 		return UserMapper.toUserDetailsDTO(user);
 	}
 
-	public UserBaseDTO getUserBaseDTOById(Long userId) {
+	public UserBaseDTO getUserBaseDTOById(ObjectId userId) {
 		User user = getUserById(userId);
 		return UserMapper.toUserBaseDTO(user);
 	}
@@ -104,7 +109,7 @@ public class UserService {
 		}
 	}
 
-	@Transactional
+
 	public UserBaseDTO addUser(UserBaseDTO userDTO) {
 		if (emailExists(userDTO.getEmail())) {
 			throw new IllegalArgumentException("Email already exists: " + userDTO.getEmail());
@@ -112,14 +117,25 @@ public class UserService {
 
 		User user = UserMapper.toUser(userDTO);
 		Log.info("Adding User " + user.getName());
+
+		Role userRole = roleRepository.findByName("User");
+		if (userRole == null) {
+			// Falls die Rolle nicht existiert, erstelle sie in der DB
+			userRole = new Role();
+			userRole.setName("User");
+			roleRepository.save(userRole);
+			Log.info("Created default role: User");
+		}
+
+		user.getRoles().add(userRole);
 		user.setCreatedAt(LocalDateTime.now());
 		user.setUpdatedAt(LocalDateTime.now());
-		userRepository.persist(user);
+		userRepository.save(user);
 		return UserMapper.toUserBaseDTO(user);
 	}
 
-	@Transactional
-	public UserBaseDTO updateUser(Long id, UserBaseDTO userBaseDTO) {
+
+	public UserBaseDTO updateUser(ObjectId id, UserBaseDTO userBaseDTO) {
 		User user = getUserById(id);
 		user.setName(userBaseDTO.getName());
 		user.setAge(userBaseDTO.getAge());
@@ -138,19 +154,19 @@ public class UserService {
 		user.setDateOfBirth(userBaseDTO.getDateOfBirth());
 		user.setUpdatedAt(LocalDateTime.now());
 		Log.info("Updating User " + user.getName());
-		userRepository.persist(user);
+		userRepository.save(user);
 		return UserMapper.toUserBaseDTO(user);
 	}
 
-	@Transactional
-	public void changePassword(Long userId, PasswordChangeRequest passwordChangeRequest) {
+
+	public void changePassword(ObjectId userId, PasswordChangeRequest passwordChangeRequest) {
 		User user = userRepository.findById(userId);
 		if (user == null) {
 			throw new ObjectNotFoundException("User with " + userId + " not found");
 		}
 
 
-		long currentUserId = Long.parseLong(jwtToken.getSubject());
+		ObjectId currentUserId = new ObjectId(jwtToken.getSubject());;
 		Set<String> roles = jwtToken.getGroups();
 
 		if (user.getId() != currentUserId && !roles.contains("Admin")) {
@@ -170,7 +186,7 @@ public class UserService {
 		// Setzen des neuen Passworts
 		user.setPassword(passwordChangeRequest.getNewPassword());
 		user.setUpdatedAt(LocalDateTime.now());
-		userRepository.persist(user);
+		userRepository.save(user);
 
 		Log.info("Password updated for user " + user.getName() + " by " + currentUserId);
 	}
@@ -193,7 +209,7 @@ public class UserService {
 
 
 
-	public String generateJwtToken(String email, Set<Role> roles,Long userId) {
+	public String generateJwtToken(String email, Set<Role> roles,ObjectId userId) {
 		long currentTimeInSecs = new Date().getTime() / 1000;
 		long expirationTime = currentTimeInSecs + jwtExpirationDays * 24 * 60 * 60;
 
@@ -215,13 +231,13 @@ public class UserService {
 
 
 
-	@Transactional
+
 	public UserBaseDTO validateJwtToken(String token) throws Exception {
 		JsonWebToken jwt = jwtParser.parse(token); // Token validieren und analysieren
 
 		// Benutzer-ID aus dem Token extrahieren
 		String userIdStr = jwt.getSubject(); // Annahme: Benutzer-ID ist im 'subject' des Tokens
-		Long userId = Long.parseLong(userIdStr);
+		ObjectId userId = new ObjectId(userIdStr);
 
 		// Benutzer anhand der Benutzer-ID suchen
 		User user = userRepository.findById(userId);
@@ -234,15 +250,15 @@ public class UserService {
 	}
 
 
-	@Transactional
-	public void deleteUser(Long userId) {
+
+	public void deleteUser(ObjectId userId) {
 		User user = userRepository.findById(userId);
 		if (user == null) {
 			throw new ObjectNotFoundException("User not found with id: " + userId);
 		}
 
 
-		long currentUserId = Long.parseLong(jwtToken.getSubject());
+		ObjectId currentUserId = new ObjectId(jwtToken.getSubject());;
 		Set<String> roles = jwtToken.getGroups();
 
 		if (user.getId() != currentUserId && !roles.contains("Admin")) {
@@ -261,7 +277,7 @@ public class UserService {
 				userComment.getBlog().getComments().remove(userComment);
 			}
 		}
-		userRepository.delete(user);
+		userRepository.deleteByUser(user);
 		Log.info("User with ID: " + userId + " deleted" );
 	}
 

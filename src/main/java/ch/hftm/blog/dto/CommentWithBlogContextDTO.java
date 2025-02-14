@@ -3,6 +3,7 @@ package ch.hftm.blog.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import lombok.Getter;
@@ -26,9 +27,9 @@ public class CommentWithBlogContextDTO extends CommentBaseDTO {
 	}
 
 	// Constructor with parameters
-	public CommentWithBlogContextDTO(Long id, String text, LocalDateTime createdAt, Long blogId, Long userId,
-			String blogTitle,
-			List<CommentBaseDTO> previousComments, List<CommentBaseDTO> nextComments) {
+	public CommentWithBlogContextDTO(ObjectId id, String text, LocalDateTime createdAt, ObjectId blogId, ObjectId userId,
+									 String blogTitle,
+									 List<CommentBaseDTO> previousComments, List<CommentBaseDTO> nextComments) {
 		super(id, text, createdAt, blogId, userId);
 		this.blogTitle = blogTitle;
 		this.previousComments = previousComments;

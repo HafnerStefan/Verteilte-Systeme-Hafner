@@ -3,6 +3,7 @@ package ch.hftm.blog.dto;
 import ch.hftm.blog.entity.Role;
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.time.LocalDate;
@@ -26,7 +27,7 @@ public class UserDetailsDTO extends UserBaseDTO {
 	}
 
 	// Constructor with all parameters
-	public UserDetailsDTO(Long id, String name, int age, String email, String password, String address, String phone,
+	public UserDetailsDTO(ObjectId id, String name, int age, String email, String password, String address, String phone,
 						  String gender, LocalDate dateOfBirth, Set<Role> roles, LocalDateTime createdAt, LocalDateTime updatedAt,
 						  List<BlogBaseDTO> blogs, List<CommentBaseDTO> comments) {
 		super(id, name, age, email, password, address, phone, gender, dateOfBirth,roles, createdAt, updatedAt);
@@ -35,7 +36,7 @@ public class UserDetailsDTO extends UserBaseDTO {
 	}
 
 	// Constructor without password
-	public UserDetailsDTO(Long id, String name, int age, String email, String address, String phone,
+	public UserDetailsDTO(ObjectId id, String name, int age, String email, String address, String phone,
 						  String gender, LocalDate dateOfBirth,Set<Role> roles, LocalDateTime createdAt, LocalDateTime updatedAt,
 						  List<BlogBaseDTO> blogs, List<CommentBaseDTO> comments) {
 		super(id, name, age, email, address, phone, gender, dateOfBirth,roles, createdAt, updatedAt);

@@ -11,6 +11,7 @@ import ch.hftm.blog.dto.UserListDTO;
 import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.Comment;
 import ch.hftm.blog.entity.User;
+import org.bson.types.ObjectId;
 
 public class UserMapper {
 
@@ -46,14 +47,14 @@ public class UserMapper {
         }
 
         public static UserListDTO toUserListDTO(User user) {
-                List<Long> blogIds = new ArrayList<>();
+                List<ObjectId> blogIds = new ArrayList<>();
                 if (user.getBlogs() != null) {
                         for (Blog blog : user.getBlogs()) {
                                 blogIds.add(blog.getId());
                         }
                 }
 
-                List<Long> commentIds = new ArrayList<>();
+                List<ObjectId> commentIds = new ArrayList<>();
                 if (user.getComments() != null) {
                         for (Comment comment : user.getComments()) {
                                 commentIds.add(comment.getId());

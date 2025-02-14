@@ -3,11 +3,13 @@ package ch.hftm.blog.dto;
 import ch.hftm.blog.entity.Role;
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Set;
 
 @Setter
@@ -16,7 +18,7 @@ import java.util.Set;
 public class UserBaseDTO {
 
 	@Schema(required = true, example = "32126319")
-	private Long id;
+	private ObjectId id;
 	@Schema(required = true, example = "Sandra Dubeli")
 	private String name;
 	@Schema(required = true, example = "32")
@@ -44,7 +46,7 @@ public class UserBaseDTO {
 	}
 
 	// Constructor with all parameters
-	public UserBaseDTO(Long id, String name, int age, String email, String password, String address, String phone,
+	public UserBaseDTO(ObjectId id, String name, int age, String email, String password, String address, String phone,
 					   String gender, LocalDate dateOfBirth, Set<Role> roles, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.name = name;
@@ -61,7 +63,7 @@ public class UserBaseDTO {
 	}
 
 	// Constructor without password
-	public UserBaseDTO(Long id, String name, int age, String email, String address, String phone,
+	public UserBaseDTO(ObjectId id, String name, int age, String email, String address, String phone,
 					   String gender, LocalDate dateOfBirth,Set<Role> roles, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.name = name;
@@ -77,7 +79,7 @@ public class UserBaseDTO {
 	}
 
 	// Constructor without password
-	public UserBaseDTO(Long id, String name, int age, String email, String address, String phone,
+	public UserBaseDTO(ObjectId id, String name, int age, String email, String address, String phone,
 					   String gender, LocalDate dateOfBirth) {
 		this.id = id;
 		this.name = name;

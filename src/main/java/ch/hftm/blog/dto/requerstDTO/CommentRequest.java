@@ -2,6 +2,7 @@ package ch.hftm.blog.dto.requerstDTO;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Setter
@@ -11,16 +12,16 @@ public class CommentRequest {
     @Schema(required = true, example = "Great post!")
     private String text;
     @Schema(example = "12345")
-    private Long userId;
+    private ObjectId userId;
     @Schema(example = "67890")
-    private Long blogId;
+    private ObjectId blogId;
 
 
     public CommentRequest() {
     }
 
 
-    public CommentRequest(String text, Long userId, Long blogId) {
+    public CommentRequest(String text, ObjectId userId, ObjectId blogId) {
         this.text = text;
         this.userId = userId;
         this.blogId = blogId;

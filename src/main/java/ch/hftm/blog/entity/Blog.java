@@ -6,30 +6,26 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Id;
+import dev.morphia.annotations.Property;
+import dev.morphia.annotations.Reference;
+import org.bson.types.ObjectId;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Entity
-@Table(name = "blog")
+@Entity("blogs")
+//@Table(name = "blog")
 
 public class Blog {
     // Getter and Setter
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    private Long id;
+    private ObjectId id;
 
     @Setter
     @Size(min = 3, message = "Title needs at least 3 characters")
@@ -40,21 +36,23 @@ public class Blog {
     private String text;
 
     @Setter
-    @Column(name = "created_at")
+    //@Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Setter
-    @Column(name = "updated_at")
+    //@Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @Setter
-    @ManyToOne
+    //@ManyToOne
+    @Reference
     @NotNull(message = "A Blog need a user")
     @JsonBackReference
     private User user;
 
     @Setter
-    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
+    //@OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Reference
     private List<Comment> comments;
 
     public Blog() {

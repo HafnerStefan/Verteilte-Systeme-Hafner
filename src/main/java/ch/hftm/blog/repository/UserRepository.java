@@ -2,29 +2,62 @@ package ch.hftm.blog.repository;
 
 import java.util.List;
 
+import ch.hftm.blog.entity.Comment;
 import ch.hftm.blog.entity.User;
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
+
+import dev.morphia.query.FindOptions;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
+// For Mongo DB
+import org.bson.types.ObjectId;
+import dev.morphia.Datastore;
+import dev.morphia.query.filters.Filters;
+
+
 @ApplicationScoped
-public class UserRepository implements PanacheRepository<User> {
+public class UserRepository  {
+
+    @Inject
+    Datastore datastore; // Morphia Datastore für MongoDB
 
     // Panache stellt die Methoden listAll, findById, persist, count und delete zur Verfügung
 
-    @Transactional
+    public void save(User user) {
+        datastore.save(user);
+    }
+
+    public void deleteByUser(User user) {
+        datastore.find(User.class).filter(Filters.eq("user", user.getId())).delete();
+    }
+
+    public List<User> listAll() {
+        return listAll(new FindOptions());
+    }
+
+    public List<User> listAll(FindOptions options) {
+        return datastore.find(User.class).iterator(options).toList();
+    }
+
+    public User findById(ObjectId userId) {
+        return datastore.find(User.class).filter(Filters.eq("user", userId)).first();
+    }
+
     public List<User> findByName(String name) {
-        return find("name", name).list();
+        return datastore.find(User.class).filter(Filters.eq("name", name)).iterator().toList();
     }
 
-    @Transactional
+
     public User findByEmail(String email) {
-        return find("email", email).firstResult();
+        return datastore.find(User.class).filter(Filters.eq("email", email)).first();
     }
 
-    @Transactional
+
     public List<User> findByRoleName(String roleName) {
-        return find("select u from User u join u.roles r where r.name = ?1", roleName).list();
+        return datastore.find(User.class)
+                .filter(Filters.eq("roles.name", roleName))
+                .iterator().toList();
     }
 
 
