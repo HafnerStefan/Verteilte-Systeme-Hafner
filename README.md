@@ -1,5 +1,11 @@
 # IN306 - Verteilte Systeme (Blog-Projekt)
 
+# MONGO DB austausch
+
+Mongo DB muss erstellt werden:
+docker run -d --name mongo -p 27017:27017 mongo:latest
+
+
 ## Was macht diese Anwendung?
 
 Diese Blog-Anwendung ist ein Backend-System, das mit Quarkus entwickelt wurde und eine einfache REST-API zum Verwalten von Blogposts bereitstellt. Die Anwendung ermöglicht das Erstellen, Aktualisieren, Löschen und Abrufen von Benutzern, Blogs und Kommentaren.
