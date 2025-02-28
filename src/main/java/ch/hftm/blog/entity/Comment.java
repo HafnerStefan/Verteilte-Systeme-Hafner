@@ -35,6 +35,18 @@ public class Comment {
     private LocalDateTime createdAt;
 
     @Setter
+    @Column(name = "email_sent")
+    private Boolean emailSent;  // Ob die E-Mail erfolgreich gesendet wurde
+
+    @Setter
+    @Column(name = "email_sent_at")
+    private LocalDateTime emailSentAt;  // Zeitpunkt des E-Mail-Versands
+
+    @Setter
+    @Column(name = "email_message_id", unique = true)
+    private String emailMessageId;  // ID der gesendeten E-Mail für Nachverfolgung
+
+    @Setter
     @ManyToOne
     @JsonIgnore
     @NotNull(message = "Comment need a Blog")

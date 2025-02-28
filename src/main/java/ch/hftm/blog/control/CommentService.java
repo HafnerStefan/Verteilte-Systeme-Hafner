@@ -13,6 +13,7 @@ import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.Comment;
 import ch.hftm.blog.entity.User;
 import ch.hftm.blog.exception.ObjectNotFoundException;
+import ch.hftm.blog.producer.CommentNotificationProducer;
 import ch.hftm.blog.repository.BlogRepository;
 import ch.hftm.blog.repository.CommentRepository;
 import ch.hftm.blog.repository.UserRepository;
@@ -35,8 +36,12 @@ public class CommentService {
 
 	@Inject
 	UserRepository userRepository;
+
 	@Inject
 	JsonWebToken jwtToken;
+
+	@Inject
+	CommentNotificationProducer commentNotificationProducer;
 
 
 	public List<CommentBaseDTO> getComments() {
@@ -124,6 +129,10 @@ public class CommentService {
 			comment.setCreatedAt(LocalDateTime.now());
 			Log.info("Adding Comment by User " + comment.getUser().getName());
 			commentRepository.persist(comment);
+
+			// Kafa-Notification
+			commentNotificationProducer.sendNotification(user.getEmail(), comment.getId(), blog.getTitle(), comment.getText());
+
 			return CommentMapper.toCommentBaseDTO(comment);
 		}
 	}
@@ -156,6 +165,9 @@ public class CommentService {
 
 		Log.info("Deleting Comment by User " + comment.getUser().getName());
 	}
+
+
+
 
 
 
