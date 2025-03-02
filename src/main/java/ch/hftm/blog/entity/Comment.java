@@ -14,10 +14,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
+
+
 @Entity
 @Table(name = "comment")
 public class Comment {
@@ -26,33 +25,26 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
     @Size(min = 3, message = "Text needs at least 3 characters")
     private String text;
 
-    @Setter
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Setter
     @Column(name = "email_sent")
     private Boolean emailSent;  // Ob die E-Mail erfolgreich gesendet wurde
 
-    @Setter
     @Column(name = "email_sent_at")
     private LocalDateTime emailSentAt;  // Zeitpunkt des E-Mail-Versands
 
-    @Setter
     @Column(name = "email_message_id", unique = true)
     private String emailMessageId;  // ID der gesendeten E-Mail für Nachverfolgung
 
-    @Setter
     @ManyToOne
     @JsonIgnore
     @NotNull(message = "Comment need a Blog")
     private Blog blog;
 
-    @Setter
     @ManyToOne
     @JsonIgnore
     @NotNull(message = "Comment need a User")
@@ -96,5 +88,71 @@ public class Comment {
                 ", blog=" + blog +
                 ", user=" + user +
                 '}';
+    }
+
+    // Getter and Setter
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public @Size(min = 3, message = "Text needs at least 3 characters") String getText() {
+        return text;
+    }
+
+    public void setText(@Size(min = 3, message = "Text needs at least 3 characters") String text) {
+        this.text = text;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Boolean getEmailSent() {
+        return emailSent;
+    }
+
+    public void setEmailSent(Boolean emailSent) {
+        this.emailSent = emailSent;
+    }
+
+    public LocalDateTime getEmailSentAt() {
+        return emailSentAt;
+    }
+
+    public void setEmailSentAt(LocalDateTime emailSentAt) {
+        this.emailSentAt = emailSentAt;
+    }
+
+    public String getEmailMessageId() {
+        return emailMessageId;
+    }
+
+    public void setEmailMessageId(String emailMessageId) {
+        this.emailMessageId = emailMessageId;
+    }
+
+    public @NotNull(message = "Comment need a Blog") Blog getBlog() {
+        return blog;
+    }
+
+    public void setBlog(@NotNull(message = "Comment need a Blog") Blog blog) {
+        this.blog = blog;
+    }
+
+    public @NotNull(message = "Comment need a User") User getUser() {
+        return user;
+    }
+
+    public void setUser(@NotNull(message = "Comment need a User") User user) {
+        this.user = user;
     }
 }

@@ -24,7 +24,6 @@ public class UserMapper {
                                 user.getPhone(),
                                 user.getGender(),
                                 user.getDateOfBirth(),
-                                user.getRoles(),
                                 user.getCreatedAt(),
                                 user.getUpdatedAt()
                 );
@@ -40,7 +39,6 @@ public class UserMapper {
                                 user.getPhone(),
                                 user.getGender(),
                                 user.getDateOfBirth(),
-                                user.getRoles(),
                                 user.getCreatedAt(),
                                 user.getUpdatedAt());
         }
@@ -117,7 +115,6 @@ public class UserMapper {
                                 user.getPhone(),
                                 user.getGender(),
                                 user.getDateOfBirth(),
-                                user.getRoles(),
                                 user.getCreatedAt(),
                                 user.getUpdatedAt(),
                                 blogBaseDTOS,

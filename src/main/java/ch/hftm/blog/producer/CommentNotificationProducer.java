@@ -5,6 +5,8 @@ import jakarta.json.bind.JsonbBuilder;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +14,7 @@ import java.util.Map;
 @ApplicationScoped
 public class CommentNotificationProducer {
 
+    private static final Logger log = LoggerFactory.getLogger(CommentNotificationProducer.class);
     @Channel("comment-notifications-email")
     Emitter<String> commentNotificationEmitter;
 
@@ -27,6 +30,7 @@ public class CommentNotificationProducer {
         notificationMessage.put("commentText", shortenText(commentText, 100));
 
         String jsonMessage = jsonb.toJson(notificationMessage);
+        log.info("Sending notification: " + jsonMessage);
 
         commentNotificationEmitter.send(jsonMessage);
     }

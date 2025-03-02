@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import ch.hftm.blog.boundry.ValidationGroups;
@@ -19,11 +20,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
 
-@Setter
-@Getter
+
 @Entity
 @Table(name = "user")
 public class User {
@@ -56,7 +54,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    @JsonManagedReference
+    @JsonIgnore
     private Set<Role> roles = new HashSet<>();
 
     private String address;
@@ -146,4 +144,121 @@ public class User {
         role.getUsers().remove(this);
     }
 
+    // Getter and Setter
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public @NotBlank(message = "Name must not be blank") @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters") String getName() {
+        return name;
+    }
+
+    public void setName(@NotBlank(message = "Name must not be blank") @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters") String name) {
+        this.name = name;
+    }
+
+    @NotNull(message = "Age must not be null")
+    @Min(value = 0, message = "Age must be at least 0")
+    @Max(value = 150, message = "Age must be less than or equal to 150")
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(@NotNull(message = "Age must not be null") @Min(value = 0, message = "Age must be at least 0") @Max(value = 150, message = "Age must be less than or equal to 150") int age) {
+        this.age = age;
+    }
+
+    public @NotBlank(message = "Email must not be blank") @Email(message = "Email should be valid") String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@NotBlank(message = "Email must not be blank") @Email(message = "Email should be valid") String email) {
+        this.email = email;
+    }
+
+    public @NotBlank(message = "Password must not be blank", groups = ValidationGroups.Create.class) @Size(min = 8, message = "Password must be at least 8 characters long", groups = ValidationGroups.Create.class) String getPassword() {
+        return password;
+    }
+
+    public void setPassword(@NotBlank(message = "Password must not be blank", groups = ValidationGroups.Create.class) @Size(min = 8, message = "Password must be at least 8 characters long", groups = ValidationGroups.Create.class) String password) {
+        this.password = password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public @Pattern(regexp = "\\+\\d{2} \\d{2} \\d{3} \\d{2} \\d{2}", message = "Phone number must follow the pattern +XX XX XXX XX XX") String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(@Pattern(regexp = "\\+\\d{2} \\d{2} \\d{3} \\d{2} \\d{2}", message = "Phone number must follow the pattern +XX XX XXX XX XX") String phone) {
+        this.phone = phone;
+    }
+
+    public @Pattern(regexp = "male|female|other", message = "Gender must be either 'male', 'female', or 'other'") String getGender() {
+        return gender;
+    }
+
+    public void setGender(@Pattern(regexp = "male|female|other", message = "Gender must be either 'male', 'female', or 'other'") String gender) {
+        this.gender = gender;
+    }
+
+    public @NotNull(message = "Date of birth must not be null") @Past(message = "Date of birth must be in the past") LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(@NotNull(message = "Date of birth must not be null") @Past(message = "Date of birth must be in the past") LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public List<Blog> getBlogs() {
+        return blogs;
+    }
+
+    public void setBlogs(List<Blog> blogs) {
+        this.blogs = blogs;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 }

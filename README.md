@@ -1,4 +1,59 @@
+# Kafka-Verteilte-Systeme-Hafner Test
+
+Kommentar kan mit folgene Query erstellt werden
+Danach sollte man in den Log die kommunikation der Consumer und Producer sehen
+
+Commentar wird an den `emailService` gesendet und dort wird ein Email versendet (Fake gemockt)
+Danach wird an der `emailService` das Backend darüber informiert das das Email versendet wurde.
+Mit der EmailMessage ID die in der DB von `emailService` gespeichert wurde.
+
+### User erstellen
+```
+curl --request POST \
+  --url http://localhost:8080//users \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "name": "Sandra Dubeli",
+  "age": 32,
+  "email": "3jane.doe@example.com",
+  "address": "123 Main St, Anytown, AT 12345",
+  "phone": "+41 78 965 00 00",
+  "gender": "female",
+  "dateOfBirth": "1988-12-31",
+  "password": "Password123!"
+}'
+```
+
+### Blog erstellen
+```
+curl --request POST \
+--url http://localhost:8080//blog \
+--header 'Authorization: Authorization eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJoZnRtIiwic3ViIjoiNjdhZjk1NGM5NmQ4YzE1MmQ5ZTRmMzBlIiwiZ3JvdXBzIjpbXSwiaWF0IjoxNzM5NTYwNzg3LCJleHAiOjE3NDIxNTI3ODcsImp0aSI6ImY0Nzk1YjZkLTMzOTctNDllNy1hNGU2LTg3OTdkODFkMjVlMSJ9.T8iKyrHKLdWq1u6__BLlZci5bziOIwOHV7gL3cS2w2p2C5U_aN8zZXUdGmHotf8IRabLlIytnzYT6y76HNlosopOJY1YW9E2H5qfGOpTfWnm1vVvdwJ0s-Lcz4DTqzCo20Ql4PPnC-Vb6yON9LIkV64N85q3tpzoIJI7I8f7b8U4PACpJPRr2Fb91z_DJEjoYdaNzGRmIPiu8-7avA7lygxB5JU2pMZeTzub4lz-sgxKNxY9pMGGXUcs6fv6DFNwIkHoPEUSyTs7BdcjiQCN9xjjjaP_bpqSn3QLnDc3AKtF-lBHnnFrTSxQF6F9hrDkJXNn-7Yw2KsQ-PDxchz1Qg' \
+--header 'Content-Type: application/json' \
+--data '{
+"title": "New Blog",
+"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra.",
+"userId": "1"
+}'
+```
+### Comment erstellen
+```
+curl --request POST \
+  --url http://localhost:8080//comment \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "text": "Great post! Du must meht schreieben",
+  "userId": 1,
+  "blogId": 1
+}'
+```
+
+
+
+
 # IN306 - Verteilte Systeme (Blog-Projekt)
+
+
 
 ## Was macht diese Anwendung?
 

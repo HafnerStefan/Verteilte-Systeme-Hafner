@@ -39,7 +39,8 @@ public class UserResource {
 	UserService userService;
 
 	@GET
-	@RolesAllowed({"User", "Admin"})
+	//@RolesAllowed({"User", "Admin"})
+	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "List of all Users", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserListDTO[].class)))
@@ -52,7 +53,8 @@ public class UserResource {
 
 	@GET
 	@Path("/id:{userId}")
-	@RolesAllowed({"User", "Admin"})
+	//@RolesAllowed({"User", "Admin"})
+	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "User by ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDetailsDTO.class)))
 	@APIResponse(responseCode = "404", description = "User not found")
@@ -66,7 +68,8 @@ public class UserResource {
 
 	@GET
 	@Path("/name:{userName}")
-	@RolesAllowed({"User", "Admin"})
+	//@RolesAllowed({"User", "Admin"})
+	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "User by Name", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDetailsDTO.class)))
 	@APIResponse(responseCode = "404", description = "User not found")
@@ -83,7 +86,8 @@ public class UserResource {
 
 	@GET
 	@Path("/email:{userEmail}")
-	@RolesAllowed({"User", "Admin"})
+	//@RolesAllowed({"User", "Admin"})
+	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "User by Email", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDetailsDTO.class)))
 	@APIResponse(responseCode = "404", description = "User not found")
@@ -134,6 +138,7 @@ public class UserResource {
 			String token = userService.generateJwtToken(user.getEmail(), user.getRoles(), user.getId());
 
 			response.put("success", true);
+			user.setRoles(null);
 			response.put("user", user);
 
 			return Response.ok(response)
@@ -161,6 +166,7 @@ public class UserResource {
 		try {
 			UserBaseDTO user = userService.validateJwtToken(token);
 			response.put("success", true);
+			user.setRoles(null);
 			response.put("user", user);
 			return Response.ok(response).build(); // Token ist gültig
 		} catch (Exception e) {
@@ -197,7 +203,8 @@ public class UserResource {
 
 	@PUT
 	@Path("/{userId}")
-	@RolesAllowed({"Admin"})
+	//@RolesAllowed({"Admin"})
+	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "User updated", content = @Content(schema = @Schema(implementation = UserBaseDTO.class)))
@@ -220,7 +227,8 @@ public class UserResource {
 
 	@PUT
 	@Path("/{id}/change-password")
-	@RolesAllowed({"Admin"})
+	//@RolesAllowed({"Admin"})
+	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response changePassword(@PathParam("id") Long id, PasswordChangeRequest passwordChangeRequest) {
@@ -232,8 +240,9 @@ public class UserResource {
 	}
 
 	@DELETE
-	@RolesAllowed({"Admin"})
+	//@RolesAllowed({"Admin"})
 	@Path("/{userId}")
+	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponses({
 			@APIResponse(responseCode = "200", description = "User deleted", content = @Content(schema = @Schema(implementation = UserDetailsDTO.class))),

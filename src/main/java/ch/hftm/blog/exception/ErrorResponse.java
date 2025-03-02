@@ -1,10 +1,5 @@
 package ch.hftm.blog.exception;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Setter
-@Getter
 
     public class ErrorResponse {
         private String message;
@@ -15,5 +10,20 @@ import lombok.Setter;
             this.statusCode = statusCode;
         }
 
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public int getStatusCode() {
+            return statusCode;
+        }
+
+        public void setStatusCode(int statusCode) {
+            this.statusCode = statusCode;
+        }
     }
 

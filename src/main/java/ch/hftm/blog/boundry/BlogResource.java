@@ -7,7 +7,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
-
+import jakarta.annotation.security.PermitAll;
 import ch.hftm.blog.control.BlogService;
 import ch.hftm.blog.control.UserService;
 import ch.hftm.blog.dto.BlogBaseDTO;
@@ -45,7 +45,8 @@ public class BlogResource {
 	UserService userService;
 
 	@GET
-	@RolesAllowed({"User", "Admin"})
+	//@RolesAllowed({"User", "Admin"})
+	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "List of blogs", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BlogListDTO[].class)))
 	public Response fetchAllBlogs(@QueryParam("userId") Long userId,
@@ -71,7 +72,8 @@ public class BlogResource {
 
 	@GET
 	@Path("/maxPage")
-	@RolesAllowed({"User", "Admin"})
+	//@RolesAllowed({"User", "Admin"})
+	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getMaxBlogPage(@QueryParam("size") @DefaultValue("15") int size) {
 		int maxPages = blogService.getMaxBlogPage(size);
@@ -81,7 +83,8 @@ public class BlogResource {
 
 	@GET
 	@Path("/{blogId}")
-	@RolesAllowed({"User", "Admin"})
+	//@RolesAllowed({"User", "Admin"})
+	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponses({
 			@APIResponse(responseCode = "200", description = "Blog found", content = @Content(schema = @Schema(implementation = BlogDetailsDTO.class))),
@@ -105,7 +108,8 @@ public class BlogResource {
 	//TODO Remove?
 	@GET
 	@Path("/toUser/blogId:{blogId}/userId:{userId}")
-	@RolesAllowed({ "Admin"})
+	//@RolesAllowed({ "Admin"})
+	@PermitAll
 	@APIResponses({
 			@APIResponse(responseCode = "200", description = "User assigned to blog", content = @Content(schema = @Schema(implementation = UserBaseDTO.class))),
 			@APIResponse(responseCode = "404", description = "Blog or User not found")
@@ -118,7 +122,8 @@ public class BlogResource {
 	}
 
 	@POST
-	@RolesAllowed({"User", "Admin"})
+	//@RolesAllowed({"User", "Admin"})
+	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "201", description = "Blog created", content = @Content(schema = @Schema(implementation = BlogBaseDTO.class)))
@@ -133,7 +138,8 @@ public class BlogResource {
 
 	@PUT
 	@Path("/{blogId}")
-	@RolesAllowed({"User", "Admin"})
+	//@RolesAllowed({"User", "Admin"})
+	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponses({
@@ -154,7 +160,8 @@ public class BlogResource {
 
 	@DELETE
 	@Path("/{blogId}")
-	@RolesAllowed({"User", "Admin"})
+	//@RolesAllowed({"User", "Admin"})
+	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponses({
 			@APIResponse(responseCode = "200", description = "Blog deleted", content = @Content(schema = @Schema(implementation = BlogDetailsDTO.class))),

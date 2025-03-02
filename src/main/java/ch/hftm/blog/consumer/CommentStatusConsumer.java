@@ -29,9 +29,11 @@ public class CommentStatusConsumer {
         Map<String, Object> statusData = jsonb.fromJson(message, Map.class);
 
         Long commentId = ((Number) statusData.get("commentId")).longValue();
-        Boolean emailSent = (Boolean) statusData.get("emailSent");
-        String emailMessageId = (String) statusData.get("emailMessageId");
-        LocalDateTime emailSentAt = LocalDateTime.parse((String) statusData.get("emailSentAt"));
+        Boolean emailSent =  Boolean.parseBoolean(statusData.get("emailSent").toString());
+        String emailMessageId =  String.valueOf(statusData.get("emailMessageId"));;
+        LocalDateTime emailSentAt = statusData.get("emailSentAt") != null
+                ? LocalDateTime.parse(statusData.get("emailSentAt").toString())
+                : null;
 
         LOG.infof("📩 Rückmeldung erhalten für Kommentar-ID: %d - Gesendet: %b - Nachricht-ID: %s",
                 commentId, emailSent, emailMessageId);

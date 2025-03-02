@@ -1,14 +1,10 @@
 package ch.hftm.blog.dto;
-
-import lombok.Getter;
-import lombok.Setter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Setter
-@Getter
+
 @Schema(name = "BlogsResponse", description = "DTO for listing blogs with comment IDs")
 public class BlogListDTO extends BlogBaseDTO {
 
@@ -30,5 +26,16 @@ public class BlogListDTO extends BlogBaseDTO {
 	// Constructor with basic fields
 	public BlogListDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt, Long userId,String username) {
 		super(id, title, text, createdAt, updatedAt, userId,username);
+	}
+
+	// Getter and Setter
+
+
+	public List<Long> getCommentsIds() {
+		return commentsIds;
+	}
+
+	public void setCommentsIds(List<Long> commentsIds) {
+		this.commentsIds = commentsIds;
 	}
 }
