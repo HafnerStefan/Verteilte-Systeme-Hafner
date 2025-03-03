@@ -1,11 +1,18 @@
 # Kafka-Verteilte-Systeme-Hafner Test
 
-Kommentar kan mit folgene Query erstellt werden
-Danach sollte man in den Log die kommunikation der Consumer und Producer sehen
+# Image Laden
+```sh
+docker pull ghcr.io/hafnerstefan/quarkus-email-service:1.0.0
+docker pull ghcr.io/hafnerstefan/quarkus-blog-backend:1.0.0
+```
 
-Commentar wird an den `emailService` gesendet und dort wird ein Email versendet (Fake gemockt)
-Danach wird an der `emailService` das Backend darüber informiert das das Email versendet wurde.
-Mit der EmailMessage ID die in der DB von `emailService` gespeichert wurde.
+# Docker Compose starten
+```sh
+docker-compose -f src/main/docker/docker-compose-kafka.yml up -d
+```
+
+Es ist Nötig kurz einen User anzulegen und einen Blog zu erstellen.
+Zur Vereinfachung habe ich die Authentifizierung ausgeschaltet.
 
 ### User erstellen
 ```
@@ -36,6 +43,13 @@ curl --request POST \
 "userId": "1"
 }'
 ```
+Kommentar kan mit folgene Query erstellt werden
+Danach sollte man in den Log die kommunikation der Consumer und Producer sehen
+
+Commentar wird an den `emailService` gesendet und dort wird ein Email versendet (Fake gemockt)
+Danach wird an der `emailService` das Backend darüber informiert das das Email versendet wurde.
+Mit der EmailMessage ID die in der DB von `emailService` gespeichert wurde.
+
 ### Comment erstellen
 ```
 curl --request POST \
@@ -48,12 +62,7 @@ curl --request POST \
 }'
 ```
 
-
-
-
 # IN306 - Verteilte Systeme (Blog-Projekt)
-
-
 
 ## Was macht diese Anwendung?
 
