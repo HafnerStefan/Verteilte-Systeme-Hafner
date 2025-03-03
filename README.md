@@ -1,7 +1,9 @@
 # Kafka-Verteilte-Systeme-Hafner Test
 
 # Image Laden
+
 ```sh
+docker login --username <GITHUB_USERNAME> --password <TOKEN> ghcr.io
 docker pull ghcr.io/hafnerstefan/quarkus-email-service:1.0.0
 docker pull ghcr.io/hafnerstefan/quarkus-blog-backend:1.0.0
 ```
