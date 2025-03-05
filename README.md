@@ -52,6 +52,8 @@ Commentar wird an den `emailService` gesendet und dort wird ein Email versendet 
 Danach wird an der `emailService` das Backend darüber informiert das das Email versendet wurde.
 Mit der EmailMessage ID die in der DB von `emailService` gespeichert wurde.
 
+Das Email wird Asynchron gemockt versendet und hat eine 60% chance das es nicht versendet wird.
+
 ### Comment erstellen
 ```
 curl --request POST \
