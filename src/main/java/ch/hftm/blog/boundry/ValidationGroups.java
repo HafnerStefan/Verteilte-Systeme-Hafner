@@ -7,4 +7,3 @@ public class ValidationGroups {
     public interface Update {
     }
 }
-

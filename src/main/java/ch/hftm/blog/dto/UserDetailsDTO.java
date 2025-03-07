@@ -24,7 +24,7 @@ public class UserDetailsDTO extends UserBaseDTO {
 
 	// Constructor with all parameters
 	public UserDetailsDTO(Long id, String name, int age, String email, String password, String address, String phone,
-						  String gender, LocalDate dateOfBirth, Set<Role> roles, LocalDateTime createdAt, LocalDateTime updatedAt,
+						  String gender, LocalDate dateOfBirth, List<String> roles, LocalDateTime createdAt, LocalDateTime updatedAt,
 						  List<BlogBaseDTO> blogs, List<CommentBaseDTO> comments) {
 		super(id, name, age, email, password, address, phone, gender, dateOfBirth,roles, createdAt, updatedAt);
 		this.blogs = blogs;
@@ -33,20 +33,9 @@ public class UserDetailsDTO extends UserBaseDTO {
 
 	// Constructor without password
 	public UserDetailsDTO(Long id, String name, int age, String email, String address, String phone,
-						  String gender, LocalDate dateOfBirth, LocalDateTime createdAt, LocalDateTime updatedAt,
+						  String gender, LocalDate dateOfBirth,List<String> roles, LocalDateTime createdAt, LocalDateTime updatedAt,
 						  List<BlogBaseDTO> blogs, List<CommentBaseDTO> comments) {
-		super(id, name, age, email, address, phone, gender, dateOfBirth, createdAt, updatedAt);
-		this.blogs = blogs;
-		this.comments = comments;
-	}
-
-	// Getter and Setter
-
-	public List<BlogBaseDTO> getBlogs() {
-		return blogs;
-	}
-
-	public void setBlogs(List<BlogBaseDTO> blogs) {
+		super(id, name, age, email, address, phone, gender, dateOfBirth,roles, createdAt, updatedAt);
 		this.blogs = blogs;
 	}
 

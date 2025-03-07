@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import ch.hftm.blog.boundry.ValidationGroups;
@@ -54,7 +54,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    @JsonIgnore
+    @JsonManagedReference
     private Set<Role> roles = new HashSet<>();
 
     private String address;
@@ -192,6 +192,10 @@ public class User {
 
     public Set<Role> getRoles() {
         return roles;
+    }
+
+    public List<String> getRolesList() {
+        return roles.stream().map(Role::getName).collect(Collectors.toList());
     }
 
     public void setRoles(Set<Role> roles) {

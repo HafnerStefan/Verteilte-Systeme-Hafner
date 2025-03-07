@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,8 +39,7 @@ public class UserBaseDTO {
 	private LocalDateTime createdAt;
 	@Schema(type = SchemaType.STRING, format = "date-time", example = "2023-01-02T12:00:00")
 	private LocalDateTime updatedAt;
-	@JsonIgnore
-	private Set<Role> roles;
+	private List<String> roles;
 
 	// Default Constructor
 	public UserBaseDTO() {
@@ -47,7 +47,7 @@ public class UserBaseDTO {
 
 	// Constructor with all parameters
 	public UserBaseDTO(Long id, String name, int age, String email, String password, String address, String phone,
-					   String gender, LocalDate dateOfBirth, Set<Role> roles, LocalDateTime createdAt, LocalDateTime updatedAt) {
+					   String gender, LocalDate dateOfBirth, List<String> roles, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.name = name;
 		this.age = age;
@@ -62,10 +62,9 @@ public class UserBaseDTO {
 		this.roles = roles;
 	}
 
-
 	// Constructor without password
 	public UserBaseDTO(Long id, String name, int age, String email, String address, String phone,
-					   String gender, LocalDate dateOfBirth, LocalDateTime createdAt, LocalDateTime updatedAt) {
+					   String gender, LocalDate dateOfBirth,List<String> roles, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.name = name;
 		this.age = age;
@@ -76,10 +75,8 @@ public class UserBaseDTO {
 		this.dateOfBirth = dateOfBirth;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
-
+		this.roles = roles;
 	}
-
-
 
 	// Constructor without password
 	public UserBaseDTO(Long id, String name, int age, String email, String address, String phone,
@@ -185,12 +182,12 @@ public class UserBaseDTO {
 		this.updatedAt = updatedAt;
 	}
 
-	@JsonIgnore
-	public Set<Role> getRoles() {
+
+	public List<String>  getRoles() {
 		return roles;
 	}
 
-	public void setRoles(Set<Role> roles) {
+	public void setRoles(List<String>  roles) {
 		this.roles = roles;
 	}
 }
