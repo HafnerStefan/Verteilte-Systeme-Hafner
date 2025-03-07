@@ -193,9 +193,12 @@ public class UserService {
 
 
 
-	public String generateJwtToken(String email, Set<Role> roles,Long userId) {
+	public String generateJwtToken(Long userId) {
 		long currentTimeInSecs = new Date().getTime() / 1000;
 		long expirationTime = currentTimeInSecs + jwtExpirationDays * 24 * 60 * 60;
+
+		User user = userRepository.findById(userId);
+		Set<Role> roles = user.getRoles();
 
 		Set<String> roleNames = (roles != null) ?
 				roles.stream()

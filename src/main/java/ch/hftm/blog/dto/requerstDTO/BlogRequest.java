@@ -5,11 +5,7 @@ import java.util.List;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import jakarta.annotation.Nullable;
-import lombok.Getter;
-import lombok.Setter;
 
-@Setter
-@Getter
 @Schema(name = "BlogRequest", description = "Request payload for creating or updating a blog")
 public class BlogRequest {
     @Schema(required = true, example = "New Blog")
@@ -40,4 +36,37 @@ public class BlogRequest {
 
     }
 
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    @Nullable
+    public List<Long> getCommentIds() {
+        return commentIds;
+    }
+
+    public void setCommentIds(@Nullable List<Long> commentIds) {
+        this.commentIds = commentIds;
+    }
 }

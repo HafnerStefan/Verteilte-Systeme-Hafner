@@ -17,10 +17,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
+
 @Entity
 @Table(name = "blog")
 
@@ -31,29 +29,23 @@ public class Blog {
 
     private Long id;
 
-    @Setter
     @Size(min = 3, message = "Title needs at least 3 characters")
     private String title;
 
-    @Setter
     @Size(min = 10, message = "Text needs at least 10 characters")
     private String text;
 
-    @Setter
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Setter
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Setter
     @ManyToOne
     @NotNull(message = "A Blog need a user")
     @JsonBackReference
     private User user;
 
-    @Setter
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
@@ -100,5 +92,61 @@ public class Blog {
                 ", user=" + user +
                 ", comments=" + comments +
                 '}';
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public @Size(min = 3, message = "Title needs at least 3 characters") String getTitle() {
+        return title;
+    }
+
+    public void setTitle(@Size(min = 3, message = "Title needs at least 3 characters") String title) {
+        this.title = title;
+    }
+
+    public @Size(min = 10, message = "Text needs at least 10 characters") String getText() {
+        return text;
+    }
+
+    public void setText(@Size(min = 10, message = "Text needs at least 10 characters") String text) {
+        this.text = text;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public @NotNull(message = "A Blog need a user") User getUser() {
+        return user;
+    }
+
+    public void setUser(@NotNull(message = "A Blog need a user") User user) {
+        this.user = user;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

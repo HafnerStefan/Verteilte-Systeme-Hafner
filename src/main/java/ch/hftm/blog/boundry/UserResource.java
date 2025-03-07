@@ -131,7 +131,7 @@ public class UserResource {
 		Map<String, Object> response = new HashMap<>();
 		if (user != null) {
 			// Hier werden die Rollen als Set übergeben
-			String token = userService.generateJwtToken(user.getEmail(), user.getRoles(), user.getId());
+			String token = userService.generateJwtToken(user.getId());
 
 			response.put("success", true);
 			response.put("user", user);
@@ -207,10 +207,16 @@ public class UserResource {
 			@PathParam("userId") Long id,
 			@Valid @jakarta.validation.groups.ConvertGroup(from = Default.class, to = ValidationGroups.Update.class) UserRequest userRequest) {
 
-		UserBaseDTO userDTO = new UserBaseDTO(id, userRequest.getName(), userRequest.getAge(),
+		UserBaseDTO userDTO = new UserBaseDTO(
+				id,
+				userRequest.getName(),
+				userRequest.getAge(),
 				userRequest.getEmail(),
-				userRequest.getAddress(), userRequest.getPhone(),
-				userRequest.getGender(), userRequest.getDateOfBirth());
+				userRequest.getAddress(),
+				userRequest.getPhone(),
+				userRequest.getGender(),
+				userRequest.getDateOfBirth()
+		);
 		userDTO.setUpdatedAt(LocalDateTime.now()); // Update the updatedAt field
 		UserBaseDTO updateUser = this.userService.updateUser(id, userDTO);
 		Log.info("Updating User " + userDTO.getName() + " with ID " + id);

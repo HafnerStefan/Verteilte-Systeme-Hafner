@@ -2,6 +2,7 @@ package ch.hftm.blog.boundry;
 
 import java.util.List;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
