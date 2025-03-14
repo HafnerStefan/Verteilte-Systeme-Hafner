@@ -9,6 +9,7 @@ import ch.hftm.blog.control.UserGraphQLService;
 import ch.hftm.blog.dto.UserGraphQL_DTO;
 import ch.hftm.blog.dto.requerstDTO.*;
 import ch.hftm.blog.entity.User;
+import ch.hftm.blog.exception.GraphQLExceptionHandler;
 import ch.hftm.blog.repository.UserRepository;
 import io.smallrye.jwt.auth.principal.JWTParser;
 import io.vertx.codegen.doc.Token;
@@ -57,68 +58,102 @@ public class UserResourceGraphQL {
     @Inject
     UserService userService;
 
+
     @Query("getAllUsers")
     @RolesAllowed({"User", "Admin"})
     @Description("Get all users")
     public List<UserGraphQL_DTO> getAllUsers() {
-        return userGraphQLService.getAllUsers();
+        try {
+            return userGraphQLService.getAllUsers();
+        } catch (Exception e) {
+            throw GraphQLExceptionHandler.handleGraphQLException(e);
+        }
     }
 
     @Query("getUserById")
-    @PermitAll
+    @RolesAllowed({"User", "Admin"})
     @Description("Get user by ID")
     public UserGraphQL_DTO getUserById(Long id) {
-        return userGraphQLService.getUserById(id);
+        try {
+            return userGraphQLService.getUserById(id);
+        } catch (Exception e) {
+            throw GraphQLExceptionHandler.handleGraphQLException(e);
+        }
     }
 
     @Query("getUsersByName")
-    @PermitAll
+    @RolesAllowed({"User", "Admin"})
     @Description("Get user by name")
     public List<UserGraphQL_DTO> getUserByName(String name) {
-        return userGraphQLService.getUsersByName(name);
+        try {
+            return userGraphQLService.getUsersByName(name);
+        } catch (Exception e) {
+            throw GraphQLExceptionHandler.handleGraphQLException(e);
+        }
     }
 
     @Query("getUsersByEmail")
-    @PermitAll
+    @RolesAllowed({"User", "Admin"})
     @Description("Get user by email")
     public UserGraphQL_DTO getUserByEmail(String email) {
-        return userGraphQLService.getUserByEmail(email);
+        try {
+            return userGraphQLService.getUserByEmail(email);
+        } catch (Exception e) {
+            throw GraphQLExceptionHandler.handleGraphQLException(e);
+        }
     }
 
     @Mutation
     @PermitAll
     @Description("Create a new user")
     public UserGraphQL_DTO createUser(UserCreateRequest input) {
-        User user = userService.addUser(UserMapper.toUserBaseDTO(input));
-        return UserMapper.toUserGraphQL_DTO(user);
+        try {
+            User user = userService.addUser(UserMapper.toUserBaseDTO(input));
+            return UserMapper.toUserGraphQL_DTO(user);
+        } catch (Exception e) {
+            throw GraphQLExceptionHandler.handleGraphQLException(e);
+        }
     }
 
     @Mutation
-    @PermitAll
+    @RolesAllowed({"User", "Admin"})
     @Description("Update a user")
     public UserGraphQL_DTO updateUser(UserRequest input) {
-        User user = userService.updateUser(UserMapper.toUserBaseDTO(input));
-        return UserMapper.toUserGraphQL_DTO(user);
+
+        try {
+            User user = userService.updateUser(UserMapper.toUserBaseDTO(input));
+            return UserMapper.toUserGraphQL_DTO(user);
+        } catch (Exception e) {
+            throw GraphQLExceptionHandler.handleGraphQLException(e);
+        }
     }
 
     @Mutation
-    @PermitAll
+    @RolesAllowed({"User", "Admin"})
     @Description("Delete a user")
     public boolean deleteUser(Long id) {
-        userService.deleteUser(id);
-        return true;
+        try {
+            userService.deleteUser(id);
+            return true;
+        } catch (Exception e) {
+            throw GraphQLExceptionHandler.handleGraphQLException(e);
+        }
     }
 
     @Mutation
     @PermitAll
     @Description("Login")
     public LoginResponse login(LoginRequest loginRequest) {
-        User user = userService.authenticateUser(loginRequest);
-        if (user != null) {
-            String token = userService.generateJwtToken(user.getId());
-            return new LoginResponse(true, token ,UserMapper.toUserGraphQL_DTO(user));
-        } else {
-            return new LoginResponse(false, null, null);
+        try {
+            User user = userService.authenticateUser(loginRequest);
+            if (user != null) {
+                String token = userService.generateJwtToken(user.getId());
+                return new LoginResponse(true, token, UserMapper.toUserGraphQL_DTO(user));
+            } else {
+                return new LoginResponse(false, null, null);
+            }
+        } catch (Exception e) {
+            throw GraphQLExceptionHandler.handleGraphQLException(e);
         }
     }
 }
