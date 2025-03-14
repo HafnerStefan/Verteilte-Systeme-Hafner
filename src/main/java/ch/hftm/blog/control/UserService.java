@@ -32,15 +32,9 @@ public class UserService {
 
 	@Inject
 	UserRepository userRepository;
-	@Inject
-	BlogService blogService;
-	@Inject
-	CommentService commentService;
 
 	@Inject
 	JsonWebToken jwtToken;
-
-
 
 	@Inject
 	JWTParser jwtParser;
@@ -105,7 +99,7 @@ public class UserService {
 	}
 
 	@Transactional
-	public UserBaseDTO addUser(UserBaseDTO userDTO) {
+	public User addUser(UserBaseDTO userDTO) {
 		if (emailExists(userDTO.getEmail())) {
 			throw new IllegalArgumentException("Email already exists: " + userDTO.getEmail());
 		}
@@ -115,11 +109,17 @@ public class UserService {
 		user.setCreatedAt(LocalDateTime.now());
 		user.setUpdatedAt(LocalDateTime.now());
 		userRepository.persist(user);
-		return UserMapper.toUserBaseDTO(user);
+		return user;
 	}
 
 	@Transactional
-	public UserBaseDTO updateUser(Long id, UserBaseDTO userBaseDTO) {
+	public User updateUser(UserBaseDTO userBaseDTO) {
+		Long id = userBaseDTO.getId();
+		return updateUser(id, userBaseDTO);
+	}
+
+	@Transactional
+	public User updateUser(Long id, UserBaseDTO userBaseDTO) {
 		User user = getUserById(id);
 		user.setName(userBaseDTO.getName());
 		user.setAge(userBaseDTO.getAge());
@@ -139,7 +139,7 @@ public class UserService {
 		user.setUpdatedAt(LocalDateTime.now());
 		Log.info("Updating User " + user.getName());
 		userRepository.persist(user);
-		return UserMapper.toUserBaseDTO(user);
+		return user;
 	}
 
 	@Transactional
@@ -177,7 +177,7 @@ public class UserService {
 
 
 
-	public UserBaseDTO authenticateUser(LoginRequest loginRequest) {
+	public User authenticateUser(LoginRequest loginRequest) {
 		String email = loginRequest.getEmail();
 		String password = loginRequest.getPassword();
 
@@ -188,7 +188,7 @@ public class UserService {
 		if (!user.getPassword().equals(password)) {
 			throw new IllegalArgumentException("Password is incorrect");
 		}
-		return UserMapper.toUserBaseDTO(user);
+		return user;
 	}
 
 
@@ -243,7 +243,6 @@ public class UserService {
 		if (user == null) {
 			throw new ObjectNotFoundException("User not found with id: " + userId);
 		}
-
 
 		long currentUserId = Long.parseLong(jwtToken.getSubject());
 		Set<String> roles = jwtToken.getGroups();

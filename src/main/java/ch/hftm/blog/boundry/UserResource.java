@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.hftm.blog.entity.User;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
@@ -126,7 +127,7 @@ public class UserResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(LoginRequest loginRequest) {
-		UserBaseDTO user = userService.authenticateUser(loginRequest);
+		User user = userService.authenticateUser(loginRequest);
 
 		Map<String, Object> response = new HashMap<>();
 		if (user != null) {
@@ -134,7 +135,7 @@ public class UserResource {
 			String token = userService.generateJwtToken(user.getId());
 
 			response.put("success", true);
-			response.put("user", user);
+			response.put("user", UserMapper.toUserBaseDTO(user));
 
 			return Response.ok(response)
 					.header("Authorization", "Bearer " + token)
@@ -180,19 +181,12 @@ public class UserResource {
 		Log.info("Received UserRequest: name=" + userCreateRequest.getName() + ", email="
 				+ userCreateRequest.getEmail());
 
-		UserBaseDTO userBaseDTO = new UserBaseDTO();
-		userBaseDTO.setName(userCreateRequest.getName());
-		userBaseDTO.setAge(userCreateRequest.getAge());
-		userBaseDTO.setEmail(userCreateRequest.getEmail());
-		userBaseDTO.setPassword(userCreateRequest.getPassword());
-		userBaseDTO.setAddress(userCreateRequest.getAddress());
-		userBaseDTO.setPhone(userCreateRequest.getPhone());
-		userBaseDTO.setGender(userCreateRequest.getGender());
-		userBaseDTO.setDateOfBirth(userCreateRequest.getDateOfBirth());
+		UserBaseDTO userBaseDTO = UserMapper.toUserBaseDTO(userCreateRequest);
 
-		UserBaseDTO createdUser = this.userService.addUser(userBaseDTO);
+		User createdUser = this.userService.addUser(userBaseDTO);
+		userBaseDTO = UserMapper.toUserBaseDTO(createdUser);
 		Log.info("Adding User " + createdUser.getName() + " with ID " + createdUser.getId());
-		return Response.status(Response.Status.CREATED).entity(createdUser).build();
+		return Response.status(Response.Status.CREATED).entity(userBaseDTO).build();
 	}
 
 	@PUT
@@ -218,9 +212,9 @@ public class UserResource {
 				userRequest.getDateOfBirth()
 		);
 		userDTO.setUpdatedAt(LocalDateTime.now()); // Update the updatedAt field
-		UserBaseDTO updateUser = this.userService.updateUser(id, userDTO);
+		User updateUser = this.userService.updateUser(id, userDTO);
 		Log.info("Updating User " + userDTO.getName() + " with ID " + id);
-		return Response.ok(updateUser).build();
+		return Response.ok(UserMapper.toUserBaseDTO(updateUser)).build();
 
 	}
 

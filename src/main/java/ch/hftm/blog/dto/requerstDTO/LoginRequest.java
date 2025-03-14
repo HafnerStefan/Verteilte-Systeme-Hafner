@@ -1,5 +1,9 @@
 package ch.hftm.blog.dto.requerstDTO;
 
+import org.eclipse.microprofile.graphql.Name;
+import org.eclipse.microprofile.graphql.Type;
+
+@Name("LoginRequest")
 public class LoginRequest {
     // Getter und Setter
     private String email;

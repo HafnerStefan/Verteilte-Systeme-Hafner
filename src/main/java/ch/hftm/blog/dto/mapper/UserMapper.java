@@ -3,11 +3,9 @@ package ch.hftm.blog.dto.mapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.hftm.blog.dto.BlogBaseDTO;
-import ch.hftm.blog.dto.CommentBaseDTO;
-import ch.hftm.blog.dto.UserBaseDTO;
-import ch.hftm.blog.dto.UserDetailsDTO;
-import ch.hftm.blog.dto.UserListDTO;
+import ch.hftm.blog.dto.*;
+import ch.hftm.blog.dto.requerstDTO.UserCreateRequest;
+import ch.hftm.blog.dto.requerstDTO.UserRequest;
 import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.Comment;
 import ch.hftm.blog.entity.User;
@@ -28,6 +26,41 @@ public class UserMapper {
                                 user.getCreatedAt(),
                                 user.getUpdatedAt()
                 );
+        }
+
+        public static UserBaseDTO toUserBaseDTO(UserCreateRequest userCreateRequest) {
+                if (userCreateRequest == null) {
+                        return null;
+                }
+
+                UserBaseDTO userBaseDTO = new UserBaseDTO();
+                userBaseDTO.setName(userCreateRequest.getName());
+                userBaseDTO.setAge(userCreateRequest.getAge());
+                userBaseDTO.setEmail(userCreateRequest.getEmail());
+                userBaseDTO.setPassword(userCreateRequest.getPassword());
+                userBaseDTO.setAddress(userCreateRequest.getAddress());
+                userBaseDTO.setPhone(userCreateRequest.getPhone());
+                userBaseDTO.setGender(userCreateRequest.getGender());
+                userBaseDTO.setDateOfBirth(userCreateRequest.getDateOfBirth());
+
+                return userBaseDTO;
+        }
+
+        public static UserBaseDTO toUserBaseDTO(UserRequest userRequest) {
+                if (userRequest== null) {
+                        return null;
+                }
+
+                UserBaseDTO userBaseDTO = new UserBaseDTO();
+                userBaseDTO.setName(userRequest.getName());
+                userBaseDTO.setAge(userRequest.getAge());
+                userBaseDTO.setEmail(userRequest.getEmail());
+                userBaseDTO.setAddress(userRequest.getAddress());
+                userBaseDTO.setPhone(userRequest.getPhone());
+                userBaseDTO.setGender(userRequest.getGender());
+                userBaseDTO.setDateOfBirth(userRequest.getDateOfBirth());
+
+                return userBaseDTO;
         }
 
         public static UserBaseDTO toUserBaseDTOFromUserDeatailsDTO(UserDetailsDTO user) {
@@ -123,6 +156,59 @@ public class UserMapper {
                                 blogBaseDTOS,
                                 commentBaseDTOS);
         }
+
+
+
+
+        public static UserGraphQL_DTO toUserGraphQL_DTO(User user) {
+                List<BlogBaseDTO> blogBaseDTOS = new ArrayList<>();
+                if (user.getBlogs() != null) {
+                        for (Blog blog : user.getBlogs()) {
+                                BlogBaseDTO blogBaseDTO = new BlogBaseDTO(
+                                                blog.getId(),
+                                                blog.getTitle(),
+                                                blog.getText(),
+                                                blog.getCreatedAt(),
+                                                blog.getUpdatedAt(),
+                                                blog.getUser().getId(),
+                                                blog.getUser().getName()
+
+                                // Comments are set separately
+                                );
+                                blogBaseDTOS.add(blogBaseDTO);
+                        }
+                }
+
+                List<CommentBaseDTO> commentBaseDTOS = new ArrayList<>();
+                if (user.getComments() != null) {
+                        for (Comment comment : user.getComments()) {
+                                CommentBaseDTO commentBaseDTO = new CommentBaseDTO(
+                                                comment.getId(),
+                                                comment.getText(),
+                                                comment.getCreatedAt(),
+                                                comment.getBlog().getId(),
+                                                comment.getUser().getId());
+                                commentBaseDTOS.add(commentBaseDTO);
+                        }
+                }
+
+                return new UserGraphQL_DTO(
+                                user.getId(),
+                                user.getName(),
+                                user.getAge(),
+                                user.getEmail(),
+                                user.getAddress(),
+                                user.getPhone(),
+                                user.getGender(),
+                                user.getDateOfBirth(),
+                                user.getCreatedAt(),
+                                user.getUpdatedAt(),
+                                user.getRolesList(),
+                                blogBaseDTOS,
+                                commentBaseDTOS
+                );
+        }
+
 
         public static User toUser(UserBaseDTO userBaseDTO) {
                 User user = new User();

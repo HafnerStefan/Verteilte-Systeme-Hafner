@@ -2,20 +2,25 @@ package ch.hftm.blog.dto.requerstDTO;
 
 import java.time.LocalDate;
 
+import org.eclipse.microprofile.graphql.Name;
+import org.eclipse.microprofile.graphql.NonNull;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Schema(name = "UserRequest", description = "Request payload for creating or updating a user")
+@Name("UserInput")
 public class UserRequest {
 
     // Getter
     @Schema(required = true, example = "Sandra Dubeli")
+    @NonNull
     private String name;
 
     @Schema(required = true, example = "32")
     private int age;
 
     @Schema(required = true, example = "sandra.dubeli@example.com")
+    @NonNull
     private String email;
 
     @Schema(example = "123 Main St, Anytown, AT 12345")

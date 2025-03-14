@@ -1,17 +1,13 @@
 package ch.hftm.blog.dto;
 
-import ch.hftm.blog.entity.Role;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.eclipse.microprofile.graphql.Name;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import org.eclipse.microprofile.graphql.NonNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+
 
 
 @Schema(name = "UserResponse", description = "Base DTO for user")
@@ -19,26 +15,37 @@ public class UserBaseDTO {
 
 	@Schema(required = true, example = "32126319")
 	private Long id;
+
 	@Schema(required = true, example = "Sandra Dubeli")
 	private String name;
+
 	@Schema(required = true, example = "32")
 	private int age;
+
 	@Schema(required = true, example = "sandra.dubeli@example.com")
 	private String email;
+
 	@Schema(hidden = true, minLength = 8, pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", example = "Password1234")
 	private String password;
+
 	@Schema(example = "123 Main St, Anytown, AT 12345")
 	private String address;
+
 	@Schema(example = "+41 78 965 26 15")
 	private String phone;
+
 	@Schema(example = "female")
 	private String gender;
+
 	@Schema(type = SchemaType.STRING, format = "date", example = "1988-12-31")
 	private LocalDate dateOfBirth;
+
 	@Schema(type = SchemaType.STRING, format = "date-time", example = "2023-01-02T12:00:00")
 	private LocalDateTime createdAt;
+
 	@Schema(type = SchemaType.STRING, format = "date-time", example = "2023-01-02T12:00:00")
 	private LocalDateTime updatedAt;
+
 	private List<String> roles;
 
 	// Default Constructor
