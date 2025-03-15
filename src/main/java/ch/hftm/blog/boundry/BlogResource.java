@@ -41,9 +41,6 @@ public class BlogResource {
 	@Inject
 	BlogService blogService;
 
-	@Inject
-	UserService userService;
-
 	@GET
 	@RolesAllowed({"User", "Admin"})
 	@Produces(MediaType.APPLICATION_JSON)

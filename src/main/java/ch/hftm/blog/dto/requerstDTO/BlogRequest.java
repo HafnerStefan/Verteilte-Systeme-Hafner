@@ -2,18 +2,23 @@ package ch.hftm.blog.dto.requerstDTO;
 
 import java.util.List;
 
+import org.eclipse.microprofile.graphql.Name;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import jakarta.annotation.Nullable;
 
 @Schema(name = "BlogRequest", description = "Request payload for creating or updating a blog")
+@Name("BlogRequest")
 public class BlogRequest {
     @Schema(required = true, example = "New Blog")
     private String title;
+
     @Schema(required = true, example = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra.")
     private String text;
+
     @Schema(required = true, example = "2023-06-15T10:15:30")
     private Long userId;
+
     @Nullable
     @Schema(example = "[12345, 67890, 13579]")
     private List<Long> commentIds;

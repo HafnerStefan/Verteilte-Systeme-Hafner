@@ -1,5 +1,8 @@
 package ch.hftm.blog.dto.requerstDTO;
 
+import org.eclipse.microprofile.graphql.Name;
+
+@Name("UserPasswordChange")
 public class PasswordChangeRequest {
 	// Getter und Setter
 	private String oldPassword;

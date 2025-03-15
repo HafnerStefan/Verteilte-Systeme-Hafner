@@ -161,6 +161,7 @@ public class UserMapper {
 
 
         public static UserGraphQL_DTO toUserGraphQL_DTO(User user) {
+               /*
                 List<BlogBaseDTO> blogBaseDTOS = new ArrayList<>();
                 if (user.getBlogs() != null) {
                         for (Blog blog : user.getBlogs()) {
@@ -192,6 +193,9 @@ public class UserMapper {
                         }
                 }
 
+                */
+
+
                 return new UserGraphQL_DTO(
                                 user.getId(),
                                 user.getName(),
@@ -204,8 +208,8 @@ public class UserMapper {
                                 user.getCreatedAt(),
                                 user.getUpdatedAt(),
                                 user.getRolesList(),
-                                blogBaseDTOS,
-                                commentBaseDTOS
+                                user.getBlogs(),
+                                user.getComments()
                 );
         }
 

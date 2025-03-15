@@ -1,4 +1,4 @@
-package ch.hftm.blog.dto.requerstDTO;
+package ch.hftm.blog.dto.responseDTO;
 
 import ch.hftm.blog.dto.UserGraphQL_DTO;
 import org.eclipse.microprofile.graphql.Type;
