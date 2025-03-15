@@ -1,9 +1,7 @@
 package ch.hftm.blog.boundry;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 import ch.hftm.blog.control.UserGraphQLService;
 import ch.hftm.blog.dto.UserGraphQL_DTO;
@@ -12,45 +10,27 @@ import ch.hftm.blog.entity.User;
 import ch.hftm.blog.exception.GraphQLExceptionHandler;
 import ch.hftm.blog.repository.UserRepository;
 import io.smallrye.jwt.auth.principal.JWTParser;
-import io.vertx.codegen.doc.Token;
+
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
-import jakarta.ws.rs.*;
+
 import org.eclipse.microprofile.graphql.Description;
 import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Mutation;
 import org.eclipse.microprofile.graphql.Query;
 import org.eclipse.microprofile.jwt.JsonWebToken;
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+
 
 import ch.hftm.blog.control.UserService;
-import ch.hftm.blog.dto.UserBaseDTO;
-import ch.hftm.blog.dto.UserDetailsDTO;
-import ch.hftm.blog.dto.UserListDTO;
 import ch.hftm.blog.dto.mapper.UserMapper;
-import io.quarkus.logging.Log;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
-import jakarta.validation.groups.Default;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+
 
 @ApplicationScoped
 @GraphQLApi
 public class UserResourceGraphQL {
-
-    @Inject
-    UserRepository userRepository;
-
-    @Inject
-    JsonWebToken jwtToken;
-
-    @Inject
-    JWTParser jwtParser;
 
     @Inject
     UserGraphQLService userGraphQLService;
