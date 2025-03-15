@@ -57,13 +57,7 @@ public class BlogGraphQLService {
 
         Log.info("Fetched " + blogs.size() + " blogs from page " + page);
 
-        PaginationResponse<Blog> response = new PaginationResponse<>();
-        response.content = blogs;
-        response.totalElements = totalElements;
-        response.page = page;
-        response.size = size;
-
-        return response;
+        return new PaginationResponse<>(blogs, totalElements, page, size);
     }
 
 
@@ -82,9 +76,9 @@ public class BlogGraphQLService {
         blog.setTitle(blogRequest.getTitle());
         blog.setText(blogRequest.getText());
 
-        User user = userRepository.findById(blogRequest.getUserId());
+        User user = userRepository.findById(blogRequest.getUser().getId());
         if (user == null) {
-            throw new ObjectNotFoundException("User with id " + blogRequest.getUserId() + " doesn't exist.");
+            throw new ObjectNotFoundException("User with id " + blogRequest.getUser().getId() + " doesn't exist.");
         } else {
             blog.setUser(user);
             blog.setCreatedAt(LocalDateTime.now());

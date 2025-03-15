@@ -25,9 +25,9 @@ public class BlogGraphQLResource {
     @Query("getAllBlog")
     @RolesAllowed({"User", "Admin"})
     @Description("Get all blogs")
-    public PaginationResponse<Blog> getAllBlog(PaginationParams paginationParams) {
+    public PaginationResponse<Blog> getBlogs(PaginationParams paginationParams) {
         PaginationResponse<Blog> allBlog = blogService.getAllBlog(paginationParams);
-        Log.info("Returning " + allBlog.content.size() + " blogs");
+        Log.info("Returning " + allBlog.getContent().size() + " blogs");
         return allBlog;
     }
 

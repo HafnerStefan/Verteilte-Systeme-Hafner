@@ -229,4 +229,23 @@ public class UserMapper {
                 user.setUpdatedAt(userBaseDTO.getUpdatedAt());
                 return user;
         }
+
+        public static User toUser(UserRequest userBaseDTO) {
+                User user = new User();
+                user.setId(userBaseDTO.getId());
+                user.setName(userBaseDTO.getName());
+                user.setAge(userBaseDTO.getAge());
+                user.setEmail(userBaseDTO.getEmail());
+                user.setPassword(userBaseDTO.getPassword());
+                user.setAddress(userBaseDTO.getAddress());
+                user.setPhone(userBaseDTO.getPhone());
+                user.setGender(userBaseDTO.getGender());
+                user.setDateOfBirth(userBaseDTO.getDateOfBirth());
+                user.setCreatedAt(userBaseDTO.getCreatedAt());
+                user.setUpdatedAt(userBaseDTO.getUpdatedAt());
+                return user;
+        }
+
+
+
 }

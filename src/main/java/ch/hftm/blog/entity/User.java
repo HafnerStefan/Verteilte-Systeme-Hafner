@@ -20,6 +20,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import org.eclipse.microprofile.graphql.Ignore;
 
 
 @Entity
@@ -46,6 +47,7 @@ public class User {
 
     @NotBlank(message = "Password must not be blank", groups = ValidationGroups.Create.class)
     @Size(min = 8, message = "Password must be at least 8 characters long", groups = ValidationGroups.Create.class)
+    @Ignore
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)

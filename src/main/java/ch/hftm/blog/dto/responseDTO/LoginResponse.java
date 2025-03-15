@@ -1,6 +1,7 @@
 package ch.hftm.blog.dto.responseDTO;
 
 import ch.hftm.blog.dto.UserGraphQL_DTO;
+import ch.hftm.blog.entity.User;
 import org.eclipse.microprofile.graphql.Type;
 
 @Type("LoginResponse")
@@ -8,12 +9,12 @@ public class LoginResponse {
 
     private boolean success;
     private String token;
-    private UserGraphQL_DTO user;
+    private User user;
 
     public LoginResponse() {
     }
 
-    public LoginResponse(boolean success, String token, UserGraphQL_DTO user) {
+    public LoginResponse(boolean success, String token, User user) {
         this.success = success;
         this.token = token;
         this.user = user;
@@ -37,11 +38,11 @@ public class LoginResponse {
         this.token = token;
     }
 
-    public UserGraphQL_DTO getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(UserGraphQL_DTO user) {
+    public void setUser(User user) {
         this.user = user;
     }
 }

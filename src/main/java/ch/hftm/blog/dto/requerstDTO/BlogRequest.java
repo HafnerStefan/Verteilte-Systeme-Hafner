@@ -2,6 +2,8 @@ package ch.hftm.blog.dto.requerstDTO;
 
 import java.util.List;
 
+import ch.hftm.blog.entity.Comment;
+import ch.hftm.blog.entity.User;
 import org.eclipse.microprofile.graphql.Name;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
@@ -16,31 +18,30 @@ public class BlogRequest {
     @Schema(required = true, example = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra.")
     private String text;
 
-    @Schema(required = true, example = "2023-06-15T10:15:30")
-    private Long userId;
+    @Schema( example = "xxxxx")
+    private User user;
 
     @Nullable
-    @Schema(example = "[12345, 67890, 13579]")
-    private List<Long> commentIds;
+    @Schema(example = "[xxxx]")
+    private List<Comment> comment;
 
     public BlogRequest() {
     }
 
-    public BlogRequest(String title, String text, Long userId) {
+    public BlogRequest(String title, String text, User user) {
         this.title = title;
         this.text = text;
-        this.userId = userId;
+        this.user = user;
 
     }
 
-    public BlogRequest(String title, String text, Long userId, List<Long> commentIds) {
+    public BlogRequest(String title, String text, User user, List<Comment> comment) {
         this.title = title;
         this.text = text;
-        this.userId = userId;
-        this.commentIds = commentIds;
+        this.user = user;
+        this.comment = comment;
 
     }
-
 
     public String getTitle() {
         return title;
@@ -58,20 +59,20 @@ public class BlogRequest {
         this.text = text;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return this.user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Nullable
-    public List<Long> getCommentIds() {
-        return commentIds;
+    public List<Comment> getComment() {
+        return comment;
     }
 
-    public void setCommentIds(@Nullable List<Long> commentIds) {
-        this.commentIds = commentIds;
+    public void setComment(@Nullable List<Comment> comment) {
+        this.comment = comment;
     }
 }

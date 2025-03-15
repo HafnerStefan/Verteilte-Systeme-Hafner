@@ -1,26 +1,36 @@
 package ch.hftm.blog.dto.requerstDTO;
 
+import ch.hftm.blog.entity.Blog;
+import ch.hftm.blog.entity.User;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
+import java.time.LocalDateTime;
 
 
 @Schema(name = "CommentRequest", description = "Request payload for creating comment")
 public class CommentRequest {
+
     @Schema(required = true, example = "Great post!")
     private String text;
-    @Schema(example = "12345")
-    private Long userId;
-    @Schema(example = "67890")
-    private Long blogId;
+
+    @Schema(type = SchemaType.STRING, format = "date-time", example = "2023-01-02T12:00:00")
+    private LocalDateTime createdAt;
+
+    @Schema(example = "xxx")
+    private User user;
+
+    @Schema(example = "xxxx")
+    private Blog blog;
 
 
     public CommentRequest() {
     }
 
-
-    public CommentRequest(String text, Long userId, Long blogId) {
+    public CommentRequest(String text, User user, Blog blog) {
         this.text = text;
-        this.userId = userId;
-        this.blogId = blogId;
+        this.user = user;
+        this.blog = blog;
     }
 
     public String getText() {
@@ -31,19 +41,27 @@ public class CommentRequest {
         this.text = text;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public Long getBlogId() {
-        return blogId;
+    public Blog getBlog() {
+        return blog;
     }
 
-    public void setBlogId(Long blogId) {
-        this.blogId = blogId;
+    public void setBlog(Blog blog) {
+        this.blog = blog;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
