@@ -5,6 +5,7 @@ import java.util.List;
 import ch.hftm.blog.entity.Comment;
 import ch.hftm.blog.entity.User;
 import org.eclipse.microprofile.graphql.Name;
+import org.eclipse.microprofile.graphql.NonNull;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import jakarta.annotation.Nullable;
@@ -18,7 +19,8 @@ public class BlogRequest {
     @Schema(required = true, example = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra.")
     private String text;
 
-    @Schema( example = "xxxxx")
+    @Schema(required = true, example = "xxxxx")
+    @NonNull
     private User user;
 
     @Nullable
@@ -75,4 +77,6 @@ public class BlogRequest {
     public void setComment(@Nullable List<Comment> comment) {
         this.comment = comment;
     }
+
+
 }

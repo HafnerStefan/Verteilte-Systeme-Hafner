@@ -69,27 +69,6 @@ public class BlogMapper {
                 username);
     }
 
-    /*    public static BlogDetailsDTO toBlogDetailsDTO(Blog blog) {
-        List<CommentBaseDTO> commentBaseDTOS = new ArrayList<>();
-        if (blog.getComments() != null) {
-            commentBaseDTOS = blog.getComments().stream()
-                    .map(CommentMapper::toCommentBaseDTO)
-                    .collect(Collectors.toList());
-        }
-    
-        UserBaseDTO userDTO = UserMapper.toUserBaseDTO(blog.getUser());
-    
-        return new BlogDetailsDTO(
-                blog.getId(),
-                blog.getTitle(),
-                blog.getText(),
-                blog.getCreatedAt(),
-                blog.getUpdatedAt(),
-    				commentBaseDTOS,
-                userDTO
-        );
-    }*/
-
     public static Blog toBlog(BlogRequest blogRequest) {
         Blog blog = new Blog();
         blog.setTitle(blogRequest.getTitle());

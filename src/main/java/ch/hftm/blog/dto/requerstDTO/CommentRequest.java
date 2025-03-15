@@ -2,6 +2,7 @@ package ch.hftm.blog.dto.requerstDTO;
 
 import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.User;
+import org.eclipse.microprofile.graphql.NonNull;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
@@ -17,10 +18,12 @@ public class CommentRequest {
     @Schema(type = SchemaType.STRING, format = "date-time", example = "2023-01-02T12:00:00")
     private LocalDateTime createdAt;
 
-    @Schema(example = "xxx")
+    @Schema(required = true, example = "xxx")
+    @NonNull
     private User user;
 
-    @Schema(example = "xxxx")
+    @Schema(required = true, example = "xxxx")
+    @NonNull
     private Blog blog;
 
 

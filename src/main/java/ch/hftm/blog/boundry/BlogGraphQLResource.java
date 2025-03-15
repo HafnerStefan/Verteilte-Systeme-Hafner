@@ -20,7 +20,7 @@ import org.eclipse.microprofile.graphql.Query;
 public class BlogGraphQLResource {
 
     @Inject
-    BlogGraphQLService blogService;
+    BlogService blogService;
 
     @Query("getAllBlog")
     @RolesAllowed({"User", "Admin"})
@@ -55,6 +55,15 @@ public class BlogGraphQLResource {
     public Blog createBlog(BlogRequest blogRequest) {
         Blog blog = blogService.addBlog(blogRequest);
         Log.info("Creating blog with title " + blogRequest.getTitle());
+        return blog;
+    }
+
+    @Mutation("updateBlog")
+    @RolesAllowed({"User", "Admin"})
+    @Description("Update blog")
+    public Blog updateBlog(int id, BlogRequest blogRequest) {
+        Blog blog = blogService.updateBlog((long) id, blogRequest);
+        Log.info("Updating blog with ID " + blog.getId());
         return blog;
     }
 

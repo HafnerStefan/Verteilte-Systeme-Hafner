@@ -1,7 +1,7 @@
 package ch.hftm.blog.boundry;
 
 
-import ch.hftm.blog.control.CommentGraphQLService;
+import ch.hftm.blog.control.CommentService;
 import ch.hftm.blog.dto.requerstDTO.CommentRequest;
 import ch.hftm.blog.dto.requerstDTO.PaginationParams;
 import ch.hftm.blog.dto.responseDTO.PaginationResponse;
@@ -20,7 +20,7 @@ import org.eclipse.microprofile.graphql.Query;
 public class CommentGraphQLResource {
 
     @Inject
-    CommentGraphQLService commentService;
+    CommentService commentService;
 
     @Query("getAllComments")
     @RolesAllowed({"User", "Admin"})
