@@ -6,6 +6,7 @@ import ch.hftm.blog.dto.requerstDTO.PaginationParams;
 import ch.hftm.blog.dto.responseDTO.PaginationResponse;
 import ch.hftm.blog.entity.Blog;
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.ws.rs.*;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -15,16 +16,6 @@ import ch.hftm.blog.dto.requerstDTO.BlogRequest;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.DefaultValue;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -53,9 +44,9 @@ public class BlogRESTResource {
 	}
 
 	//TODO fix this
-	/*
+/*
 	@GET
-	@Path("/{blogId}")
+	@Path("/{blogId}/commentsPagination")
 	@RolesAllowed({"User", "Admin"})
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponses({
@@ -63,12 +54,8 @@ public class BlogRESTResource {
 			@APIResponse(responseCode = "404", description = "Blog not found")
 	})
 	// FETCH BLOG BY ID
-	public Response getBlogById(@PathParam("blogId") Long id,
-			@QueryParam("commentStart") @DefaultValue("0") int commentStart,
-			@QueryParam("commentSize") @DefaultValue("15") int commentSize,
-			@QueryParam("sortByDateAsc") @DefaultValue("true") boolean sortByDateAsc) {
-		BlogDetailsDTO blogDetailsDTO = this.blogService.getBlogDetailsDTOById(id, commentStart, commentSize,
-				sortByDateAsc);
+	public Response getBlogById(@PathParam("blogId") Long id, @BeanParam PaginationParams paginationParams) {
+		BlogDetailsDTO blogDetailsDTO = this.blogService.getBlogCommentsPagination(id, paginationParams);
 		if (blogDetailsDTO == null) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		}
@@ -76,7 +63,7 @@ public class BlogRESTResource {
 		return Response.ok(blogDetailsDTO).build();
 
 	}
-	 */
+*/
 
 	//TODO Remove?
 	@GET

@@ -1,15 +1,9 @@
 package ch.hftm.blog.boundry;
 
-import java.util.List;
-
-import ch.hftm.blog.dto.UserListDTO;
-import ch.hftm.blog.dto.mapper.BlogMapper;
 import ch.hftm.blog.dto.mapper.CommentMapper;
-import ch.hftm.blog.dto.mapper.UserMapper;
 import ch.hftm.blog.dto.requerstDTO.PaginationParams;
 import ch.hftm.blog.dto.responseDTO.PaginationResponse;
 import ch.hftm.blog.entity.Comment;
-import ch.hftm.blog.entity.User;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -22,9 +16,6 @@ import ch.hftm.blog.dto.requerstDTO.CommentRequest;
 
 import ch.hftm.blog.control.CommentService;
 
-import ch.hftm.blog.dto.CommentWithBlogContextDTO;
-import ch.hftm.blog.dto.CommentWithBlogTitleDTO;
-
 import io.quarkus.logging.Log;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -35,28 +26,30 @@ import jakarta.ws.rs.core.Response;
 @Path("comment")
 @ApplicationScoped
 public class CommentRESTResource {
+
     @Inject
     CommentService commentService;
 
     @GET
+    @Path("/blogId/{blogId}")
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponse(responseCode = "200", description = "List of all Comments", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CommentBaseDTO[].class)))
     // GET COMMENTS
-    public Response getComments(PaginationParams paginationParams) {
-        PaginationResponse<Comment> comments = commentService.getComments(paginationParams);
-        PaginationResponse<CommentBaseDTO> userDTOsResponse = new PaginationResponse<>(
+    public Response getComments(@PathParam("blogId") Long blogId,@BeanParam PaginationParams paginationParams) {
+        PaginationResponse<Comment> comments = commentService.getComments(blogId, paginationParams);
+        PaginationResponse<CommentBaseDTO> commentDTOsResponse = new PaginationResponse<>(
                 comments.getContent().stream().map(CommentMapper::toCommentBaseDTO).toList(),
                 comments.getTotalElements(),
                 comments.getPage(),
                 comments.getSize()
         );
-        Log.info("Returning " + userDTOsResponse.getContent().size() + " users");
-        return Response.ok(userDTOsResponse).build();
+        Log.info("Returning " + commentDTOsResponse.getContent().size() + " users");
+        return Response.ok(commentDTOsResponse).build();
     }
 
     @GET
-    @Path("/commentId:{commentId}")
-    @RolesAllowed({"Admin"})
+    @Path("/{commentId}")
+    @RolesAllowed({"User","Admin"})
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponse(responseCode = "200", description = "Comment by ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CommentBaseDTO.class)))
     @APIResponse(responseCode = "404", description = "Comment not found")

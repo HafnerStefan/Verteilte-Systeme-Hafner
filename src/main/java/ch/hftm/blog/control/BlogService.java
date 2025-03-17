@@ -1,5 +1,6 @@
 package ch.hftm.blog.control;
 
+import ch.hftm.blog.dto.BlogDetailsDTO;
 import ch.hftm.blog.dto.requerstDTO.BlogRequest;
 import ch.hftm.blog.dto.requerstDTO.PaginationParams;
 import ch.hftm.blog.dto.responseDTO.PaginationResponse;
@@ -22,6 +23,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+
 
 @ApplicationScoped
 public class BlogService {
@@ -76,7 +78,9 @@ public class BlogService {
         blog.setTitle(blogRequest.getTitle());
         blog.setText(blogRequest.getText());
 
-        User user = userRepository.findById(blogRequest.getUser().getId());
+        long currentUserId = Long.parseLong(jwtToken.getSubject());
+
+        User user = userRepository.findById(currentUserId);
         if (user == null) {
             throw new ObjectNotFoundException("User with id " + blogRequest.getUser().getId() + " doesn't exist.");
         } else {
@@ -163,5 +167,32 @@ public class BlogService {
         Log.info("Deleting Blog " + blog.getTitle());
     }
 
+    /*
+    public BlogDetailsDTO getBlogCommentsPagination(Long id, PaginationParams paginationParams) {
+            int page = paginationParams.page;
+            int size = paginationParams.size;
+            String sortOrder = paginationParams.sortOrder;
 
+            List<Blog> blogs;
+
+            if ("desc".equalsIgnoreCase(sortOrder)) {
+                blogs = blogRepository.findAll(Sort.by("updatedAt").descending())
+                        .page(Page.of(page, size))
+                        .list();
+            } else {
+                blogs = blogRepository.findAll(Sort.by("updatedAt").ascending())
+                        .page(Page.of(page, size))
+                        .list();
+            }
+
+            long totalElements = blogRepository.count();
+
+            Log.info("Fetched " + blogs.size() + " blogs from page " + page);
+
+            return new PaginationResponse<>(blogs, totalElements, page, size);
+        }
+
+    }
+
+     */
 }

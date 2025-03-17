@@ -25,8 +25,8 @@ public class CommentGraphQLResource {
     @Query("getAllComments")
     @RolesAllowed({"User", "Admin"})
     @Description("Get all comments")
-    public PaginationResponse<Comment> getComments(PaginationParams paginationParams) {
-        PaginationResponse<Comment> allComments = commentService.getComments(paginationParams);
+    public PaginationResponse<Comment> getComments(Long blogId, PaginationParams paginationParams) {
+        PaginationResponse<Comment> allComments = commentService.getComments(blogId, paginationParams);
         Log.info("Returning " + allComments.getContent().size() + " comments");
         return allComments;
     }

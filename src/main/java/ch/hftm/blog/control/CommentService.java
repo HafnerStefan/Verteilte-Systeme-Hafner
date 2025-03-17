@@ -44,7 +44,7 @@ public class CommentService {
     @Inject
     CommentNotificationProducer commentNotificationProducer;
 
-    public PaginationResponse<Comment> getComments(PaginationParams paginationRequest) {
+    public PaginationResponse<Comment> getComments(Long blogId, PaginationParams paginationRequest) {
         int page = paginationRequest.page;
         int size = paginationRequest.size;
         String sortOrder = paginationRequest.sortOrder;
@@ -52,11 +52,13 @@ public class CommentService {
         List<Comment> comments;
 
         if ("desc".equalsIgnoreCase(sortOrder)) {
-            comments = commentRepository.findAll(Sort.by("updatedAt").descending())
+            comments = commentRepository.find(
+                            "blog.id = ?1",Sort.by("createdAt").descending(), blogId)
                     .page(Page.of(page, size))
                     .list();
         } else {
-            comments = commentRepository.findAll(Sort.by("updatedAt").ascending())
+            comments = commentRepository.find(
+                            "blog.id = ?1", Sort.by("createdAt").ascending(), blogId)
                     .page(Page.of(page, size))
                     .list();
         }

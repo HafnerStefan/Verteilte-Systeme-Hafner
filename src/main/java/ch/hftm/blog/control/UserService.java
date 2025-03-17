@@ -1,10 +1,7 @@
 package ch.hftm.blog.control;
 
 import ch.hftm.blog.dto.mapper.UserMapper;
-import ch.hftm.blog.dto.requerstDTO.LoginRequest;
-import ch.hftm.blog.dto.requerstDTO.PaginationParams;
-import ch.hftm.blog.dto.requerstDTO.PasswordChangeRequest;
-import ch.hftm.blog.dto.requerstDTO.UserRequest;
+import ch.hftm.blog.dto.requerstDTO.*;
 import ch.hftm.blog.dto.responseDTO.PaginationResponse;
 import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.Comment;
@@ -95,12 +92,12 @@ public class UserService {
     }
 
     @Transactional
-    public User addUser(UserRequest userRequest) {
-        if (emailExists(userRequest.getEmail())) {
-            throw new IllegalArgumentException("Email already exists: " + userRequest.getEmail());
+    public User addUser(UserCreateRequest userCreateRequest) {
+        if (emailExists(userCreateRequest.getEmail())) {
+            throw new IllegalArgumentException("Email already exists: " + userCreateRequest.getEmail());
         }
 
-        User user = UserMapper.toUser(userRequest);
+        User user = UserMapper.toUser(userCreateRequest);
         Log.info("Adding User " + user.getName());
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());

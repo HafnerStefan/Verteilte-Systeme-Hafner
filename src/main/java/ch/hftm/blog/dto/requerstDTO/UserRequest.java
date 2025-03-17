@@ -9,7 +9,7 @@ import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Schema(name = "UserRequest", description = "Request payload for creating or updating a user")
-@Name("UserInput")
+@Name("UserRequest")
 public class UserRequest {
 
     // Getter
@@ -19,9 +19,6 @@ public class UserRequest {
     @Schema(required = true, example = "Sandra Dubeli")
     @NonNull
     private String name;
-
-    @Schema(hidden = true, minLength = 8, pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", example = "Password1234")
-    private String password;
 
     @Schema(required = true, example = "32")
     private int age;
@@ -111,14 +108,6 @@ public class UserRequest {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public LocalDateTime getCreatedAt() {

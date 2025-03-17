@@ -44,7 +44,7 @@ public class UserRESTResource {
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponse(responseCode = "200", description = "List of all Users", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserListDTO[].class)))
     // GET USERS
-    public Response getUsers(PaginationParams paginationParams) {
+    public Response getUsers(@BeanParam PaginationParams paginationParams) {
         PaginationResponse<User> users = userService.getUsers(paginationParams);
         PaginationResponse<UserListDTO> userDTOsResponse = new PaginationResponse<>(
                 users.getContent().stream().map(UserMapper::toUserListDTO).toList(),

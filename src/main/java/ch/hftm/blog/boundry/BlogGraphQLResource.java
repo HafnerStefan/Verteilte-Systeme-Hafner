@@ -1,12 +1,13 @@
 package ch.hftm.blog.boundry;
 
-import ch.hftm.blog.control.BlogGraphQLService;
 import ch.hftm.blog.control.BlogService;
 import ch.hftm.blog.dto.requerstDTO.BlogRequest;
 import ch.hftm.blog.dto.requerstDTO.PaginationParams;
 import ch.hftm.blog.dto.responseDTO.PaginationResponse;
 import ch.hftm.blog.entity.Blog;
 import io.quarkus.logging.Log;
+import io.quarkus.security.UnauthorizedException;
+import io.quarkus.vertx.http.runtime.CurrentVertxRequest;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -22,11 +23,14 @@ public class BlogGraphQLResource {
     @Inject
     BlogService blogService;
 
+    @Inject
+    CurrentVertxRequest request;
+
     @Query("getAllBlog")
     @RolesAllowed({"User", "Admin"})
     @Description("Get all blogs")
     public PaginationResponse<Blog> getBlogs(PaginationParams paginationParams) {
-        PaginationResponse<Blog> allBlog = blogService.getAllBlog(paginationParams);
+        PaginationResponse<Blog> allBlog = blogService.getBlogs(paginationParams);
         Log.info("Returning " + allBlog.getContent().size() + " blogs");
         return allBlog;
     }

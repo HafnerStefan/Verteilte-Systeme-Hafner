@@ -20,7 +20,6 @@ public class BlogRequest {
     private String text;
 
     @Schema(required = true, example = "xxxxx")
-    @NonNull
     private User user;
 
     @Nullable

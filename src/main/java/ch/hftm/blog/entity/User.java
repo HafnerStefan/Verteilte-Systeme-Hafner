@@ -57,6 +57,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     @JsonManagedReference
+    @Ignore
     private Set<Role> roles = new HashSet<>();
 
     private String address;
