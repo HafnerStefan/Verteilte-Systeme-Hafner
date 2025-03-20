@@ -26,7 +26,7 @@ public class BlogGraphQLResource {
     @Inject
     CurrentVertxRequest request;
 
-    @Query("getAllBlog")
+    @Query("getBlogs")
     @RolesAllowed({"User", "Admin"})
     @Description("Get all blogs")
     public PaginationResponse<Blog> getBlogs(PaginationParams paginationParams) {

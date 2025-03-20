@@ -41,12 +41,10 @@ public class Comment {
     private String emailMessageId;  // ID der gesendeten E-Mail für Nachverfolgung
 
     @ManyToOne
-    @JsonIgnore
     @NotNull(message = "Comment need a Blog")
     private Blog blog;
 
     @ManyToOne
-    @JsonIgnore
     @NotNull(message = "Comment need a User")
     private User user;
 

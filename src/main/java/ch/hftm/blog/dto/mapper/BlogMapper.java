@@ -46,10 +46,11 @@ public class BlogMapper {
                 commentIds);
     }
 
-    public static BlogDetailsDTO toBlogDetailsDTO(Blog blog, List<Comment> sortedAndPaginatedComments) {
+    public static BlogDetailsDTO toBlogDetailsDTO(Blog blog) {
+        List<Comment> comments = blog.getComments();
         List<CommentDetailDTO> commentDetailDTOS = new ArrayList<>();
-        if (sortedAndPaginatedComments != null) {
-            commentDetailDTOS = sortedAndPaginatedComments.stream()
+        if (comments != null) {
+            commentDetailDTOS = comments.stream()
                     .map(CommentMapper::toCommentDetailDTO) // Verwende CommentDetailDTO
                     .collect(Collectors.toList());
         }
@@ -67,23 +68,5 @@ public class BlogMapper {
                 commentDetailDTOS,
                 userDTO,
                 username);
-    }
-
-    public static Blog toBlog(BlogRequest blogRequest) {
-        Blog blog = new Blog();
-        blog.setTitle(blogRequest.getTitle());
-        blog.setText(blogRequest.getText());
-        // User and comments are usually set separately
-        return blog;
-    }
-
-    public static Blog toBlog(BlogBaseDTO blogBaseDTO) {
-        Blog blog = new Blog();
-        blog.setTitle(blogBaseDTO.getTitle());
-        blog.setText(blogBaseDTO.getText());
-        blog.setCreatedAt(blogBaseDTO.getCreatedAt());
-        blog.setUpdatedAt(blogBaseDTO.getUpdatedAt());
-        // User and comments are usually set separately
-        return blog;
     }
 }

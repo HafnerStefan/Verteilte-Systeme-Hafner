@@ -21,7 +21,6 @@ public class UserCreateRequest extends UserRequest {
 	@NonNull
 	private String password;
 
-
 	public @NotBlank(message = "Password must not be blank", groups = ValidationGroups.Create.class) @Size(min = 8, message = "Password must be at least 8 characters long", groups = {Default.class, ValidationGroups.Create.class}) String getPassword() {
 		return password;
 	}

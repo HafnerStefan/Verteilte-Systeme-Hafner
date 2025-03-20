@@ -28,12 +28,6 @@ public class CommentBaseDTO {
     public CommentBaseDTO() {
     }
 
-    public CommentBaseDTO(String text, Long blogId, Long userId) {
-        this.text = text;
-        this.blogId = blogId;
-        this.userId = userId;
-    }
-
     public CommentBaseDTO(Long id, String text, LocalDateTime createdAt, Long blogId, Long userId) {
         this.id = id;
         this.text = text;

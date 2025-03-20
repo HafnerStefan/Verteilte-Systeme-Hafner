@@ -22,20 +22,4 @@ public class BlogListDTO extends BlogBaseDTO {
 		super(id, title, text, createdAt, updatedAt, userId,username);
 		this.commentsIds = commentsIds;
 	}
-
-	// Constructor with basic fields
-	public BlogListDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt, Long userId,String username) {
-		super(id, title, text, createdAt, updatedAt, userId,username);
-	}
-
-	// Getter and Setter
-
-
-	public List<Long> getCommentsIds() {
-		return commentsIds;
-	}
-
-	public void setCommentsIds(List<Long> commentsIds) {
-		this.commentsIds = commentsIds;
-	}
 }

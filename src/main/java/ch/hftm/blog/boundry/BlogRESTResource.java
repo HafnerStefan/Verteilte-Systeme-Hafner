@@ -1,10 +1,12 @@
 package ch.hftm.blog.boundry;
 
+import ch.hftm.blog.control.CommentService;
 import ch.hftm.blog.dto.*;
 import ch.hftm.blog.dto.mapper.BlogMapper;
 import ch.hftm.blog.dto.requerstDTO.PaginationParams;
 import ch.hftm.blog.dto.responseDTO.PaginationResponse;
 import ch.hftm.blog.entity.Blog;
+import ch.hftm.blog.entity.Comment;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -19,6 +21,8 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.util.List;
+
 @Path("blog")
 // Unter welchem Web-Pfad die Ressource erreichbar ist. Diese Annotation darfst du zusätzlich auch direkt über der Methode anbringen
 @ApplicationScoped
@@ -26,6 +30,9 @@ public class BlogRESTResource {
 
 	@Inject
 	BlogService blogService;
+
+	@Inject
+	CommentService commentService;
 
 	@GET
 	@RolesAllowed({"User", "Admin"})
@@ -44,9 +51,9 @@ public class BlogRESTResource {
 	}
 
 	//TODO fix this
-/*
+
 	@GET
-	@Path("/{blogId}/commentsPagination")
+	@Path("/{blogId}")
 	@RolesAllowed({"User", "Admin"})
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponses({
@@ -54,8 +61,8 @@ public class BlogRESTResource {
 			@APIResponse(responseCode = "404", description = "Blog not found")
 	})
 	// FETCH BLOG BY ID
-	public Response getBlogById(@PathParam("blogId") Long id, @BeanParam PaginationParams paginationParams) {
-		BlogDetailsDTO blogDetailsDTO = this.blogService.getBlogCommentsPagination(id, paginationParams);
+	public Response getBlogById(@PathParam("blogId") Long id) {
+		BlogDetailsDTO blogDetailsDTO = BlogMapper.toBlogDetailsDTO(blogService.getBlogById(id));
 		if (blogDetailsDTO == null) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		}
@@ -63,7 +70,7 @@ public class BlogRESTResource {
 		return Response.ok(blogDetailsDTO).build();
 
 	}
-*/
+
 
 	//TODO Remove?
 	@GET

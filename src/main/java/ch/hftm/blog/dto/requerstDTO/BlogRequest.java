@@ -5,7 +5,6 @@ import java.util.List;
 import ch.hftm.blog.entity.Comment;
 import ch.hftm.blog.entity.User;
 import org.eclipse.microprofile.graphql.Name;
-import org.eclipse.microprofile.graphql.NonNull;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import jakarta.annotation.Nullable;
@@ -33,7 +32,6 @@ public class BlogRequest {
         this.title = title;
         this.text = text;
         this.user = user;
-
     }
 
     public BlogRequest(String title, String text, User user, List<Comment> comment) {
@@ -41,7 +39,6 @@ public class BlogRequest {
         this.text = text;
         this.user = user;
         this.comment = comment;
-
     }
 
     public String getTitle() {

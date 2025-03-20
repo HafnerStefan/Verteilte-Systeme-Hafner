@@ -12,8 +12,6 @@ public class BlogDetailsDTO extends BlogBaseDTO {
 	@Schema(description = "User details")
 	private UserBaseDTO user;
 
-
-
 	// Default constructor
 	public BlogDetailsDTO() {
 		super();
@@ -29,14 +27,7 @@ public class BlogDetailsDTO extends BlogBaseDTO {
 
 	}
 
-	// Constructor with basic fields
-	public BlogDetailsDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt,
-			Long userId,String username) {
-		super(id, title, text, createdAt, updatedAt, userId, username);
-	}
-
 	// Getter and Setter
-
 	public List<CommentDetailDTO> getComments() {
 		return comments;
 	}

@@ -22,39 +22,12 @@ public class UserListDTO extends UserBaseDTO {
 		super();
 	}
 
-	// Constructor with all parameters
-	public UserListDTO(Long id, String name, int age, String email, String password, String address, String phone,
-					   String gender, LocalDate dateOfBirth, List<String> roles, LocalDateTime createdAt, LocalDateTime updatedAt,
-					   List<Long> blogIds, List<Long> commentIds) {
-		super(id, name, age, email, password, address, phone, gender, dateOfBirth, roles, createdAt, updatedAt);
-		this.blogIds = blogIds;
-		this.commentIds = commentIds;
-	}
-
 	// Constructor without password
 	public UserListDTO(Long id, String name, int age, String email, String address, String phone,
 					   String gender, LocalDate dateOfBirth,List<String> roles, LocalDateTime createdAt, LocalDateTime updatedAt,
 					   List<Long> blogIds, List<Long> commentIds) {
 		super(id, name, age, email, address, phone, gender, dateOfBirth, roles, createdAt, updatedAt);
 		this.blogIds = blogIds;
-		this.commentIds = commentIds;
-	}
-
-	// Getter and Setter
-
-	public List<Long> getBlogIds() {
-		return blogIds;
-	}
-
-	public void setBlogIds(List<Long> blogIds) {
-		this.blogIds = blogIds;
-	}
-
-	public List<Long> getCommentIds() {
-		return commentIds;
-	}
-
-	public void setCommentIds(List<Long> commentIds) {
 		this.commentIds = commentIds;
 	}
 }

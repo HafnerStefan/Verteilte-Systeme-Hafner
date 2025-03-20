@@ -1,6 +1,5 @@
 package ch.hftm.blog.dto.responseDTO;
 
-import ch.hftm.blog.dto.UserGraphQL_DTO;
 import ch.hftm.blog.entity.User;
 import org.eclipse.microprofile.graphql.Type;
 

@@ -35,7 +35,7 @@ public class UserGraphQLResource {
     @Inject
     UserService userService;
 
-    @Query("getAllUsers")
+    @Query("getUsers")
     @RolesAllowed({"User", "Admin"})
     @Description("Get all users")
     public PaginationResponse<User> getUsers(PaginationParams paginationParams) {

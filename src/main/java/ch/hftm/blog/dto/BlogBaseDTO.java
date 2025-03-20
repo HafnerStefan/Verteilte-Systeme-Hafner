@@ -26,13 +26,6 @@ public class BlogBaseDTO {
     public BlogBaseDTO() {
     }
 
-    // Constructor ADD NEW BLOG
-    public BlogBaseDTO(String title, String text, Long userId) {
-        this.title = title;
-        this.text = text;
-        this.userId = userId;
-    }
-
     // Constructor without comments
     public BlogBaseDTO(Long id, String title, String text, LocalDateTime createdAt, LocalDateTime updatedAt,
             Long userId,String username) {
@@ -46,7 +39,6 @@ public class BlogBaseDTO {
     }
 
     // Getter and Setter
-
 
     public Long getId() {
         return id;

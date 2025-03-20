@@ -85,20 +85,6 @@ public class UserBaseDTO {
 		this.roles = roles;
 	}
 
-	// Constructor without password
-	public UserBaseDTO(Long id, String name, int age, String email, String address, String phone,
-					   String gender, LocalDate dateOfBirth) {
-		this.id = id;
-		this.name = name;
-		this.age = age;
-		this.email = email;
-		this.address = address;
-		this.phone = phone;
-		this.gender = gender;
-		this.dateOfBirth = dateOfBirth;
-
-	}
-
 	// Getter and Setter
 
 	public Long getId() {
@@ -188,7 +174,6 @@ public class UserBaseDTO {
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
-
 
 	public List<String>  getRoles() {
 		return roles;

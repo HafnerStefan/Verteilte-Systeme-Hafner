@@ -16,15 +16,6 @@ public class CommentMapper {
                 comment.getUser().getId());
     }
 
-    public static Comment toComment(CommentBaseDTO commentBaseDTO) {
-        Comment comment = new Comment();
-        comment.setText(commentBaseDTO.getText());
-        comment.setCreatedAt(commentBaseDTO.getCreatedAt());
-
-        // Blog and user are usually set separately
-        return comment;
-    }
-
     public static Comment toComment(CommentRequest commentRequest) {
         Comment comment = new Comment();
         comment.setText(commentRequest.getText());
@@ -35,8 +26,6 @@ public class CommentMapper {
         // Blog and user are usually set separately
         return comment;
     }
-
-
 
     public static CommentDetailDTO toCommentDetailDTO(Comment comment) {
         String username = comment.getUser().getName();
@@ -49,5 +38,4 @@ public class CommentMapper {
                 comment.getUser().getId(),
                 username);
     }
-
 }

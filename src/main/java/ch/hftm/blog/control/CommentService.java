@@ -62,7 +62,7 @@ public class CommentService {
                     .page(Page.of(page, size))
                     .list();
         }
-        long totalElements = blogRepository.count();
+        long totalElements = commentRepository.countByBlogId(blogId);
         Log.info("Fetched " + comments.size() + " blogs from page " + page);
 
         return new PaginationResponse<>(comments, totalElements, page, size);

@@ -35,6 +35,8 @@ public class BlogService {
     @Inject
     CommentRepository commentRepository;
     @Inject
+    CommentService commentService;
+    @Inject
     JsonWebToken jwtToken;
 
 
@@ -166,33 +168,4 @@ public class BlogService {
 
         Log.info("Deleting Blog " + blog.getTitle());
     }
-
-    /*
-    public BlogDetailsDTO getBlogCommentsPagination(Long id, PaginationParams paginationParams) {
-            int page = paginationParams.page;
-            int size = paginationParams.size;
-            String sortOrder = paginationParams.sortOrder;
-
-            List<Blog> blogs;
-
-            if ("desc".equalsIgnoreCase(sortOrder)) {
-                blogs = blogRepository.findAll(Sort.by("updatedAt").descending())
-                        .page(Page.of(page, size))
-                        .list();
-            } else {
-                blogs = blogRepository.findAll(Sort.by("updatedAt").ascending())
-                        .page(Page.of(page, size))
-                        .list();
-            }
-
-            long totalElements = blogRepository.count();
-
-            Log.info("Fetched " + blogs.size() + " blogs from page " + page);
-
-            return new PaginationResponse<>(blogs, totalElements, page, size);
-        }
-
-    }
-
-     */
 }

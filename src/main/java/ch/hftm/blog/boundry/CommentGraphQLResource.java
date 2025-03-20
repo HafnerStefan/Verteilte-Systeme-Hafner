@@ -22,7 +22,7 @@ public class CommentGraphQLResource {
     @Inject
     CommentService commentService;
 
-    @Query("getAllComments")
+    @Query("getComments")
     @RolesAllowed({"User", "Admin"})
     @Description("Get all comments")
     public PaginationResponse<Comment> getComments(Long blogId, PaginationParams paginationParams) {
