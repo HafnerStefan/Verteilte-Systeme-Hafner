@@ -65,7 +65,7 @@ services:
 
   # Quarkus Blog-Backend-Service
   quarkus-blog-backend:
-    image: ghcr.io/hafnerstefan/quarkus-blog-backend:1.1.0
+    image: ghcr.io/hafnerstefan/quarkus-blog-backend:1.1.1
     container_name: quarkus-blog-backend_1
     environment:
       KAFKA_BOOTSTRAP_SERVERS: redpanda-1:9092
