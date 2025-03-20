@@ -50,8 +50,6 @@ public class BlogRESTResource {
 		return Response.ok(blogDTOs).build();
 	}
 
-	//TODO fix this
-
 	@GET
 	@Path("/{blogId}")
 	@RolesAllowed({"User", "Admin"})
