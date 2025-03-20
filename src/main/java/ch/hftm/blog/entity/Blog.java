@@ -17,11 +17,12 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.eclipse.microprofile.graphql.Type;
 
 
 @Entity
 @Table(name = "blog")
-
+@Type("Blog")
 public class Blog {
     // Getter and Setter
     @Id

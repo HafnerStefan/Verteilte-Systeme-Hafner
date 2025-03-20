@@ -1,5 +1,7 @@
 package ch.hftm.blog.dto;
 
+import ch.hftm.blog.entity.Blog;
+import ch.hftm.blog.entity.Comment;
 import jakarta.validation.constraints.*;
 import org.eclipse.microprofile.graphql.Description;
 import org.eclipse.microprofile.graphql.Name;
@@ -14,7 +16,7 @@ import java.util.List;
 
 
 @Schema(name = "UserResponse", description = "Base DTO for user")
-@Type("User")
+@Type("UserDTO")
 public class UserGraphQL_DTO {
 
     @NonNull
@@ -45,9 +47,9 @@ public class UserGraphQL_DTO {
 
     private List<String> roles;
 
-    private List<BlogBaseDTO> blogs;
+    private List<Blog> blogs;
 
-    private List<CommentBaseDTO> comments;
+    private List<Comment> comments;
 
 
     // Default Constructor
@@ -65,8 +67,8 @@ public class UserGraphQL_DTO {
                            LocalDateTime createdAt,
                            LocalDateTime updatedAt,
                            List<String> roles,
-                           List<BlogBaseDTO> blogs,
-                           List<CommentBaseDTO> comments
+                           List<Blog> blogs,
+                           List<Comment> comments
     ) {
         this.id = id;
         this.name = name;
@@ -199,19 +201,19 @@ public class UserGraphQL_DTO {
         this.roles = roles;
     }
 
-    public List<BlogBaseDTO> getBlogs() {
+    public List<Blog> getBlogs() {
         return blogs;
     }
 
-    public void setBlogs(List<BlogBaseDTO> blogs) {
+    public void setBlogs(List<Blog> blogs) {
         this.blogs = blogs;
     }
 
-    public List<CommentBaseDTO> getComments() {
+    public List<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(List<CommentBaseDTO> comments) {
+    public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
 

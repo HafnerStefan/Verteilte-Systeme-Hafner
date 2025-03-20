@@ -157,59 +157,6 @@ public class UserMapper {
                                 commentBaseDTOS);
         }
 
-
-
-
-        public static UserGraphQL_DTO toUserGraphQL_DTO(User user) {
-                List<BlogBaseDTO> blogBaseDTOS = new ArrayList<>();
-                if (user.getBlogs() != null) {
-                        for (Blog blog : user.getBlogs()) {
-                                BlogBaseDTO blogBaseDTO = new BlogBaseDTO(
-                                                blog.getId(),
-                                                blog.getTitle(),
-                                                blog.getText(),
-                                                blog.getCreatedAt(),
-                                                blog.getUpdatedAt(),
-                                                blog.getUser().getId(),
-                                                blog.getUser().getName()
-
-                                // Comments are set separately
-                                );
-                                blogBaseDTOS.add(blogBaseDTO);
-                        }
-                }
-
-                List<CommentBaseDTO> commentBaseDTOS = new ArrayList<>();
-                if (user.getComments() != null) {
-                        for (Comment comment : user.getComments()) {
-                                CommentBaseDTO commentBaseDTO = new CommentBaseDTO(
-                                                comment.getId(),
-                                                comment.getText(),
-                                                comment.getCreatedAt(),
-                                                comment.getBlog().getId(),
-                                                comment.getUser().getId());
-                                commentBaseDTOS.add(commentBaseDTO);
-                        }
-                }
-
-                return new UserGraphQL_DTO(
-                                user.getId(),
-                                user.getName(),
-                                user.getAge(),
-                                user.getEmail(),
-                                user.getAddress(),
-                                user.getPhone(),
-                                user.getGender(),
-                                user.getDateOfBirth(),
-                                user.getCreatedAt(),
-                                user.getUpdatedAt(),
-                                user.getRolesList(),
-                                blogBaseDTOS,
-                                commentBaseDTOS
-                );
-        }
-
-
         public static User toUser(UserBaseDTO userBaseDTO) {
                 User user = new User();
                 user.setId(userBaseDTO.getId());
@@ -225,4 +172,23 @@ public class UserMapper {
                 user.setUpdatedAt(userBaseDTO.getUpdatedAt());
                 return user;
         }
+
+        public static User toUser(UserCreateRequest userCreateRequest) {
+                User user = new User();
+                user.setId(userCreateRequest.getId());
+                user.setName(userCreateRequest.getName());
+                user.setAge(userCreateRequest.getAge());
+                user.setEmail(userCreateRequest.getEmail());
+                user.setPassword(userCreateRequest.getPassword());
+                user.setAddress(userCreateRequest.getAddress());
+                user.setPhone(userCreateRequest.getPhone());
+                user.setGender(userCreateRequest.getGender());
+                user.setDateOfBirth(userCreateRequest.getDateOfBirth());
+                user.setCreatedAt(userCreateRequest.getCreatedAt());
+                user.setUpdatedAt(userCreateRequest.getUpdatedAt());
+                return user;
+        }
+
+
+
 }

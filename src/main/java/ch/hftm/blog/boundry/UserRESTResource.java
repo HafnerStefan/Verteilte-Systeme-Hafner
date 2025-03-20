@@ -1,10 +1,12 @@
 package ch.hftm.blog.boundry;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import ch.hftm.blog.dto.requerstDTO.*;
+import ch.hftm.blog.dto.responseDTO.PaginationResponse;
 import ch.hftm.blog.entity.User;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -19,10 +21,6 @@ import ch.hftm.blog.dto.UserBaseDTO;
 import ch.hftm.blog.dto.UserDetailsDTO;
 import ch.hftm.blog.dto.UserListDTO;
 import ch.hftm.blog.dto.mapper.UserMapper;
-import ch.hftm.blog.dto.requerstDTO.LoginRequest;
-import ch.hftm.blog.dto.requerstDTO.PasswordChangeRequest;
-import ch.hftm.blog.dto.requerstDTO.UserCreateRequest;
-import ch.hftm.blog.dto.requerstDTO.UserRequest;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -31,10 +29,11 @@ import jakarta.validation.groups.Default;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+
 @Path("users")
 @ApplicationScoped
 
-public class UserResource {
+public class UserRESTResource {
 
     @Inject
     UserService userService;
@@ -45,10 +44,16 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponse(responseCode = "200", description = "List of all Users", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserListDTO[].class)))
     // GET USERS
-    public Response fetchAllUsers() {
-        List<UserListDTO> users = this.userService.getUsers();
-        Log.info("Returning " + users.size() + " users");
-        return Response.ok(users).build();
+    public Response getUsers(@BeanParam PaginationParams paginationParams) {
+        PaginationResponse<User> users = userService.getUsers(paginationParams);
+        PaginationResponse<UserListDTO> userDTOsResponse = new PaginationResponse<>(
+                users.getContent().stream().map(UserMapper::toUserListDTO).toList(),
+                users.getTotalElements(),
+                users.getPage(),
+                users.getSize()
+        );
+        Log.info("Returning " + userDTOsResponse.getContent().size() + " users");
+        return Response.ok(userDTOsResponse).build();
     }
 
     @GET
@@ -58,8 +63,8 @@ public class UserResource {
     @APIResponse(responseCode = "200", description = "User by ID", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDetailsDTO.class)))
     @APIResponse(responseCode = "404", description = "User not found")
     // GET USER BY ID
-    public Response fetchUserById(@PathParam("userId") Long id) {
-        UserDetailsDTO userDetailsDTO = this.userService.getUserDTOById(id);
+    public Response getUserById(@PathParam("userId") Long id) {
+        UserDetailsDTO userDetailsDTO = UserMapper.toUserDetailsDTO(userService.getUserById(id));
         Log.info("Returning User " + userDetailsDTO.getName() + " with ID " + id);
         return Response.ok(userDetailsDTO).build();
 
@@ -72,9 +77,9 @@ public class UserResource {
     @APIResponse(responseCode = "200", description = "User by Name", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDetailsDTO.class)))
     @APIResponse(responseCode = "404", description = "User not found")
     // GET USER BY NAME
-    public Response fetchUsersByName(@PathParam("userName") String name) {
+    public Response getUsersByName(@PathParam("userName") String name) {
 
-        List<UserDetailsDTO> users = this.userService.getUsersByName(name);
+        List<UserDetailsDTO> users = userService.getUsersByName(name).stream().map(UserMapper::toUserDetailsDTO).collect(Collectors.toList());
         for (UserDetailsDTO user : users) {
             Log.info("Returning founded User by Name " + name + " with ID " + user.getId());
         }
@@ -90,7 +95,7 @@ public class UserResource {
     @APIResponse(responseCode = "404", description = "User not found")
     // GET USER BY EMAIL
     public Response fetchUserByEmail(@PathParam("userEmail") String email) {
-        UserDetailsDTO userDetailsDTO = this.userService.getUserByEmail(email);
+        UserDetailsDTO userDetailsDTO = UserMapper.toUserDetailsDTO(userService.getUserByEmail(email));
         Log.info("Returning User " + userDetailsDTO.getName() + " found by Email " + email + " with ID "
                 + userDetailsDTO.getId());
         return Response.ok(userDetailsDTO).build();
@@ -135,7 +140,7 @@ public class UserResource {
         String token = authorizationHeader.substring("Bearer".length()).trim();
         Map<String, Object> response = new HashMap<>();
         try {
-            UserBaseDTO user = userService.validateJwtToken(token);
+            UserBaseDTO user = UserMapper.toUserBaseDTO(userService.validateJwtToken(token));
             response.put("success", true);
             response.put("user", user);
             return Response.ok(response).build(); // Token ist gültig
@@ -155,12 +160,10 @@ public class UserResource {
         Log.info("Received UserRequest: name=" + userCreateRequest.getName() + ", email="
                 + userCreateRequest.getEmail());
 
-        UserBaseDTO userBaseDTO = UserMapper.toUserBaseDTO(userCreateRequest);
+        UserBaseDTO createdUser= UserMapper.toUserBaseDTO(userService.addUser(userCreateRequest));
 
-        User createdUser = this.userService.addUser(userBaseDTO);
-        userBaseDTO = UserMapper.toUserBaseDTO(createdUser);
         Log.info("Adding User " + createdUser.getName() + " with ID " + createdUser.getId());
-        return Response.status(Response.Status.CREATED).entity(userBaseDTO).build();
+        return Response.status(Response.Status.CREATED).entity(createdUser).build();
     }
 
     @PUT
@@ -171,24 +174,11 @@ public class UserResource {
     @APIResponse(responseCode = "200", description = "User updated", content = @Content(schema = @Schema(implementation = UserBaseDTO.class)))
     @APIResponse(responseCode = "404", description = "User not found")
     // UPDATE USER
-    public Response updateUser(
-            @PathParam("userId") Long id,
+    public Response updateUser(@PathParam("userId") Long id,
             @Valid @jakarta.validation.groups.ConvertGroup(from = Default.class, to = ValidationGroups.Update.class) UserRequest userRequest) {
-
-        UserBaseDTO userDTO = new UserBaseDTO(
-                id,
-                userRequest.getName(),
-                userRequest.getAge(),
-                userRequest.getEmail(),
-                userRequest.getAddress(),
-                userRequest.getPhone(),
-                userRequest.getGender(),
-                userRequest.getDateOfBirth()
-        );
-        userDTO.setUpdatedAt(LocalDateTime.now()); // Update the updatedAt field
-        User updateUser = this.userService.updateUser(id, userDTO);
-        Log.info("Updating User " + userDTO.getName() + " with ID " + id);
-        return Response.ok(UserMapper.toUserBaseDTO(updateUser)).build();
+        UserBaseDTO updateUser = UserMapper.toUserBaseDTO(userService.updateUser(userRequest));
+        Log.info("Updating User " + userRequest.getName() + " with ID " + id);
+        return Response.ok(updateUser).build();
     }
 
     @PUT
@@ -198,7 +188,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response changePassword(@PathParam("id") Long id, PasswordChangeRequest passwordChangeRequest) {
         userService.changePassword(id, passwordChangeRequest);
-        UserBaseDTO updateUser = userService.getUserBaseDTOById(id);
+        UserBaseDTO updateUser = UserMapper.toUserBaseDTO(userService.getUserById(id));
         Log.info("Changing password for User " + updateUser.getName() + " with ID " + id);
         return Response.ok(updateUser).build();
 
@@ -212,10 +202,9 @@ public class UserResource {
             @APIResponse(responseCode = "200", description = "User deleted", content = @Content(schema = @Schema(implementation = UserDetailsDTO.class))),
             @APIResponse(responseCode = "404", description = "User not found")
     })
-
     // REMOVE USER
     public Response removeUser(@PathParam("userId") Long id) {
-        UserDetailsDTO userDetailsDTO = this.userService.getUserDTOById(id);
+        UserDetailsDTO userDetailsDTO = UserMapper.toUserDetailsDTO(userService.getUserById(id));;
         this.userService.deleteUser(id);
         Log.info("Deleting User " + userDetailsDTO.getName() + " with ID " + id);
         return Response.ok(userDetailsDTO).build();

@@ -1,6 +1,7 @@
 package ch.hftm.blog.dto.requerstDTO;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.eclipse.microprofile.graphql.Name;
 import org.eclipse.microprofile.graphql.NonNull;
@@ -8,10 +9,13 @@ import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Schema(name = "UserRequest", description = "Request payload for creating or updating a user")
-@Name("UserInput")
+@Name("UserRequest")
 public class UserRequest {
 
     // Getter
+    @Schema(example = "32126319")
+    private Long id;
+
     @Schema(required = true, example = "Sandra Dubeli")
     @NonNull
     private String name;
@@ -35,6 +39,20 @@ public class UserRequest {
     @Schema(type = SchemaType.STRING, format = "date", example = "1988-12-31")
     private LocalDate dateOfBirth;
 
+    @Schema(type = SchemaType.STRING, format = "date-time", example = "2023-01-02T12:00:00")
+    private LocalDateTime createdAt;
+
+    @Schema(type = SchemaType.STRING, format = "date-time", example = "2023-01-02T12:00:00")
+    private LocalDateTime updatedAt;
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -90,5 +108,21 @@ public class UserRequest {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

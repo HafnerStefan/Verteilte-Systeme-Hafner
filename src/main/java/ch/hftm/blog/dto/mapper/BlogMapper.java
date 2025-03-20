@@ -9,6 +9,7 @@ import ch.hftm.blog.dto.BlogDetailsDTO;
 import ch.hftm.blog.dto.BlogListDTO;
 import ch.hftm.blog.dto.CommentDetailDTO;
 import ch.hftm.blog.dto.UserBaseDTO;
+import ch.hftm.blog.dto.requerstDTO.BlogRequest;
 import ch.hftm.blog.entity.Blog;
 import ch.hftm.blog.entity.Comment;
 
@@ -68,26 +69,13 @@ public class BlogMapper {
                 username);
     }
 
-    /*    public static BlogDetailsDTO toBlogDetailsDTO(Blog blog) {
-        List<CommentBaseDTO> commentBaseDTOS = new ArrayList<>();
-        if (blog.getComments() != null) {
-            commentBaseDTOS = blog.getComments().stream()
-                    .map(CommentMapper::toCommentBaseDTO)
-                    .collect(Collectors.toList());
-        }
-    
-        UserBaseDTO userDTO = UserMapper.toUserBaseDTO(blog.getUser());
-    
-        return new BlogDetailsDTO(
-                blog.getId(),
-                blog.getTitle(),
-                blog.getText(),
-                blog.getCreatedAt(),
-                blog.getUpdatedAt(),
-    				commentBaseDTOS,
-                userDTO
-        );
-    }*/
+    public static Blog toBlog(BlogRequest blogRequest) {
+        Blog blog = new Blog();
+        blog.setTitle(blogRequest.getTitle());
+        blog.setText(blogRequest.getText());
+        // User and comments are usually set separately
+        return blog;
+    }
 
     public static Blog toBlog(BlogBaseDTO blogBaseDTO) {
         Blog blog = new Blog();
