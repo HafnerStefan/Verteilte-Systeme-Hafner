@@ -2,6 +2,7 @@ package ch.hftm.blog.dto.requerstDTO;
 
 import org.eclipse.microprofile.graphql.Name;
 
+
 @Name("UserPasswordChange")
 public class PasswordChangeRequest {
 	// Getter und Setter
@@ -14,6 +15,14 @@ public class PasswordChangeRequest {
 
 	public String getNewPassword() {
 		return newPassword;
+	}
+
+	public void setOldPassword(String oldPassword) {
+		this.oldPassword = oldPassword;
+	}
+
+	public void setNewPassword(String newPassword) {
+		this.newPassword = newPassword;
 	}
 
 }

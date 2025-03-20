@@ -12,6 +12,9 @@ import io.quarkus.logging.Log;
 import io.quarkus.security.UnauthorizedException;
 import io.quarkus.vertx.http.runtime.CurrentVertxRequest;
 
+import io.smallrye.graphql.api.Subscription;
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.operators.multi.processors.BroadcastProcessor;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.annotation.security.PermitAll;
@@ -34,6 +37,8 @@ public class UserGraphQLResource {
 
     @Inject
     UserService userService;
+
+    BroadcastProcessor<User> processor = BroadcastProcessor.create();
 
     @Query("getUsers")
     @RolesAllowed({"User", "Admin"})
@@ -70,7 +75,14 @@ public class UserGraphQLResource {
     @Description("Create a new user")
     public User createUser(UserCreateRequest input) {
         User user = userService.addUser(input);
+        processor.onNext(user);
         return user;
+    }
+
+    @Subscription
+    @PermitAll
+    public Multi<User> userCreated(){
+        return processor;
     }
 
     @Mutation

@@ -1,72 +1,4 @@
-# Kafka-Verteilte-Systeme-Hafner Test
-
-# Image Laden
-
-```sh
-docker login --username <GITHUB_USERNAME> --password <TOKEN> ghcr.io
-docker pull ghcr.io/hafnerstefan/quarkus-email-service:1.1.0
-docker pull ghcr.io/hafnerstefan/quarkus-blog-backend:1.0.0
-```
-
-# Docker Compose starten
-```sh
-docker-compose -f src/main/docker/docker-compose-kafka.yml up -d
-```
-
-Es ist Nötig kurz einen User anzulegen und einen Blog zu erstellen.
-Zur Vereinfachung habe ich die Authentifizierung ausgeschaltet.
-
-### User erstellen
-```
-curl --request POST \
-  --url http://localhost:8080//users \
-  --header 'Content-Type: application/json' \
-  --data '{
-  "name": "Sandra Dubeli",
-  "age": 32,
-  "email": "3jane.doe@example.com",
-  "address": "123 Main St, Anytown, AT 12345",
-  "phone": "+41 78 965 00 00",
-  "gender": "female",
-  "dateOfBirth": "1988-12-31",
-  "password": "Password123!"
-}'
-```
-
-### Blog erstellen
-```
-curl --request POST \
---url http://localhost:8080//blog \
---header 'Authorization: Authorization eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJoZnRtIiwic3ViIjoiNjdhZjk1NGM5NmQ4YzE1MmQ5ZTRmMzBlIiwiZ3JvdXBzIjpbXSwiaWF0IjoxNzM5NTYwNzg3LCJleHAiOjE3NDIxNTI3ODcsImp0aSI6ImY0Nzk1YjZkLTMzOTctNDllNy1hNGU2LTg3OTdkODFkMjVlMSJ9.T8iKyrHKLdWq1u6__BLlZci5bziOIwOHV7gL3cS2w2p2C5U_aN8zZXUdGmHotf8IRabLlIytnzYT6y76HNlosopOJY1YW9E2H5qfGOpTfWnm1vVvdwJ0s-Lcz4DTqzCo20Ql4PPnC-Vb6yON9LIkV64N85q3tpzoIJI7I8f7b8U4PACpJPRr2Fb91z_DJEjoYdaNzGRmIPiu8-7avA7lygxB5JU2pMZeTzub4lz-sgxKNxY9pMGGXUcs6fv6DFNwIkHoPEUSyTs7BdcjiQCN9xjjjaP_bpqSn3QLnDc3AKtF-lBHnnFrTSxQF6F9hrDkJXNn-7Yw2KsQ-PDxchz1Qg' \
---header 'Content-Type: application/json' \
---data '{
-"title": "New Blog",
-"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet eu purus ac congue. Proin aliquam in enim aliquet viverra.",
-"userId": "1"
-}'
-```
-Kommentar kan mit folgene Query erstellt werden
-Danach sollte man in den Log die kommunikation der Consumer und Producer sehen
-
-Commentar wird an den `emailService` gesendet und dort wird ein Email versendet (Fake gemockt)
-Danach wird an der `emailService` das Backend darüber informiert das das Email versendet wurde.
-Mit der EmailMessage ID die in der DB von `emailService` gespeichert wurde.
-
-Das Email wird Asynchron gemockt versendet und hat eine 60% chance das es nicht versendet wird.
-
-### Comment erstellen
-```
-curl --request POST \
-  --url http://localhost:8080//comment \
-  --header 'Content-Type: application/json' \
-  --data '{
-  "text": "Great post! Du must meht schreieben",
-  "userId": 1,
-  "blogId": 1
-}'
-```
-
-# IN306 - Verteilte Systeme (Blog-Projekt)
+# Blog-Backend-GraphQL-REST-API
 
 ## Was macht diese Anwendung?
 
@@ -84,9 +16,12 @@ Das Projekt folgt einer standardmäßigen Quarkus-Struktur:
 │       └── hftm
 │           └── blog
 │               ├── boundry
-│               │   ├── BlogResource.java
-│               │   ├── CommentResource.java
-│               │   └── UserResource.java
+│               │   ├── BlogGraphQLResource.java
+│               │   ├── BlogRESTResource.java
+│               │   ├── CommentGraphQLResource.java
+│               │   ├── CommentRESTResource.java
+│               │   ├── UserGraphQLResource.java
+│               │   └── UserRESTResource.java
 │               ├── control
 │               │   ├── BlogService.java
 │               │   ├── CommentService.java
@@ -105,7 +40,7 @@ Das Projekt folgt einer standardmäßigen Quarkus-Struktur:
     └── application.properties
 ```
 
-- **boundary**: Enthält REST-Ressourcenklassen, die HTTP-Anfragen bearbeiten.
+- **boundary**: Enthält REST / GRAPHQL -Ressourcenklassen, die HTTP-Anfragen bearbeiten.
 - **control**: Enthält Service-Klassen mit der Geschäftslogik für Blogs, Kommentare und Benutzeroperationen.
 - **repository**: Enthält Repository-Klassen für Datenbankoperationen.
 - **entity**: Enthält Entitätsklassen, die verschiedene Komponenten der Anwendung repräsentieren.
@@ -191,23 +126,171 @@ docker start blog-backend
 ```
 
 # Docker Compose starten
+
+## Image Laden
+
+```sh
+docker login --username <GITHUB_USERNAME> --password <TOKEN> ghcr.io
+docker pull ghcr.io/hafnerstefan/quarkus-email-service:1.1.0
+docker pull ghcr.io/hafnerstefan/quarkus-blog-backend:1.1.1
+```
+
 ## Docker Compose starten
 ```sh
 docker-compose -f src/main/docker/docker-compose.yml up -d
 ```
-## Docker Compose starten with example data
-```sh 
-docker-compose -f src/main/docker/docker-compose-with-example-sql-data.yml up -d
+
+# GraphQL Ausprobieren
+- Vorraussetzung ist das der Container läuft am besten mit Docker Compose
+
+## Test Daten Laden
+
+### Bash / Linux / WSL / macOS / Git Bash
+```bash
+ docker exec -i blog-mysql mysql -u dbuser -pdbuser blogdb < src/main/resources/import.sql  
 ```
 
 
-## Change History
+### Login for Token
+```bash
+curl --request POST \
+  --url http://localhost:8080/graphql \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/10.3.1' \
+  --data '{
+    "query": "mutation { 
+      login( 
+        loginRequest: { 
+          email: \"john.doe@example.com\", 
+          password: \"Password123!\" 
+        } 
+      ) { 
+        success 
+        token 
+        user { 
+          id 
+          name 
+          email 
+          rolesList 
+        } 
+      } 
+    }"
+  }'
+```
 
-- **Projekt erstellt**: First Quarkus Step
-- **Blog-Modell und DB-Verbindung**: Quick-Start_DB-Anbindung mit Quarkus Panache
-- **Repository und Service und erster Test**: Erster DB Zugriff über die Test
-- **Rest Servie aufgebaut und getestet**: add Rest API
-- **REST-API-Pfade hinzugefügt**: Rest und Swagger Funktioniert und ist fast perfekt
+### GraphQL Query
+```bash
+TOKEN="xxxx"
+
+curl --request POST \
+  --url http://localhost:8080/graphql \
+  --header "Authorization: Bearer $TOKEN" \
+  --header "Content-Type: application/json" \
+  --header "User-Agent: insomnia/10.3.1" \
+  --data '{
+    "query": "query { 
+      users: getUsers(paginationParams: { 
+        size: 10, 
+        page: 0, 
+        sortOrder: \"desc\" 
+      }) { 
+        size 
+        page 
+        totalElements 
+        content { 
+          id 
+          name 
+          age 
+          email 
+          address 
+          phone 
+          gender 
+          dateOfBirth 
+          createdAt 
+          updatedAt 
+          rolesList 
+          blogs { 
+            id 
+            title 
+            text 
+          } 
+          comments { 
+            id 
+            text 
+          } 
+        } 
+      }, 
+      
+      blogs: getBlogs(paginationParams: { 
+        size: 10, 
+        page: 0, 
+        sortOrder: \"desc\" 
+      }) { 
+        size 
+        page 
+        totalElements 
+        content { 
+          id 
+          title 
+          text 
+          user { 
+            name 
+          } 
+        } 
+      }, 
+      
+      comments: getComments(blogId: 5, paginationParams: { 
+        size: 10, 
+        page: 0, 
+        sortOrder: \"desc\" 
+      }) { 
+        size 
+        page 
+        totalElements 
+        content { 
+          id 
+          text 
+          user { 
+            name 
+          } 
+        } 
+      } 
+    }"
+  }'
+```
+
+## GraphQL Mutation
+```
+# JWT-Token hier einfügen
+TOKEN="xxx" # <--- Hier dein JWT einfügen
+
+curl --request POST \
+  --url http://localhost:8080/graphql \
+  --header "Authorization: Bearer $TOKEN" \
+  --header "Content-Type: application/json" \
+  --header "User-Agent: insomnia/10.3.1" \
+  --data '{
+    "query": "mutation { 
+      createUser(input: { 
+        name: \"Sandra Dubeli\", 
+        age: 32, 
+        email: \"jane.doe11@example.com\", 
+        address: \"123 Main St, Anytown, AT 12345\", 
+        phone: \"+41 78 965 00 00\", 
+        gender: \"female\", 
+        dateOfBirth: \"1988-12-31\", 
+        password: \"Password123!\" 
+      }) { 
+        id 
+        name 
+        email 
+      } 
+    }"
+  }'
+```
+# Hinweis
+
+Im Ordner gibt es ein Insomnia File das die API REST / GraphQL Calls beinhaltet.
 
 ## Autor
 
